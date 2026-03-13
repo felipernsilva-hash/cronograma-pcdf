@@ -1168,22 +1168,21 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
   <div class="taf-chart-wrap">
     <div class="taf-chart-controls">
       <span style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-right:4px;">Exibir:</span>
-      <button class="taf-chart-filter f-barra active" onclick="toggleChartFilter('barra',this)">🏋️ Barra</button>
-      <button class="taf-chart-filter f-abd active" onclick="toggleChartFilter('abd',this)">🔄 Abdominal</button>
-      <button class="taf-chart-filter f-shuttle active" onclick="toggleChartFilter('shuttle',this)">🏃 Shuttle</button>
-      <button class="taf-chart-filter f-corrida active" onclick="toggleChartFilter('corrida',this)">🏅 Corrida</button>
-      <button class="taf-chart-filter f-total active" onclick="toggleChartFilter('total',this)">⭐ Total</button>
+      <button class="taf-chart-filter f-barra active" onclick="toggleChartFilter('barra',this)">🏋️ Barra (reps)</button>
+      <button class="taf-chart-filter f-abd active" onclick="toggleChartFilter('abd',this)">🔄 Abdominal (reps)</button>
+      <button class="taf-chart-filter f-shuttle active" onclick="toggleChartFilter('shuttle',this)">🏃 Shuttle (nível)</button>
+      <button class="taf-chart-filter f-corrida active" onclick="toggleChartFilter('corrida',this)">🏅 Corrida (m)</button>
     </div>
     <div class="taf-chart-canvas-wrap">
       <canvas id="taf-chart-canvas" height="280" style="display: none;"></canvas>
     </div>
     <div id="taf-chart-empty" class="taf-chart-empty" style="display: block;">Nenhum treino registrado ainda.<br>Use o calendário abaixo para registrar seus treinos!</div>
     <div class="taf-chart-legend">
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#3b82f6"></div>Barra (pts)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#10b981"></div>Abdominal (pts)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#f59e0b"></div>Shuttle (pts)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#ef4444"></div>Corrida (pts)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#a855f7"></div>Total /400 (pts)</div>
+      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#60a5fa"></div>Barra (reps)</div>
+      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#34d399"></div>Abdominal (reps)</div>
+      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#fbbf24"></div>Shuttle (nível)</div>
+      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#f87171"></div>Corrida (metros)</div>
+      
     </div>
   </div>
 
@@ -1196,6 +1195,14 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
       <div class="taf-cal-nav-btns">
         <button class="taf-nav-btn" onclick="tafCalGo(-12)">«</button>
         <button class="taf-nav-btn" onclick="tafCalGo(-1)">‹</button>
+        <select id="taf-month-select" onchange="tafCalSetMonth(this.value)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
+          <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+          <option value="2" selected>Março</option><option value="3">Abril</option>
+          <option value="4">Maio</option><option value="5">Junho</option>
+          <option value="6">Julho</option><option value="7">Agosto</option>
+          <option value="8">Setembro</option><option value="9">Outubro</option>
+          <option value="10">Novembro</option><option value="11">Dezembro</option>
+        </select>
         <input type="number" class="taf-year-input" id="taf-year-input" value="2026" min="2020" max="2099" onchange="tafCalSetYear(this.value)">
         <button class="taf-nav-btn" onclick="tafCalGo(1)">›</button>
         <button class="taf-nav-btn" onclick="tafCalGo(12)">»</button>
@@ -7960,6 +7967,12 @@ function tafCalGo(delta){
   while(tafCalMonth > 11){ tafCalMonth -= 12; tafCalYear++; }
   const yi = document.getElementById('taf-year-input');
   if(yi) yi.value = tafCalYear;
+  const ms = document.getElementById('taf-month-select');
+  if(ms) ms.value = tafCalMonth;
+  renderTAFCal();
+}
+function tafCalSetMonth(val){
+  tafCalMonth = parseInt(val);
   renderTAFCal();
 }
 function tafCalSetYear(val){
@@ -7978,6 +7991,8 @@ function tafCalGoToday(){
 function renderTAFCal(){
   const title=document.getElementById('taf-cal-title');
   if(title) title.textContent=MONTH_NAMES_TAF[tafCalMonth]+' '+tafCalYear;
+  const ms=document.getElementById('taf-month-select');
+  if(ms) ms.value=tafCalMonth;
   const grid=document.getElementById('taf-cal-grid');
   if(!grid) return;
   grid.innerHTML='';
@@ -8441,7 +8456,7 @@ function deleteTAFLogEntry(){
 // TAF — GRÁFICO DE EVOLUÇÃO (Canvas 2D)
 // ============================================================
 const CHART_COLORS = {barra:'#3b82f6',abd:'#10b981',shuttle:'#f59e0b',corrida:'#ef4444',total:'#a855f7'};
-let chartActiveFilters = {barra:true, abd:true, shuttle:true, corrida:true, total:true};
+let chartActiveFilters = {barra:true, abd:true, shuttle:true, corrida:true};
 
 function toggleChartFilter(key, btn){
   chartActiveFilters[key] = !chartActiveFilters[key];
@@ -8468,10 +8483,10 @@ function getAllTAFLogs(){
 }
 
 function renderTAFChart(){
-  const canvas=document.getElementById('taf-chart-canvas');
-  const emptyEl=document.getElementById('taf-chart-empty');
+  const canvas = document.getElementById('taf-chart-canvas');
+  const emptyEl = document.getElementById('taf-chart-empty');
   if(!canvas) return;
-  const entries=getAllTAFLogs();
+  const entries = getAllTAFLogs();
   if(!entries.length){
     canvas.style.display='none';
     if(emptyEl) emptyEl.style.display='block';
@@ -8480,100 +8495,111 @@ function renderTAFChart(){
   canvas.style.display='block';
   if(emptyEl) emptyEl.style.display='none';
 
-  const dpr=window.devicePixelRatio||1;
-  const W=canvas.parentElement.offsetWidth||700;
-  const H=300;
+  const dpr = window.devicePixelRatio||1;
+  const W = canvas.parentElement.offsetWidth||700;
+  const H = 300;
   canvas.width=W*dpr; canvas.height=H*dpr;
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   ctx.scale(dpr,dpr);
 
-  // Show last 10 entries max
-  const show=entries.slice(-10);
-  const n=show.length;
-  const P={t:30,r:24,b:56,l:46};
-  const CW=W-P.l-P.r, CH=H-P.t-P.b;
+  // Last 20 entries
+  const show = entries.slice(-20);
+  const n = show.length;
 
-  const METRICS=[
-    {key:'barra',   label:'Barra', c:'#60a5fa', fn:v=>scoreBarra(parseInt(v)||0)},
-    {key:'abd',     label:'Abd',   c:'#34d399', fn:v=>scoreAbd(parseInt(v)||0)},
-    {key:'shuttle', label:'Shuttle',c:'#fbbf24',fn:v=>scoreShuttle(parseFloat(v)||0)},
-    {key:'corrida', label:'Corrida',c:'#f87171',fn:v=>scoreCorrida(parseInt(v)||0)},
+  const METRICS = [
+    { key:'barra',   label:'Barra',    unit:'reps', color:'#60a5fa', max:()=>Math.max(10,...show.map(e=>parseInt(e.log.barra)||0)) },
+    { key:'abd',     label:'Abdominal',unit:'reps', color:'#34d399', max:()=>Math.max(40,...show.map(e=>parseInt(e.log.abd)||0)) },
+    { key:'shuttle', label:'Shuttle',  unit:'nível',color:'#fbbf24', max:()=>Math.max(7,...show.map(e=>parseFloat(e.log.shuttle)||0)) },
+    { key:'corrida', label:'Corrida',  unit:'m',    color:'#f87171', max:()=>Math.max(2200,...show.map(e=>parseInt(e.log.corrida)||0)) },
   ];
-  const active=METRICS.filter(m=>chartActiveFilters[m.key]);
-  const dayGap=8;
-  const dayW=(CW-dayGap*(n-1))/n;
-  const mGap=2;
-  const mW=active.length>0?(dayW-mGap*(active.length-1))/active.length:dayW;
+  const active = METRICS.filter(m=>chartActiveFilters[m.key]);
+  if(!active.length){ ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H); return; }
+
+  const P = {t:30, r:24, b:52, l:54};
+  const CW = W-P.l-P.r, CH = H-P.t-P.b;
 
   // bg
   ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H);
 
-  // Y grid (0..100 = score points)
-  [0,25,50,75,100].forEach(v=>{
-    const y=P.t+CH-(v/100)*CH;
-    ctx.save(); ctx.setLineDash([4,5]);
-    ctx.strokeStyle=v===50?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.06)'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+CW,y); ctx.stroke(); ctx.restore();
-    ctx.fillStyle='#475569'; ctx.font='10px DM Mono,monospace';
-    ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillText(v,P.l-6,y);
+  // X positions
+  const xOf = i => P.l + (n<=1 ? CW/2 : i*(CW/(n-1)));
+
+  // Each metric on its own 0..max scale
+  active.forEach(m => {
+    const vals = show.map(e => {
+      const raw = e.log[m.key];
+      if(raw===''||raw===null||raw===undefined) return null;
+      return parseFloat(raw)||0;
+    });
+    const maxV = m.max();
+    const yOf = v => P.t + CH - (v/maxV)*CH;
+
+    // Grid lines (5 ticks)
+    const ticks = 5;
+    if(active[0].key === m.key){ // draw grid only for first active metric
+      for(let t=0;t<=ticks;t++){
+        const v = (t/ticks)*maxV;
+        const y = yOf(v);
+        ctx.save(); ctx.setLineDash([4,5]);
+        ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+CW,y); ctx.stroke(); ctx.restore();
+      }
+    }
+
+    // Y axis label (right side for each metric — skipped to keep clean, use legend)
+    // Draw line
+    ctx.save();
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = m.color+'66'; ctx.shadowBlur = 8;
+    ctx.beginPath();
+    let started = false;
+    vals.forEach((v,i)=>{
+      if(v===null) return;
+      const x=xOf(i), y=yOf(v);
+      if(!started){ ctx.moveTo(x,y); started=true; } else ctx.lineTo(x,y);
+    });
+    ctx.stroke(); ctx.restore();
+
+    // Dots + value labels
+    vals.forEach((v,i)=>{
+      if(v===null) return;
+      const x=xOf(i), y=yOf(v);
+      // dot
+      ctx.save();
+      ctx.shadowColor=m.color+'99'; ctx.shadowBlur=10;
+      ctx.fillStyle=m.color;
+      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5;
+      ctx.stroke(); ctx.restore();
+      // value above dot
+      ctx.fillStyle=m.color;
+      ctx.font='bold 10px DM Mono,monospace';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      const label = m.unit==='m' ? v+'m' : m.unit==='nível' ? 'N'+v : v+'';
+      ctx.fillText(label, x, y-7);
+    });
   });
 
-  // 60pt "apto" line
-  const aptoY=P.t+CH-(60/100)*CH;
-  ctx.save(); ctx.setLineDash([8,4]);
-  ctx.strokeStyle='rgba(34,197,94,0.5)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(P.l,aptoY); ctx.lineTo(P.l+CW,aptoY); ctx.stroke(); ctx.restore();
-  ctx.fillStyle='#22c55e'; ctx.font='bold 9px DM Sans,sans-serif';
-  ctx.textAlign='left'; ctx.textBaseline='bottom'; ctx.fillText('APTO 60',P.l+4,aptoY-3);
-
-  // Draw bars per entry
+  // X axis: dates
+  ctx.fillStyle='#64748b'; ctx.font='10px DM Mono,monospace';
+  ctx.textAlign='center'; ctx.textBaseline='top';
   show.forEach((e,i)=>{
-    const dayX=P.l+i*(dayW+dayGap);
-    active.forEach((m,j)=>{
-      const raw=e.log[m.key];
-      if(raw===''||raw===null||raw===undefined) return;
-      const score=m.fn(raw);
-      if(!score&&score!==0) return;
-      const bh=(score/100)*CH;
-      const x=dayX+j*(mW+mGap), y=P.t+CH-bh;
-      // glow
-      ctx.shadowColor=m.c+'55'; ctx.shadowBlur=12;
-      const gr=ctx.createLinearGradient(0,y,0,P.t+CH);
-      gr.addColorStop(0,m.c); gr.addColorStop(1,m.c+'44');
-      ctx.fillStyle=gr;
-      const r=Math.min(4,mW/3);
-      ctx.beginPath();
-      ctx.moveTo(x+r,y); ctx.lineTo(x+mW-r,y);
-      ctx.arcTo(x+mW,y,x+mW,y+r,r);
-      ctx.lineTo(x+mW,P.t+CH); ctx.lineTo(x,P.t+CH);
-      ctx.arcTo(x,y,x+r,y,r); ctx.closePath(); ctx.fill();
-      ctx.shadowBlur=0;
-      // score on top
-      if(bh>16){
-        ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.font='bold 9px DM Mono,monospace';
-        ctx.textAlign='center'; ctx.textBaseline='bottom';
-        ctx.fillText(score===0?'E':score, x+mW/2, y-2);
-      }
-    });
-
-    // X date label
-    const lbl=e.date.getDate()+'/'+(e.date.getMonth()+1);
-    ctx.fillStyle='#64748b'; ctx.font='9px DM Mono,monospace';
-    ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText(lbl,dayX+dayW/2,P.t+CH+8);
-    // total score
-    const scores=[scoreBarra(parseInt(e.log.barra)||0),scoreAbd(parseInt(e.log.abd)||0),scoreShuttle(parseFloat(e.log.shuttle)||0),scoreCorrida(parseInt(e.log.corrida)||0)];
-    const filled=[e.log.barra,e.log.abd,e.log.shuttle,e.log.corrida].filter(v=>v!==''&&v!=null);
-    if(filled.length===4){
-      const tot=scores.reduce((a,s)=>a+s,0);
-      const avgOk=tot/4>=60;
-      ctx.fillStyle=avgOk?'#22c55e':'#f59e0b'; ctx.font='bold 9px DM Mono,monospace';
-      ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText(tot,dayX+dayW/2,P.t+CH+21);
+    const x=xOf(i);
+    // vertical tick
+    ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,P.t+CH); ctx.lineTo(x,P.t+CH+4); ctx.stroke();
+    // date label — show every other if crowded
+    if(n<=10 || i%2===0){
+      const d=e.date; ctx.fillStyle='#475569';
+      ctx.fillText(`${d.getDate()}/${d.getMonth()+1}`, x, P.t+CH+7);
     }
   });
 
-  // axes
-  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+CH); ctx.lineTo(P.l+CW,P.t+CH); ctx.stroke();
 }
 
