@@ -516,6 +516,14 @@
   .edital-apto { background:rgba(34,197,94,0.15); color:#4ade80; }
   .edital-inapto { background:rgba(239,68,68,0.15); color:#f87171; }
 
+  /* HOJE — grid responsivo */
+  @media (max-width: 900px) {
+    #hoje-cols, #hoje-cols + div { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 580px) {
+    #hoje-cols, #hoje-cols + div { grid-template-columns: 1fr !important; }
+  }
+
   /* SONO CHART */
   .sono-log-item { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:var(--surface2); margin-bottom:6px; font-size:13px; }
 
@@ -664,97 +672,87 @@
   </div>
 
   <div id="alerta-disciplina-critica" style="margin-bottom:20px;display:none;"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;" id="hoje-cols">
 
-    <!-- Coluna Esquerda -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+  <!-- Linha 1: Treino + Aulas + Bem-estar -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;" id="hoje-cols">
 
-      <!-- Treino do dia -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">💪 Treino TAF de Hoje</div>
-        <div id="hoje-treino" style="font-size:14px;color:var(--text);line-height:1.8;">—</div>
-      </div>
-
-      <!-- Aulas do dia -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📚 Aulas de Hoje</div>
-        <div id="hoje-aulas-lista" style="font-size:13px;color:var(--text);line-height:2;">—</div>
-      </div>
-
+    <!-- Treino do dia -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">💪 Treino TAF de Hoje</div>
+      <div id="hoje-treino" style="font-size:14px;color:var(--text);line-height:1.8;">—</div>
     </div>
 
-    <!-- Coluna Direita -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <!-- Aulas do dia -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📚 Aulas de Hoje</div>
+      <div id="hoje-aulas-lista" style="font-size:13px;color:var(--text);line-height:2;">—</div>
+    </div>
 
-      <!-- Bem-estar do dia -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🧘 Bem-estar de Hoje</div>
+    <!-- Bem-estar -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🧘 Bem-estar de Hoje</div>
 
-        <div style="margin-bottom:14px;">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">😴 Horas de sono</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="number" id="hoje-sono" min="0" max="24" step="0.5" placeholder="h" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;" oninput="salvarBemEstar()">
-            <span style="font-size:12px;color:var(--muted);">horas (ideal: 7-9h)</span>
-          </div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">⚡ Disposição</div>
-          <div style="display:flex;gap:8px;" id="hoje-disposicao-btns">
-            <button onclick="setDisposicao(1,this)" class="disp-btn" data-val="1">😴 1</button>
-            <button onclick="setDisposicao(2,this)" class="disp-btn" data-val="2">😕 2</button>
-            <button onclick="setDisposicao(3,this)" class="disp-btn" data-val="3">😐 3</button>
-            <button onclick="setDisposicao(4,this)" class="disp-btn" data-val="4">😊 4</button>
-            <button onclick="setDisposicao(5,this)" class="disp-btn" data-val="5">🤩 5</button>
-          </div>
-        </div>
-
-        <div>
-          <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">💧 Hidratação</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <div id="hoje-agua-copos" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
-            <span id="hoje-agua-total" style="font-size:12px;color:#60a5fa;font-weight:700;"></span>
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Clique nos copos para registrar (meta: <span id="hoje-agua-meta">—</span>)</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">😴 Horas de sono</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" id="hoje-sono" min="0" max="24" step="0.5" placeholder="h" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;" oninput="salvarBemEstar()">
+          <span style="font-size:12px;color:var(--muted);">horas (ideal: 7-9h)</span>
         </div>
       </div>
-  <!-- Sono -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:0;">
-    <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">😴 Histórico de Sono (14 dias)</div>
-    <div id="sono-chart" style="width:100%;"></div>
+
+      <div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">💧 Hidratação</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div id="hoje-agua-copos" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          <span id="hoje-agua-total" style="font-size:12px;color:#60a5fa;font-weight:700;"></span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Clique nos copos para registrar (meta: <span id="hoje-agua-meta">—</span>)</div>
+      </div>
+    </div>
+
   </div>
 
+  <!-- Linha 2: Histórico de Sono + Histórico de Hidratação + IMC -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;">
 
+    <!-- Sono -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">😴 Histórico de Sono (14 dias)</div>
+      <div id="sono-chart" style="width:100%;"></div>
+    </div>
 
-      <!-- IMC -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📏 IMC e Composição</div>
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
-          <div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Altura (cm)</div>
-            <input type="number" id="hoje-altura" min="140" max="220" placeholder="175" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;" oninput="calcIMC();salvarAltura()">
-          </div>
-          <div style="margin-top:16px;font-size:22px;color:var(--muted);">=</div>
-          <div id="hoje-imc-box" style="text-align:center;flex:1;">
-            <div id="hoje-imc-val" style="font-size:32px;font-family:'DM Mono',monospace;color:#a5b4fc;">—</div>
-            <div id="hoje-imc-class" style="font-size:12px;color:var(--muted);">IMC</div>
-          </div>
+    <!-- Histórico de Hidratação -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">📊 Histórico de Hidratação</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+        <button onclick="setHidroView('diario')" id="hidro-btn-diario" style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;">Últimos 7 dias</button>
+        <button onclick="setHidroView('mensal')" id="hidro-btn-mensal" style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">Mensal</button>
+      </div>
+      <div id="hidro-historico-chart"></div>
+    </div>
+
+    <!-- IMC -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📏 IMC e Composição</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Altura (cm)</div>
+          <div style="background:var(--surface2);color:#60a5fa;border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;text-align:center;">170</div>
         </div>
-        <div id="hoje-imc-bar" style="height:8px;border-radius:4px;background:linear-gradient(to right,#60a5fa,#4ade80,#fbbf24,#f87171);position:relative;margin-bottom:6px;">
-          <div id="hoje-imc-indicator" style="position:absolute;top:-4px;width:4px;height:16px;background:#fff;border-radius:2px;transition:left 0.4s;display:none;"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);">
-          <span>Abaixo</span><span>Normal</span><span>Sobrepeso</span><span>Obeso</span>
+        <div style="margin-top:16px;font-size:22px;color:var(--muted);">=</div>
+        <div id="hoje-imc-box" style="text-align:center;flex:1;">
+          <div id="hoje-imc-val" style="font-size:32px;font-family:'DM Mono',monospace;color:#a5b4fc;">—</div>
+          <div id="hoje-imc-class" style="font-size:12px;color:var(--muted);">IMC</div>
         </div>
       </div>
-
-      <!-- Relatório semanal -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
-        <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📋 Relatório Semanal</div>
-        <div id="hoje-relatorio" style="font-size:13px;color:var(--text);line-height:1.9;">—</div>
-        <button onclick="gerarRelatorio()" style="margin-top:10px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;">🔄 Atualizar Relatório</button>
+      <div id="hoje-imc-bar" style="height:8px;border-radius:4px;background:linear-gradient(to right,#60a5fa,#4ade80,#fbbf24,#f87171);position:relative;margin-bottom:6px;">
+        <div id="hoje-imc-indicator" style="position:absolute;top:-4px;width:4px;height:16px;background:#fff;border-radius:2px;transition:left 0.4s;display:none;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);">
+        <span>Abaixo</span><span>Normal</span><span>Sobrepeso</span><span>Obeso</span>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -7762,9 +7760,10 @@ function deleteCustomAula(mesKey, id){
   renderEstudos(_currentEstudosFilter||null);
 }
 
-let _currentEstudosFilter = null;
-function estudosYearGo(d){ _estudosYear += d; document.getElementById('estudos-year-input').value=_estudosYear; renderEstudos(null); }
-function estudosYearSet(v){ const y=parseInt(v); if(y>=2020&&y<=2035){_estudosYear=y; renderEstudos(null);} }
+const _MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+let _currentEstudosFilter = _MESES_PT[new Date().getMonth()] + ' ' + new Date().getFullYear();
+function estudosYearGo(d){ _estudosYear += d; document.getElementById('estudos-year-input').value=_estudosYear; const mesAtual=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+_estudosYear:null; renderEstudos(mesAtual); }
+function estudosYearSet(v){ const y=parseInt(v); if(y>=2020&&y<=2035){_estudosYear=y; const mesAtual=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+y:null; renderEstudos(mesAtual);} }
 
 
 // ---- Aula Edit ----
@@ -7972,8 +7971,7 @@ function setEstudosPlatform(p){
   }
   renderEstudosProgress();
   const _nm=new Date();
-  const _mp=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  renderEstudos(_mp[_nm.getMonth()]);
+  renderEstudos(_MESES_PT[_nm.getMonth()]+' '+_nm.getFullYear());
 }
 
 function initEstudosPlatformUI(){
@@ -9826,6 +9824,77 @@ function calcStreak(){
   return streak;
 }
 
+// ── Histórico de Hidratação ───────────────────────────────────
+let _hidroView = 'diario';
+function setHidroView(v){
+  _hidroView = v;
+  document.getElementById('hidro-btn-diario').style.background = v==='diario'?'var(--blue)':'var(--surface2)';
+  document.getElementById('hidro-btn-diario').style.borderColor = v==='diario'?'var(--blue)':'var(--border)';
+  document.getElementById('hidro-btn-diario').style.color = v==='diario'?'#fff':'var(--muted)';
+  document.getElementById('hidro-btn-mensal').style.background = v==='mensal'?'var(--blue)':'var(--surface2)';
+  document.getElementById('hidro-btn-mensal').style.borderColor = v==='mensal'?'var(--blue)':'var(--border)';
+  document.getElementById('hidro-btn-mensal').style.color = v==='mensal'?'#fff':'var(--muted)';
+  renderHidroHistorico();
+}
+function renderHidroHistorico(){
+  const el = document.getElementById('hidro-historico-chart'); if(!el) return;
+  const pesoLog = loadPesoLog();
+  const kg = pesoLog.length ? pesoLog[pesoLog.length-1].kg : 75;
+  const metaCopos = Math.ceil(Math.round(kg*35)/250);
+
+  if(_hidroView === 'diario'){
+    // Últimos 7 dias
+    const dias = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const n = (() => { try{ return JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(d)))||0; }catch(e){ return 0; } })();
+      dias.push({ label: d.getDate()+'/'+(d.getMonth()+1), n });
+    }
+    const maxN = Math.max(metaCopos, ...dias.map(d=>d.n), 1);
+    el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:6px;height:70px;">` +
+      dias.map(d => {
+        const pct = Math.min(100, Math.round(d.n/maxN*100));
+        const col = d.n >= metaCopos ? '#22c55e' : d.n >= metaCopos*0.6 ? '#f59e0b' : '#60a5fa';
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:${col};">${d.n}</div>
+          <div style="width:100%;height:${Math.max(4,pct*0.56)}px;background:${col};border-radius:3px 3px 0 0;opacity:0.85;"></div>
+          <div style="font-size:9px;color:var(--muted);white-space:nowrap;">${d.label}</div>
+        </div>`;
+      }).join('') +
+      `</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Meta diária: <span style="color:#22c55e;">${metaCopos} copos</span></div>`;
+  } else {
+    // Mensal: total de copos por semana do mês atual
+    const hoje = new Date();
+    const ano = hoje.getFullYear(), mes = hoje.getMonth();
+    const semanas = [{label:'Sem 1',total:0,dias:0},{label:'Sem 2',total:0,dias:0},{label:'Sem 3',total:0,dias:0},{label:'Sem 4',total:0,dias:0},{label:'Sem 5',total:0,dias:0}];
+    const diasNoMes = new Date(ano, mes+1, 0).getDate();
+    for(let day=1;day<=diasNoMes;day++){
+      const d = new Date(ano, mes, day);
+      if(d > hoje) break;
+      const n = (() => { try{ return JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(d)))||0; }catch(e){ return 0; } })();
+      const si = Math.min(4, Math.floor((day-1)/7));
+      semanas[si].total += n;
+      semanas[si].dias++;
+    }
+    const semAtivas = semanas.filter(s=>s.dias>0);
+    const maxMedia = Math.max(metaCopos, ...semAtivas.map(s=>s.dias?s.total/s.dias:0), 1);
+    el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:8px;height:70px;">` +
+      semAtivas.map(s => {
+        const media = s.dias ? (s.total/s.dias) : 0;
+        const pct = Math.min(100, Math.round(media/maxMedia*100));
+        const col = media >= metaCopos ? '#22c55e' : media >= metaCopos*0.6 ? '#f59e0b' : '#60a5fa';
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:${col};">${media.toFixed(1)}</div>
+          <div style="width:100%;height:${Math.max(4,pct*0.56)}px;background:${col};border-radius:3px 3px 0 0;opacity:0.85;"></div>
+          <div style="font-size:9px;color:var(--muted);">${s.label}</div>
+        </div>`;
+      }).join('') +
+      `</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Média de copos/dia por semana · Meta: <span style="color:#22c55e;">${metaCopos}</span></div>`;
+  }
+}
+
 // ── Água ─────────────────────────────────────────────────────
 function loadAgua(){ try{ return JSON.parse(localStorage.getItem(AGUA_KEY+dateKey()))||0; }catch(e){ return 0; } }
 function saveAgua(n){ localStorage.setItem(AGUA_KEY+dateKey(), JSON.stringify(n)); }
@@ -9854,6 +9923,7 @@ function renderAguaCopos(){
     wrap.appendChild(btn);
   }
   if(totalEl) totalEl.textContent=n+'/'+metaCopos+' copos · '+(n*250)+'ml';
+  renderHidroHistorico();
 }
 
 // ── Bem-estar ────────────────────────────────────────────────
@@ -9861,6 +9931,7 @@ function salvarBemEstar(){
   const sono=document.getElementById('hoje-sono')?.value||'';
   const prev=loadBemEstar();
   saveBemEstarData({...prev, sono});
+  renderSonoChart();
 }
 function loadBemEstar(){ try{ return JSON.parse(localStorage.getItem(BEM_ESTAR_KEY+dateKey()))||{}; }catch(e){ return {}; } }
 function saveBemEstarData(obj){ localStorage.setItem(BEM_ESTAR_KEY+dateKey(), JSON.stringify(obj)); }
@@ -9872,10 +9943,10 @@ function setDisposicao(val, btn){
 }
 
 // ── IMC ──────────────────────────────────────────────────────
-function salvarAltura(){ localStorage.setItem(ALTURA_KEY, document.getElementById('hoje-altura')?.value||''); }
-function getAltura(){ return parseFloat(localStorage.getItem(ALTURA_KEY))||0; }
+function salvarAltura(){ /* altura fixa 170cm */ }
+function getAltura(){ return 170; }
 function calcIMC(){
-  const h=parseFloat(document.getElementById('hoje-altura')?.value)||getAltura();
+  const h=170;
   const pesoLog=loadPesoLog();
   const kg=pesoLog.length?pesoLog[pesoLog.length-1].kg:0;
   const valEl=document.getElementById('hoje-imc-val');
@@ -9995,41 +10066,7 @@ function getAulasDia(){
   }).join('');
 }
 
-// ── Relatório semanal ────────────────────────────────────────
-function gerarRelatorio(){
-  const el=document.getElementById('hoje-relatorio'); if(!el) return;
-  const hoje=new Date();
-  let totalAulas=0, totalTreinos=0, totalCal=0, diasCal=0, pesoDiff='—';
-  for(let i=6;i>=0;i--){
-    const d=new Date(hoje); d.setDate(d.getDate()-i);
-    const dk=dateKey(d);
-    // treinos
-    const tlog=loadTAFLog(d.getFullYear(),d.getMonth(),d.getDate());
-    if(tlog) totalTreinos++;
-    // calorias
-    const clog=loadCalDay(d);
-    const cal=clog.reduce((s,e)=>s+(e.cal||0),0);
-    if(cal>0){ totalCal+=cal; diasCal++; }
-  }
-  // aulas totais
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(k&&k.startsWith('aula_')) totalAulas++;
-  }
-  const avgCal=diasCal?Math.round(totalCal/diasCal):0;
-  const pesoLog=loadPesoLog();
-  if(pesoLog.length>=2){
-    const diff=(pesoLog[pesoLog.length-1].kg-pesoLog[0].kg).toFixed(1);
-    pesoDiff=(diff>0?'+':'')+diff+'kg';
-  }
-  el.innerHTML=`
-    <div>📚 Aulas concluídas (total): <b style="color:#60a5fa;">${totalAulas}</b></div>
-    <div>💪 Treinos TAF esta semana: <b style="color:#4ade80;">${totalTreinos}/7</b></div>
-    <div>🍽️ Média calórica semanal: <b style="color:#fbbf24;">${avgCal||'—'} kcal</b></div>
-    <div>⚖️ Variação de peso: <b style="color:${pesoDiff.startsWith('-')?'#4ade80':'#f87171'}">${pesoDiff}</b></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px;">Atualizado em ${hoje.toLocaleDateString('pt-BR')}</div>
-  `;
-}
+
 
 // ── Render Hoje (main) ────────────────────────────────────────
 function renderHoje(){
@@ -10078,11 +10115,13 @@ function renderHoje(){
 
   // Água
   renderAguaCopos();
+  renderHidroHistorico();
 
-  // IMC
-  const altEl=document.getElementById('hoje-altura');
-  if(altEl&&!altEl.value){ const a=getAltura(); if(a) altEl.value=a; }
+  // IMC (altura fixa 170cm)
   calcIMC();
+
+  // Sono chart
+  renderSonoChart();
 
   // Bem-estar restore
   const be=loadBemEstar();
@@ -10099,7 +10138,6 @@ function renderHoje(){
   // Relatório
   renderAlertaDisc();
   atualizarCountdownGlobal();
-  gerarRelatorio();
 }
 
 
@@ -10354,31 +10392,31 @@ function renderSonoChart(){
     catch(e){ logs.push({date:d,h:null}); }
   }
   if(!logs.some(l=>l.h)){
-    el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">Nenhum registro de sono ainda.</div>'; return;
+    el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">Nenhum registro de sono ainda. Registre as horas de sono diariamente para ver o histórico.</div>'; return;
   }
-  const W=el.offsetWidth||400, H=100;
-  const P={t:10,r:10,b:30,l:30};
+  const W=el.offsetWidth||400, H=110;
+  const P={t:14,r:20,b:30,l:32};
   const CW=W-P.l-P.r, CH=H-P.t-P.b;
   const n=logs.length;
   const xOf=i=>P.l+(i/(n-1))*CW;
-  const yOf=h=>P.t+CH-((h-4)/8)*CH; // 4-12h range
-  el.innerHTML=`<svg width="${W}" height="${H}" style="overflow:visible;">
-    <rect width="${W}" height="${H}" fill="#0d0f14" rx="8"/>
-    <!-- 8h ideal line -->
+  const yOf=h=>P.t+CH-Math.max(0,Math.min(1,(h-4)/8))*CH;
+  // build line path
+  const pts=logs.reduce((acc,l,i)=>{ if(!l.h) return acc; return acc+(acc===''?`M${xOf(i).toFixed(1)},${yOf(l.h).toFixed(1)}`:`L${xOf(i).toFixed(1)},${yOf(l.h).toFixed(1)}`); },'');
+  el.innerHTML=`<svg width="${W}" height="${H}" style="overflow:visible;display:block;">
+    <rect width="${W}" height="${H}" fill="transparent"/>
     <line x1="${P.l}" y1="${yOf(8)}" x2="${P.l+CW}" y2="${yOf(8)}" stroke="rgba(34,197,94,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
     <text x="${P.l+CW+2}" y="${yOf(8)+4}" fill="#22c55e" font-size="9">8h</text>
+    ${pts?`<path d="${pts}" fill="none" stroke="rgba(96,165,250,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`:''}
     ${logs.map((l,i)=>{
       if(!l.h) return '';
       const x=xOf(i), y=yOf(l.h);
       const col=l.h>=7?'#4ade80':l.h>=6?'#fbbf24':'#f87171';
-      return `<circle cx="${x}" cy="${y}" r="4" fill="${col}" opacity="0.9"/>
-              <text x="${x}" y="${y-8}" text-anchor="middle" fill="${col}" font-size="9">${l.h}h</text>`;
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${col}" opacity="0.9"/>
+              <text x="${x.toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9">${l.h}h</text>`;
     }).join('')}
-    ${(()=>{ let d=''; let started=false; return logs.map((l,i)=>{ if(!l.h){started=false;return '';} const x=xOf(i),y=yOf(l.h); if(!started){started=true;return `M${x},${y}`;} return `L${x},${y}`; }).filter(Boolean).join(' '); })()}
-    <!-- x axis labels -->
-    ${logs.filter((_,i)=>i%2===0||i===n-1).map((l,_,arr,i2)=>{
+    ${logs.filter((_,i)=>i%2===0||i===n-1).map(l=>{
       const i=logs.indexOf(l);
-      return `<text x="${xOf(i)}" y="${H-4}" text-anchor="middle" fill="#475569" font-size="8">${l.date.getDate()}/${l.date.getMonth()+1}</text>`;
+      return `<text x="${xOf(i).toFixed(1)}" y="${H-4}" text-anchor="middle" fill="#475569" font-size="8">${l.date.getDate()}/${l.date.getMonth()+1}</text>`;
     }).join('')}
   </svg>`;
 }
