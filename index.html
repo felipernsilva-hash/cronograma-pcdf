@@ -7980,7 +7980,8 @@ function setEstudosPlatform(p){
   renderEstudosProgress();
   const _nm=new Date();
   const _mp=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  renderEstudos(_mp[_nm.getMonth()]);
+  const _mesAtual = _mp[_nm.getMonth()] + ' ' + _nm.getFullYear();
+  renderEstudos(_mesAtual);
 }
 
 function initEstudosPlatformUI(){
@@ -8228,8 +8229,16 @@ function renderEstudos(filterMes){
     container.appendChild(mesDiv);
   });
 
-  const pctTotal = totalAulas>0?Math.round((totalDone/totalAulas)*100):0;
-  document.getElementById('estudo-pct-total').textContent = pctTotal+'%';
+  // Progresso total sempre calculado sobre TODOS os dados da plataforma ativa (ignora filtro de mês)
+  let allTotal=0, allDone=0;
+  getActiveStudyData().forEach(mes=>mes.dias.forEach(dia=>dia.aulas.forEach(a=>{ allTotal++; if(loadAula(a.id)) allDone++; })));
+  const pctTotal = allTotal>0?Math.round((allDone/allTotal)*100):0;
+  const pctEl = document.getElementById('estudo-pct-total');
+  if(pctEl) pctEl.textContent = pctTotal+'%';
+  const barTotal = document.getElementById('ep-bar-total');
+  if(barTotal) barTotal.style.width = pctTotal+'%';
+  const lblTotal = document.getElementById('ep-label-total');
+  if(lblTotal) lblTotal.textContent = allDone+' / '+allTotal+' aulas · '+pctTotal+'%';
 }
 
 function updateStudoProgress(){
@@ -9790,8 +9799,7 @@ async function salvarNoDrive() {
         }
       }
     });
-    // Tenta silencioso primeiro; só mostra tela de autorização se necessário
-    tokenClient.requestAccessToken({ prompt: '' });
+    tokenClient.requestAccessToken({ prompt: 'consent' });
   } catch(e) {
     _authDone = true;
     clearTimeout(safetyTimer);
@@ -11139,18 +11147,25 @@ function renderEstudosQChart(){
   const activeDiscs=Object.keys(series);
   if(!activeDiscs.length){wrap.innerHTML='';return;}
   const H=260;
-  wrap.innerHTML=`<div style="position:relative;width:100%;"><canvas id="estudos-q-canvas" style="width:100%;display:block;border-radius:8px;"></canvas><div id="estudos-q-tooltip" style="display:none;position:absolute;background:#1e2433;border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;pointer-events:none;z-index:10;white-space:nowrap;"></div></div>`;
+  wrap.innerHTML=`<div style="position:relative;width:100%;overflow-x:auto;"><canvas id="estudos-q-canvas" style="display:block;border-radius:8px;"></canvas><div id="estudos-q-tooltip" style="display:none;position:absolute;background:#1e2433;border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;pointer-events:none;z-index:10;white-space:nowrap;"></div></div>`;
   const canvas=document.getElementById('estudos-q-canvas');
   const tooltip=document.getElementById('estudos-q-tooltip');
   const DPR=Math.min(window.devicePixelRatio||1,2);
-  const W=wrap.offsetWidth||700;
+  // Largura mínima por ponto para não ficar esticado com poucos dados
+  const fullW = wrap.offsetWidth||700;
+  const W = fullW;
   canvas.width=W*DPR; canvas.height=H*DPR;
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d'); ctx.scale(DPR,DPR);
   const P={t:24,r:48,b:54,l:46},CW=W-P.l-P.r,CH=H-P.t-P.b;
-  function xOf(i){return P.l+(dates.length<=1?CW/2:(i/(dates.length-1))*CW);}
+  // Espaçamento fixo entre pontos: 80px, centralizado quando poucos dados
+  const SPACING = Math.min(80, CW / Math.max(dates.length - 1, 1));
+  const totalLineW = SPACING * (dates.length - 1);
+  const lineStartX = P.l + (CW - totalLineW) / 2;
+  function xOf(i){ return dates.length <= 1 ? P.l + CW/2 : lineStartX + i * SPACING; }
   function yOf(pct){return P.t+CH-(pct/100)*CH;}
   ctx.fillStyle='#161923'; ctx.beginPath(); ctx.roundRect(0,0,W,H,10); ctx.fill();
+  // Grid lines originais
   [0,25,50,75,100].forEach(v=>{
     const y=yOf(v);
     ctx.save(); ctx.setLineDash([3,6]); ctx.strokeStyle=v===0||v===100?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.05)'; ctx.lineWidth=1;
@@ -11158,6 +11173,13 @@ function renderEstudosQChart(){
     ctx.fillStyle='#475569'; ctx.font='10px DM Mono,monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
     ctx.fillText(v+'%',P.l-8,y);
   });
+  // Linha de meta 85% — label no lado direito para não sobrepor o eixo
+  const metaY=yOf(85);
+  ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle='#f59e0b'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(P.l,metaY); ctx.lineTo(P.l+CW,metaY); ctx.stroke(); ctx.restore();
+  ctx.fillStyle='#f59e0b'; ctx.font='bold 10px DM Mono,monospace';
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.fillText('85%',P.l-8,metaY);
   const maxL=Math.max(1,Math.floor(CW/55)),step=Math.max(1,Math.ceil(dates.length/maxL));
   dates.forEach((ds,i)=>{
     if(i%step!==0&&i!==dates.length-1) return;
