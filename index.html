@@ -9790,7 +9790,8 @@ async function salvarNoDrive() {
         }
       }
     });
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+    // Tenta silencioso primeiro; só mostra tela de autorização se necessário
+    tokenClient.requestAccessToken({ prompt: '' });
   } catch(e) {
     _authDone = true;
     clearTimeout(safetyTimer);
