@@ -511,18 +511,10 @@
   .questao-disciplina-badge { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:2px 8px; border-radius:20px; background:rgba(239,68,68,0.15); color:#f87171; }
 
   /* COMPARATIVO EDITAL */
-  .edital-row { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:center; padding:12px; border-radius:10px; margin-bottom:8px; background:var(--surface2); }
+  .edital-row { display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:10px; align-items:center; padding:12px; border-radius:10px; margin-bottom:2px; background:var(--surface2); }
   .edital-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
   .edital-apto { background:rgba(34,197,94,0.15); color:#4ade80; }
   .edital-inapto { background:rgba(239,68,68,0.15); color:#f87171; }
-
-  /* HOJE — grid responsivo */
-  @media (max-width: 900px) {
-    #hoje-cols, #hoje-cols + div { grid-template-columns: 1fr 1fr !important; }
-  }
-  @media (max-width: 580px) {
-    #hoje-cols, #hoje-cols + div { grid-template-columns: 1fr !important; }
-  }
 
   /* SONO CHART */
   .sono-log-item { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:var(--surface2); margin-bottom:6px; font-size:13px; }
@@ -673,33 +665,25 @@
 
   <div id="alerta-disciplina-critica" style="margin-bottom:20px;display:none;"></div>
 
-  <!-- Linha 1: Treino + Aulas + Bem-estar -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;" id="hoje-cols">
-
-    <!-- Treino do dia -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">💪 Treino TAF de Hoje</div>
       <div id="hoje-treino" style="font-size:14px;color:var(--text);line-height:1.8;">—</div>
     </div>
-
-    <!-- Aulas do dia -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📚 Aulas de Hoje</div>
       <div id="hoje-aulas-lista" style="font-size:13px;color:var(--text);line-height:2;">—</div>
     </div>
-
-    <!-- Bem-estar -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🧘 Bem-estar de Hoje</div>
-
       <div style="margin-bottom:14px;">
         <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">😴 Horas de sono</div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input type="number" id="hoje-sono" min="0" max="24" step="0.5" placeholder="h" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;" oninput="salvarBemEstar()">
+          <input type="number" id="hoje-sono" min="0" max="24" step="0.5" placeholder="h" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:70px;font-family:'DM Mono',monospace;font-size:14px;" onchange="salvarBemEstar()">
           <span style="font-size:12px;color:var(--muted);">horas (ideal: 7-9h)</span>
+          <button id="sono-salvar-btn" onclick="salvarBemEstar()" style="background:var(--blue);border:none;color:#fff;border-radius:7px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">✓ Salvar</button>
         </div>
       </div>
-
       <div>
         <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">💧 Hidratação</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -709,19 +693,13 @@
         <div style="font-size:11px;color:var(--muted);margin-top:4px;">Clique nos copos para registrar (meta: <span id="hoje-agua-meta">—</span>)</div>
       </div>
     </div>
-
   </div>
 
-  <!-- Linha 2: Histórico de Sono + Histórico de Hidratação + IMC -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;">
-
-    <!-- Sono -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">😴 Histórico de Sono (14 dias)</div>
       <div id="sono-chart" style="width:100%;"></div>
     </div>
-
-    <!-- Histórico de Hidratação -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">📊 Histórico de Hidratação</div>
       <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
@@ -730,8 +708,6 @@
       </div>
       <div id="hidro-historico-chart"></div>
     </div>
-
-    <!-- IMC -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;">
       <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📏 IMC e Composição</div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
@@ -752,7 +728,6 @@
         <span>Abaixo</span><span>Normal</span><span>Sobrepeso</span><span>Obeso</span>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -1001,384 +976,12 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
     <div id="revisao-lista" style="font-size:13px;"></div>
   </div>
 
-  </div>
+  </div><!-- /estudos-search-wrap -->
 
+  </div><!-- /estudos-container -->
 
-    <!-- Date nav + ring -->
-    <div class="cal-counter-header">
-      <div class="cal-daily-ring-wrap">
-        <canvas class="cal-ring-svg" id="cal-ring-hoje" width="110" height="110"></canvas>
-        <div class="cal-ring-stats">
-          <div class="cal-ring-label">Calorias hoje</div>
-          <div class="cal-ring-total" id="cal-total-today">0</div>
-          <div style="font-size:12px;color:var(--muted);">meta: <span id="cal-goal-display" style="color:var(--amber);">2000</span> kcal
-            <button onclick="openCalGoalEdit()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;margin-left:4px;">✏️</button>
-          </div>
-          <div class="cal-ring-meta">
-            <div class="cal-ring-meta-item"><div class="cal-ring-meta-val" id="cal-prot-today" style="color:#60a5fa">0g</div><div class="cal-ring-meta-lbl">Prot.</div></div>
-            <div class="cal-ring-meta-item"><div class="cal-ring-meta-val" id="cal-carb-today" style="color:#fbbf24">0g</div><div class="cal-ring-meta-lbl">Carb.</div></div>
-            <div class="cal-ring-meta-item"><div class="cal-ring-meta-val" id="cal-fat-today" style="color:#f87171">0g</div><div class="cal-ring-meta-lbl">Gordura</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="cal-date-nav">
-        <button class="cal-date-btn" onclick="calDayGo(-1)">‹</button>
-        <div class="cal-date-label" id="cal-date-label">Hoje</div>
-        <button class="cal-date-btn" onclick="calDayGo(1)">›</button>
-        <input type="date" class="cal-date-input" id="cal-date-picker" onchange="calSetDate(this.value)">
-        <button class="cal-date-btn" onclick="calGoToday()">Hoje</button>
-      </div>
-    </div>
+</div><!-- /tab-estudos -->
 
-    <!-- Macros bar -->
-    <div class="cal-meta-bar">
-      <div class="cal-meta-card">
-        <div class="cal-meta-card-val" id="cal-prot-bar-val" style="color:#60a5fa">0g</div>
-        <div class="cal-meta-card-lbl">Proteína</div>
-        <div class="cal-meta-bar-inner"><div class="cal-meta-bar-fill" id="cal-prot-bar" style="background: rgb(59, 130, 246); width: 55%;"></div></div>
-      </div>
-      <div class="cal-meta-card">
-        <div class="cal-meta-card-val" id="cal-carb-bar-val" style="color:#fbbf24">0g</div>
-        <div class="cal-meta-card-lbl">Carboidrato</div>
-        <div class="cal-meta-bar-inner"><div class="cal-meta-bar-fill" id="cal-carb-bar" style="background: rgb(245, 158, 11); width: 78%;"></div></div>
-      </div>
-      <div class="cal-meta-card">
-        <div class="cal-meta-card-val" id="cal-fat-bar-val" style="color:#f87171">0g</div>
-        <div class="cal-meta-card-lbl">Gordura</div>
-        <div class="cal-meta-bar-inner"><div class="cal-meta-bar-fill" id="cal-fat-bar" style="background: rgb(239, 68, 68); width: 100%;"></div></div>
-      </div>
-      <div class="cal-meta-card">
-        <div class="cal-meta-card-val" id="cal-fiber-bar-val" style="color:#10b981">10.6g</div>
-        <div class="cal-meta-card-lbl">Fibra</div>
-        <div class="cal-meta-bar-inner"><div class="cal-meta-bar-fill" id="cal-fiber-bar" style="background: rgb(16, 185, 129); width: 42%;"></div></div>
-      </div>
-      <div class="cal-meta-card">
-        <div class="cal-meta-card-val" id="cal-remaining-val" style="color:var(--green)">364</div>
-        <div class="cal-meta-card-lbl">Restante</div>
-        <div class="cal-meta-bar-inner"><div class="cal-meta-bar-fill" id="cal-remaining-bar" style="background: rgb(34, 197, 94); width: 18%;"></div></div>
-      </div>
-    </div>
-
-    <!-- Add food -->
-    <div class="cal-add-section">
-      <div class="cal-add-title">➕ Adicionar alimento</div>
-  <!-- MFP INTEGRATION BAR -->
-  <div class="mfp-bar">
-    <span class="mfp-logo">🥗</span>
-    <div class="mfp-bar-text">
-      <strong>MyFitnessPal — banco de dados completo</strong>
-      Pesquise milhões de alimentos no MFP e cole os valores aqui
-    </div>
-    <button class="mfp-open-btn" onclick="window.open('https://www.myfitnesspal.com/pt/food/search','_blank')">
-      🔗 Abrir MyFitnessPal
-    </button>
-    <button class="mfp-paste-btn" onclick="openMFPPasteModal()">
-      📋 Colar do MFP
-    </button>
-  </div>
-
-  <!-- MFP PASTE MODAL -->
-  <div class="mfp-modal-overlay" id="mfp-modal-overlay" onclick="if(event.target===this)closeMFPModal()">
-    <div class="mfp-modal">
-      <button class="mfp-modal-close" onclick="closeMFPModal()">✕</button>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;margin-bottom:6px;">Importar do MyFitnessPal</div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:18px;">Pesquise o alimento no MFP, anote os valores nutricionais e preencha abaixo.</p>
-      <div class="mfp-step"><div class="mfp-step-num">1</div><div class="mfp-step-text"><strong>Abra o MyFitnessPal</strong> e pesquise o alimento desejado</div></div>
-      <div class="mfp-step"><div class="mfp-step-num">2</div><div class="mfp-step-text"><strong>Anote os valores</strong> mostrados na página do alimento (calorias, proteínas, carboidratos e gorduras)</div></div>
-      <div class="mfp-step"><div class="mfp-step-num">3</div><div class="mfp-step-text"><strong>Preencha abaixo</strong> e clique em Adicionar ao Diário</div></div>
-      <div style="border-top:1px solid var(--border);margin:16px 0;"></div>
-      <div class="mfp-field" style="margin-bottom:12px;">
-        <label>Nome do alimento (como aparece no MFP)</label>
-        <input type="text" id="mfp-name" class="cal-food-input" placeholder="Ex: Frango Assado Sadia" oninput="updateMFPPreview()">
-      </div>
-      <div class="mfp-field-grid">
-        <div class="mfp-field">
-          <label>🔥 Calorias (kcal)</label>
-          <input type="number" id="mfp-cal" min="0" placeholder="ex: 165" oninput="updateMFPPreview()">
-        </div>
-        <div class="mfp-field">
-          <label>Quantidade consumida</label>
-          <input type="number" id="mfp-qty" min="1" value="100" placeholder="ex: 150" oninput="updateMFPPreview()">
-        </div>
-        <div class="mfp-field">
-          <label>💪 Proteína (g)</label>
-          <input type="number" id="mfp-prot" min="0" step="0.1" placeholder="g" oninput="updateMFPPreview()">
-        </div>
-        <div class="mfp-field">
-          <label>🌾 Carboidrato (g)</label>
-          <input type="number" id="mfp-carb" min="0" step="0.1" placeholder="g" oninput="updateMFPPreview()">
-        </div>
-        <div class="mfp-field">
-          <label>🥑 Gordura (g)</label>
-          <input type="number" id="mfp-fat" min="0" step="0.1" placeholder="g" oninput="updateMFPPreview()">
-        </div>
-        <div class="mfp-field">
-          <label>🌿 Fibra (g)</label>
-          <input type="number" id="mfp-fiber" min="0" step="0.1" placeholder="g" oninput="updateMFPPreview()">
-        </div>
-      </div>
-      <div class="mfp-field" style="margin-bottom:12px;">
-        <label>Unidade de referência dos valores acima</label>
-        <select id="mfp-ref-unit" class="cal-unit-select" style="width:100%;" onchange="updateMFPPreview()">
-          <option value="100g">por 100g / 100ml</option>
-          <option value="porcao">pela porção (quantidade exata que vou consumir)</option>
-          <option value="un">por unidade (1 unidade = valores acima)</option>
-        </select>
-      </div>
-      <div class="mfp-field" style="margin-bottom:14px;">
-        <label>Refeição</label>
-        <select id="mfp-meal" class="cal-unit-select" style="width:100%;">
-          <option value="cafe">☀️ Café da Manhã</option>
-          <option value="almoco">🍽 Almoço</option>
-          <option value="lanche">🌤 Lanche</option>
-          <option value="janta">🌙 Janta</option>
-          <option value="extra">⭐ Extra</option>
-        </select>
-      </div>
-      <div class="mfp-preview" id="mfp-preview" style="color: var(--text);"><strong style="color:var(--text)">Strogonoff de Carne</strong> — 1 un<br>
-    <span style="color:var(--amber);font-weight:600">300 kcal</span> &nbsp;·&nbsp;
-    <span style="color:#60a5fa">P: 25g</span> &nbsp;·&nbsp;
-    <span style="color:#fbbf24">C: 10g</span> &nbsp;·&nbsp;
-    <span style="color:#f87171">G: 15g</span> &nbsp;·&nbsp;
-    <span style="color:#10b981">F: 0g</span></div>
-      <button class="mfp-add-btn" onclick="addFromMFP()">➕ Adicionar ao Diário</button>
-    </div>
-  </div>
-
-      <div class="cal-add-row">
-        <div class="cal-add-field" style="flex:3;min-width:200px;">
-          <label>Alimento</label>
-          <div class="cal-search-wrap">
-            <input type="text" class="cal-food-input" id="cal-food-search" placeholder="Digite o nome do alimento..." oninput="calSearch(this.value)" autocomplete="off">
-            <div class="cal-dropdown" id="cal-dropdown"><div class="cal-dd-item" onclick="calSelectFood(143)">
-      <span class="cal-dd-name">Café preto sem açúcar</span>
-      <span class="cal-dd-cat">Bebidas</span>
-      <span class="cal-dd-cal">2 kcal/100g</span>
-    </div><div class="cal-dd-item" onclick="calSelectFood(144)">
-      <span class="cal-dd-name">Café com açúcar (1 col.)</span>
-      <span class="cal-dd-cat">Bebidas</span>
-      <span class="cal-dd-cal">20 kcal/100g</span>
-    </div><div class="cal-dd-item" onclick="calSelectFood(145)">
-      <span class="cal-dd-name">Café com leite integral</span>
-      <span class="cal-dd-cat">Bebidas</span>
-      <span class="cal-dd-cal">34 kcal/100g</span>
-    </div></div>
-          </div>
-        </div>
-        <div class="cal-add-field">
-          <label>Quantidade</label>
-          <input type="number" class="cal-qty-input" id="cal-qty" value="100" min="1" max="9999">
-        </div>
-        <div class="cal-add-field" style="min-width:80px;">
-          <label>Unidade</label>
-          <select class="cal-unit-select" id="cal-unit">
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="un">unid.</option>
-            <option value="col_sopa">col. sopa</option>
-            <option value="col_cha">col. chá</option>
-            <option value="xcara">xícara</option>
-            <option value="fatia">fatia</option>
-          </select>
-        </div>
-        <div class="cal-add-field" style="min-width:100px;">
-          <label>Refeição</label>
-          <select class="cal-unit-select" id="cal-meal-type">
-            <option value="cafe">☀️ Café</option>
-            <option value="almoco">🍽 Almoço</option>
-            <option value="lanche">🌤 Lanche</option>
-            <option value="janta">🌙 Janta</option>
-            <option value="extra">⭐ Extra</option>
-          </select>
-        </div>
-        <div class="cal-add-field" style="flex:0;min-width:auto;justify-content:flex-end;">
-          <label>&nbsp;</label>
-          <button class="cal-add-btn" onclick="calAddFood()">Adicionar</button>
-        </div>
-      </div>
-      <div id="cal-selected-food-info" style="margin-top: 12px; padding: 10px 14px; background: var(--surface2); border-radius: 8px; font-size: 12px; color: var(--muted); display: none;"><strong style="color:var(--text)">Café com leite integral</strong> — 300 g →
-    <span style="color:var(--amber);font-weight:600"> 102 kcal</span> ·
-    <span style="color:#60a5fa">P: 5.1g</span> ·
-    <span style="color:#fbbf24">C: 8.4g</span> ·
-    <span style="color:#f87171">G: 4.5g</span> ·
-    <span style="color:#10b981">F: 0g</span></div>
-      <div style="margin-top:10px;">
-        <button class="cal-add-custom-btn" onclick="openCalCustomModal()">+ Cadastrar alimento personalizado</button>
-      </div>
-    </div>
-
-    <!-- Daily log -->
-    <div class="cal-log-section">
-      <div class="cal-log-title">
-        <span>📋 Registro do dia</span>
-        <button onclick="clearDayLog()" style="background:none;border:1px solid rgba(239,68,68,0.3);color:#f87171;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">Limpar dia</button>
-      </div>
-      <div id="cal-log-container"><div class="cal-log-meal-group">
-      <div class="cal-log-meal-header">
-        <span>☀️ Café da Manhã</span>
-        <span style="color:var(--amber)">548 kcal</span>
-      </div>
-      <div class="cal-log-list"><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#f59e0b"></div>
-        <div class="cal-log-name">Café com leite integral</div>
-        <div class="cal-log-qty">350ml</div>
-        <div class="cal-log-kcal">119 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:6g C:9.8g G:5.3g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773138800992)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#f59e0b"></div>
-        <div class="cal-log-name">Ovo inteiro cozido</div>
-        <div class="cal-log-qty">2un</div>
-        <div class="cal-log-kcal">156 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:13g C:1g G:11g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773138823840)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#f59e0b"></div>
-        <div class="cal-log-name">Maçã</div>
-        <div class="cal-log-qty">1un</div>
-        <div class="cal-log-kcal">88 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:0.5g C:23g G:0.3g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773138834392)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#f59e0b"></div>
-        <div class="cal-log-name">[MFP] Iogurte Ninho Forti+ (potinho)</div>
-        <div class="cal-log-qty">90g</div>
-        <div class="cal-log-kcal">77 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:2.4g C:9.9g G:2.4g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773165717652)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#f59e0b"></div>
-        <div class="cal-log-name">[MFP] Wafer Isabela</div>
-        <div class="cal-log-qty">1un</div>
-        <div class="cal-log-kcal">108 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:0.8g C:12.6g G:6g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773165897893)">✕</button>
-      </div></div></div><div class="cal-log-meal-group">
-      <div class="cal-log-meal-header">
-        <span>🍽 Almoço</span>
-        <span style="color:var(--amber)">537 kcal</span>
-      </div>
-      <div class="cal-log-list"><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#3b82f6"></div>
-        <div class="cal-log-name">[MFP] Strogonoff de Carne</div>
-        <div class="cal-log-qty">1un</div>
-        <div class="cal-log-kcal">300 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:25g C:10g G:15g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773166111454)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#3b82f6"></div>
-        <div class="cal-log-name">Macarrão cozido (espaguete)</div>
-        <div class="cal-log-qty">150g</div>
-        <div class="cal-log-kcal">237 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:8.7g C:46.5g G:1.4g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773166141501)">✕</button>
-      </div></div></div><div class="cal-log-meal-group">
-      <div class="cal-log-meal-header">
-        <span>🌤 Lanche</span>
-        <span style="color:var(--amber)">551 kcal</span>
-      </div>
-      <div class="cal-log-list"><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#10b981"></div>
-        <div class="cal-log-name">Iogurte Ninho Forti+</div>
-        <div class="cal-log-qty">100g</div>
-        <div class="cal-log-kcal">86 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:2.7g C:12g G:2.7g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773166298957)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#10b981"></div>
-        <div class="cal-log-name">Nectarina</div>
-        <div class="cal-log-qty">80g</div>
-        <div class="cal-log-kcal">35 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:0.9g C:8.5g G:0.2g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773166474149)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#10b981"></div>
-        <div class="cal-log-name">Sanduíche de Pão Francês na Air Fryer</div>
-        <div class="cal-log-qty">100g</div>
-        <div class="cal-log-kcal">328 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:17g C:33g G:14g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773179440407)">✕</button>
-      </div><div class="cal-log-item">
-        <div class="cal-log-meal-dot" style="background:#10b981"></div>
-        <div class="cal-log-name">Café com leite integral</div>
-        <div class="cal-log-qty">300g</div>
-        <div class="cal-log-kcal">102 kcal</div>
-        <div style="font-size:10px;color:var(--muted);min-width:90px;text-align:right">P:5.1g C:8.4g G:4.5g</div>
-        <button class="cal-log-del" onclick="calDeleteEntry(1773179772086)">✕</button>
-      </div></div></div></div>
-    </div>
-
-    <!-- Nutrition chart -->
-    <div class="cal-week-chart-wrap">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-        <div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:1px;">📊 Gráfico — Últimos 7 dias</div>
-          <div style="font-size:11px;color:var(--muted);">Média kcal: <span id="cal-week-avg" style="color:var(--amber);font-weight:600">1647</span>&nbsp; | &nbsp;<span id="cal-chart-macro-avg" style="color:var(--muted);font-size:11px;">P:<b style="color:#60a5fa">106g</b> C:<b style="color:#fbbf24">143g</b> G:<b style="color:#f87171">71g</b></span></div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="cal-chart-tabs">
-          <button class="cal-chart-tab" onclick="calChartSetMode('calorias',this)">🔥 Calorias</button>
-          <button class="cal-chart-tab active" onclick="calChartSetMode('macros',this)">📦 Macros</button>
-          <button class="cal-chart-tab" onclick="calChartSetMode('pizza',this)">🥧 Hoje</button>
-        </div>
-      </div>
-      <canvas id="cal-chart-canvas" style="display: block; width: 100%; border-radius: 8px; height: 200px;" height="400" width="2720"></canvas>
-      <div id="cal-chart-legend" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px;"><div class="cal-legend-chip"><div class="cal-legend-sq" style="background:#3b82f6"></div>Proteína</div><div class="cal-legend-chip"><div class="cal-legend-sq" style="background:#fbbf24"></div>Carboidrato</div><div class="cal-legend-chip"><div class="cal-legend-sq" style="background:#f87171"></div>Gordura</div><div class="cal-legend-chip"><div class="cal-legend-sq" style="background:#34d399"></div>Fibra</div></div>
-    </div>
-  </div>
-
-  <!-- Custom food modal -->
-  <div class="cal-custom-modal-overlay" id="cal-custom-overlay" onclick="if(event.target===this)closeCalCustomModal()">
-    <div class="cal-custom-modal">
-      <button class="cal-custom-modal-close" onclick="closeCalCustomModal()">✕</button>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;margin-bottom:18px;">Cadastrar Alimento</div>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div><label style="font-size:11px;color:var(--muted);">Nome do alimento</label><br>
-          <input type="text" id="cf-name" class="cal-food-input" style="margin-top:5px;" placeholder="Ex: Arroz com feijão caseiro"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div><label style="font-size:11px;color:var(--muted);">Calorias por 100g/ml</label><br>
-            <input type="number" id="cf-cal" class="cal-qty-input" style="width:100%;margin-top:5px;" placeholder="kcal"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Proteína (g/100g)</label><br>
-            <input type="number" id="cf-prot" class="cal-qty-input" style="width:100%;margin-top:5px;" placeholder="g"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Carboidrato (g/100g)</label><br>
-            <input type="number" id="cf-carb" class="cal-qty-input" style="width:100%;margin-top:5px;" placeholder="g"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Gordura (g/100g)</label><br>
-            <input type="number" id="cf-fat" class="cal-qty-input" style="width:100%;margin-top:5px;" placeholder="g"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Fibra (g/100g)</label><br>
-            <input type="number" id="cf-fiber" class="cal-qty-input" style="width:100%;margin-top:5px;" placeholder="g"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Categoria</label><br>
-            <select id="cf-cat" class="cal-unit-select" style="width:100%;margin-top:5px;">
-              <option value="Proteínas">Proteínas</option>
-              <option value="Cereais">Cereais</option>
-              <option value="Leguminosas">Leguminosas</option>
-              <option value="Laticínios">Laticínios</option>
-              <option value="Frutas">Frutas</option>
-              <option value="Verduras">Verduras</option>
-              <option value="Gorduras">Gorduras</option>
-              <option value="Bebidas">Bebidas</option>
-              <option value="Personalizado">Personalizado</option>
-            </select>
-          </div>
-        </div>
-        <button class="taf-modal-save-btn" onclick="saveCustomFood()">💾 Salvar Alimento</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Goal edit modal -->
-  <div class="cal-custom-modal-overlay" id="cal-goal-overlay" onclick="if(event.target===this)closeCalGoalEdit()">
-    <div class="cal-custom-modal" style="max-width:320px;">
-      <button class="cal-custom-modal-close" onclick="closeCalGoalEdit()">✕</button>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;margin-bottom:18px;">Meta de Calorias</div>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div><label style="font-size:11px;color:var(--muted);">Meta diária (kcal)</label><br>
-          <input type="number" id="cal-goal-input" class="cal-food-input" style="margin-top:5px;" value="2400" min="1000" max="6000" placeholder="kcal"></div>
-        <div style="font-size:11px;color:var(--muted);">Sugestão: déficit calórico para emagrecer ~2000 kcal · manutenção ~2400 kcal · ganho de massa ~2800 kcal</div>
-        <button class="taf-modal-save-btn" onclick="saveCalGoal()">✓ Definir Meta</button>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 <!-- ===== ALIMENTAÇÃO ===== -->
 <div id="tab-alimentacao" class="tab-content">
@@ -1899,23 +1502,11 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
   <div class="section-title" style="font-size:28px;margin-bottom:4px;">📈 Gráfico de Evolução</div>
   <p class="section-sub">Pontuação por treino registrado ao longo do tempo</p>
 
-  <!-- Planejamento de Pico -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
-    <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🎯 Planejamento de Pico</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Periodização automática — mostra em qual fase você deve estar para chegar no pico na data do TAF</div>
-    <div id="taf-pico-container"></div>
-  </div>
 
   <!-- Comparativo Edital -->
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:20px;margin-bottom:4px;">
     <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📋 Comparativo com Edital PCDF</div>
     <div id="taf-comparativo">Carregando...</div>
-  </div>
-  <!-- Projeção -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
-    <div style="font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📈 Projeção de Evolução</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Baseado na sua progressão atual, estimativa de quando você atingirá o mínimo de aprovação</div>
-    <div id="taf-projecao">Carregando...</div>
   </div>
 
   <div class="taf-chart-wrap">
@@ -1926,17 +1517,30 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
       <button class="taf-chart-filter f-shuttle active" onclick="toggleChartFilter('shuttle',this)">🏃 Shuttle</button>
       <button class="taf-chart-filter f-corrida active" onclick="toggleChartFilter('corrida',this)">🏅 Corrida</button>
     </div>
-    <div class="taf-chart-canvas-wrap">
-      <canvas id="taf-chart-canvas" height="280" style="display: none;"></canvas>
+    <div class="taf-chart-canvas-wrap" style="position:relative;overflow-x:auto;overflow-y:hidden;">
+      <canvas id="taf-chart-canvas" height="340" style="display:none;" onmousemove="tafChartHover(event,this)" onmouseleave="tafChartLeave()"></canvas>
+      <div id="taf-chart-tooltip" style="display:none;position:absolute;background:#1e2433;border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;pointer-events:none;z-index:10;min-width:120px;box-shadow:0 4px 16px rgba(0,0,0,0.4);"></div>
     </div>
     <div id="taf-chart-empty" class="taf-chart-empty" style="display: block;">Nenhum treino registrado ainda.<br>Use o calendário abaixo para registrar seus treinos!</div>
-    <div class="taf-chart-legend">
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#60a5fa"></div>Barra (reps)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#34d399"></div>Abdominal (reps)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#fbbf24"></div>Shuttle (seg)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#f87171"></div>Corrida (m)</div>
-      <div class="taf-legend-item"><div class="taf-legend-dot" style="background:#fb923c;border-style:dashed;border-width:2px;background:none;border-color:#fb923c;"></div>Corrida (tempo)</div>
-      
+    <div id="taf-chart-legend-wrap">
+      <div class="taf-chart-legend">
+        <div class="taf-legend-item">
+          <svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#60a5fa" stroke-width="2.5"/></svg>
+          <span>Barra</span> <span id="taf-leg-barra" style="font-family:'DM Mono',monospace;font-size:11px;color:#60a5fa;margin-left:4px;"></span>
+        </div>
+        <div class="taf-legend-item">
+          <svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#34d399" stroke-width="2.5" stroke-dasharray="8,4"/></svg>
+          <span>Abdominal</span> <span id="taf-leg-abd" style="font-family:'DM Mono',monospace;font-size:11px;color:#34d399;margin-left:4px;"></span>
+        </div>
+        <div class="taf-legend-item">
+          <svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="3,3"/></svg>
+          <span>Shuttle</span> <span id="taf-leg-shuttle" style="font-family:'DM Mono',monospace;font-size:11px;color:#fbbf24;margin-left:4px;"></span>
+        </div>
+        <div class="taf-legend-item">
+          <svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#f87171" stroke-width="2.5" stroke-dasharray="12,3,3,3"/></svg>
+          <span>Corrida</span> <span id="taf-leg-corrida" style="font-family:'DM Mono',monospace;font-size:11px;color:#f87171;margin-left:4px;"></span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2203,7 +1807,7 @@ function buildMonthSelector(){
 
 function renderCalendar(){
   const grid=document.getElementById('calendar-grid'); grid.innerHTML='';
-  document.getElementById('cal-month-title').textContent=MONTHS[currentMonth]+' '+currentYear;
+  var _cmt=document.getElementById('cal-month-title'); if(_cmt) _cmt.textContent=MONTHS[currentMonth]+' '+currentYear;
   DOWS.forEach(d=>{ const h=document.createElement('div'); h.className='dow-header'; h.textContent=d; grid.appendChild(h); });
   const firstDay=new Date(currentYear,currentMonth,1).getDay();
   const daysInMonth=new Date(currentYear,currentMonth+1,0).getDate();
@@ -2231,8 +1835,8 @@ function renderCalendar(){
     grid.appendChild(cell);
   }
   const pct=Math.round((done/daysInMonth)*100);
-  document.getElementById('month-progress').style.width=pct+'%';
-  document.getElementById('month-pct').textContent=pct+'%';
+  var _mp2=document.getElementById('month-progress'); if(_mp2) _mp2.style.width=pct+'%';
+  var _mpct=document.getElementById('month-pct'); if(_mpct) _mpct.textContent=pct+'%';
   updateStats();
 }
 
@@ -2324,11 +1928,13 @@ function saveModal(){
 function showTab(name, btn){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  const tabEl = document.getElementById('tab-'+name);
+  if(!tabEl) return;
+  tabEl.classList.add('active');
   if(btn) btn.classList.add('active');
   if(name==='hoje'){ renderHoje(); setTimeout(renderSonoChart,100); }
   if(name==='peso'){ renderPeso(); setTimeout(renderFotosGrid, 50); }
-  if(name==='taf'){ renderTAFCal(); renderTAFChart(); setTimeout(()=>{ renderComparativoEdital(); renderProjecaoTAF(); renderPicoTAF(); },50); }
+  if(name==='taf'){ renderTAFCal(); renderTAFChart(); setTimeout(()=>{ renderComparativoEdital(); },50); }
   if(name==='alimentacao'){ calCurrentDate=new Date(); updateCalDateDisplay(); renderCalDay(); renderCalWeekBars(); }
   if(name==='estudos'){ setTimeout(()=>{ initEstudosPlatformUI(); renderHeatmap(); renderAcertoDiscCards(); setTimeout(renderEstudosQChart,80); renderPainelMetas(); const rs=getRevisaoSugerida(); const rw=document.getElementById('revisao-espaçada-wrap'); const rl=document.getElementById('revisao-lista'); if(rw&&rl){ rw.style.display=rs.length?'block':'none'; rl.innerHTML=rs.map(({aula,diasDecorridos})=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);">${SUBJECT_STYLE[aula.disciplina]?.icon||'📖'} <b>${aula.titulo||aula.disciplina}</b> — feita há ${diasDecorridos} dias</div>`).join(''); } },50); }
   if(name==='questoes'){ renderPainelQuestoes(); renderAcertoDiscCards(); setTimeout(renderEstudosQChart,200); }
@@ -2338,7 +1944,7 @@ function showTab(name, btn){
 // STATS
 // ============================================================
 function updateStats(){
-  document.getElementById('stat-done').textContent=getTotalDone();
+  var _sd=document.getElementById('stat-done'); if(_sd) _sd.textContent=getTotalDone();
   // Count done per platform for header display
   let aulasGC=0, aulasSP=0;
   STUDY_DATA.forEach(mes=>mes.dias.forEach(dia=>dia.aulas.forEach(a=>{ if(loadAula(a.id)) aulasGC++; })));
@@ -2622,6 +2228,7 @@ let _calSearchResults = []; // Armazena os resultados atuais da busca
 
 function calSearch(query){
   const dd = document.getElementById('cal-dropdown');
+  if(!dd) return;
   calSelectedFood = null;
   _calSearchResults = [];
   updateFoodInfo();
@@ -2648,12 +2255,14 @@ function calSelectFood(idx){
   calSelectedFood = food;
   const inp = document.getElementById('cal-food-search');
   if(inp) inp.value = food.name;
-  document.getElementById('cal-dropdown').classList.remove('open');
+  const dd2 = document.getElementById('cal-dropdown');
+  if(dd2) dd2.classList.remove('open');
   updateFoodInfo();
 }
 
 function updateFoodInfo(){
   const infoEl = document.getElementById('cal-selected-food-info');
+  if(!infoEl) return;
   if(!calSelectedFood){ infoEl.style.display='none'; return; }
   const qty = parseInt(document.getElementById('cal-qty').value)||100;
   const unit = document.getElementById('cal-unit').value;
@@ -2692,8 +2301,9 @@ function calAddFood(){
 
 // ---- render day log ----
 function renderCalDay(){
-  const log = loadCalDay(calCurrentDate);
   const container = document.getElementById('cal-log-container');
+  if(!container) return;
+  const log = loadCalDay(calCurrentDate);
   const totalToday = log.reduce((s,e)=>s+e.cal,0);
   const totalProt  = log.reduce((s,e)=>s+e.prot,0);
   const totalCarb  = log.reduce((s,e)=>s+e.carb,0);
@@ -2717,8 +2327,7 @@ function renderCalDay(){
   document.getElementById('cal-fiber-bar').style.width = Math.min(100,Math.round(totalFiber/25*100))+'%';
   const remaining = calGoal - totalToday;
   const remEl = document.getElementById('cal-remaining-val');
-  remEl.textContent = remaining >= 0 ? remaining : '−'+(Math.abs(remaining));
-  remEl.style.color = remaining >= 0 ? 'var(--green)' : 'var(--red)';
+  if(remEl){ remEl.textContent = remaining >= 0 ? remaining : '−'+(Math.abs(remaining)); remEl.style.color = remaining >= 0 ? 'var(--green)' : 'var(--red)'; }
   document.getElementById('cal-remaining-bar').style.width = Math.max(0,Math.min(100,Math.round(remaining/calGoal*100)))+'%';
   document.getElementById('cal-remaining-bar').style.background = remaining>=0?'#22c55e':'#ef4444';
   // goal display
@@ -2809,7 +2418,7 @@ function updateCalDateDisplay(){
   const today=new Date(); const isToday=calCurrentDate.toDateString()===today.toDateString();
   const dow=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const label=isToday?'Hoje':dow[calCurrentDate.getDay()]+', '+calCurrentDate.getDate()+'/'+(calCurrentDate.getMonth()+1)+'/'+calCurrentDate.getFullYear();
-  document.getElementById('cal-date-label').textContent=label;
+  var _cdl=document.getElementById('cal-date-label'); if(_cdl) _cdl.textContent=label;
   const picker=document.getElementById('cal-date-picker');
   if(picker){ const y=calCurrentDate.getFullYear(),m=String(calCurrentDate.getMonth()+1).padStart(2,'0'),d=String(calCurrentDate.getDate()).padStart(2,'0'); picker.value=`${y}-${m}-${d}`; }
 }
@@ -7760,10 +7369,10 @@ function deleteCustomAula(mesKey, id){
   renderEstudos(_currentEstudosFilter||null);
 }
 
-const _MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var _MESES_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 let _currentEstudosFilter = _MESES_PT[new Date().getMonth()] + ' ' + new Date().getFullYear();
-function estudosYearGo(d){ _estudosYear += d; document.getElementById('estudos-year-input').value=_estudosYear; const mesAtual=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+_estudosYear:null; renderEstudos(mesAtual); }
-function estudosYearSet(v){ const y=parseInt(v); if(y>=2020&&y<=2035){_estudosYear=y; const mesAtual=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+y:null; renderEstudos(mesAtual);} }
+function estudosYearGo(d){ _estudosYear += d; var ei=document.getElementById('estudos-year-input'); if(ei) ei.value=_estudosYear; var m=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+_estudosYear:null; renderEstudos(m); }
+function estudosYearSet(v){ const y=parseInt(v); if(y>=2020&&y<=2035){_estudosYear=y; var m=_currentEstudosFilter?_currentEstudosFilter.split(' ')[0]+' '+y:null; renderEstudos(m);} }
 
 
 // ---- Aula Edit ----
@@ -7992,6 +7601,7 @@ function renderEstudos(filterMes){
 
   // Build month filter pills — filter by year
   const filterDiv = document.getElementById('estudos-filter');
+  if(!filterDiv) return;
   filterDiv.innerHTML = '<span style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;align-self:center;">Mês:</span>';
   const allPill = document.createElement('button');
   allPill.className = 'filter-pill' + (!filterMes?' active':'');
@@ -8219,7 +7829,12 @@ function renderEstudos(filterMes){
     container.appendChild(mesDiv);
   });
 
-  const pctTotal = totalAulas>0?Math.round((totalDone/totalAulas)*100):0;
+  // Progresso total: conta TODAS as aulas da plataforma ativa, não só as filtradas
+  let grandTotalAll=0, grandDoneAll=0;
+  getActiveStudyData().forEach(mes=>mes.dias.forEach(dia=>dia.aulas.forEach(a=>{
+    grandTotalAll++; if(loadAula(a.id)) grandDoneAll++;
+  })));
+  const pctTotal = grandTotalAll>0?Math.round((grandDoneAll/grandTotalAll)*100):0;
   document.getElementById('estudo-pct-total').textContent = pctTotal+'%';
 }
 
@@ -8298,33 +7913,32 @@ function renderPeso(){
 
   // Set date input to today if empty
   const dateEl=document.getElementById('peso-date-inp');
-  if(!dateEl.value){ const t=new Date(); dateEl.value=t.toISOString().slice(0,10); }
+  if(dateEl&&!dateEl.value){ const t=new Date(); dateEl.value=t.toISOString().slice(0,10); }
   if(meta){ const me=document.getElementById('peso-meta-inp'); if(me&&!me.value) me.value=meta; }
 
   // Stats
   const atual=log.length?log[log.length-1].kg:null;
   const inicial=log.length?log[0].kg:null;
   const diff=atual!==null&&inicial!==null?atual-inicial:null;
-  document.getElementById('peso-atual').textContent=atual!=null?atual.toFixed(1):'—';
-  document.getElementById('peso-inicial').textContent=inicial!=null?inicial.toFixed(1):'—';
+  var _pa=document.getElementById('peso-atual'); if(_pa) _pa.textContent=atual!=null?atual.toFixed(1):'—';
+  var _pi=document.getElementById('peso-inicial'); if(_pi) _pi.textContent=inicial!=null?inicial.toFixed(1):'—';
   const diffEl=document.getElementById('peso-diff');
   if(diff!=null){
-    diffEl.textContent=(diff>0?'+':'')+diff.toFixed(1)+' kg';
-    diffEl.style.color=diff<=0?'#22c55e':'#f87171';
-  } else { diffEl.textContent='—'; diffEl.style.color='var(--muted)'; }
-  document.getElementById('peso-meta-val').textContent=meta?meta.toFixed(1):'—';
+    if(diffEl){ diffEl.textContent=(diff>0?'+':'')+diff.toFixed(1)+' kg'; diffEl.style.color=diff<=0?'#22c55e':'#f87171'; }
+  } else { if(diffEl){ diffEl.textContent='—'; diffEl.style.color='var(--muted)'; } }
+  var _pmv=document.getElementById('peso-meta-val'); if(_pmv) _pmv.textContent=meta?meta.toFixed(1):'—';
   const faltaEl=document.getElementById('peso-falta');
   if(meta&&atual!=null){
     const f=atual-meta;
-    faltaEl.textContent=(f>0?'-':'+')+Math.abs(f).toFixed(1)+' kg';
-    faltaEl.style.color=f<=0?'#22c55e':'#f59e0b';
-  } else { faltaEl.textContent='—'; }
+    if(faltaEl){ faltaEl.textContent=(f>0?'-':'+')+Math.abs(f).toFixed(1)+' kg'; faltaEl.style.color=f<=0?'#22c55e':'#f59e0b'; }
+  } else { if(faltaEl) faltaEl.textContent='—'; }
 
   // Chart
   renderPesoChart(log, meta);
 
   // Table
   const container=document.getElementById('peso-log-container');
+  if(!container) return;
   const countEl=document.getElementById('peso-count');
   if(!log.length){
     container.innerHTML='<div class="peso-empty">Nenhum registro ainda</div>';
@@ -8975,6 +8589,7 @@ function updateTAFModalScores(){
   const shutRaw=document.getElementById('taf-log-shuttle').value;
   const shutNum=parseFloat(shutRaw);
   const shutEl=document.getElementById('taf-log-shuttle-score');
+  if(!shutEl) return;
   if(shutRaw!==''&&!isNaN(shutNum)){
     const s=scoreShuttle(shutNum); total+=s; filled++;
     if(s===0)anyElim=true;
@@ -8982,16 +8597,24 @@ function updateTAFModalScores(){
     shutEl.textContent=s===0?'ELIM':s; shutEl.className='taf-field-score '+cls;
   } else { shutEl.textContent='—'; shutEl.className='taf-field-score score-nd'; }
 
-  // Corrida 12min — pontuação baseada apenas na distância (metros)
-  // O teste consiste em correr o máximo em 12 minutos — quanto mais metros, melhor
+  // Corrida 12min — distância em metros + tempo deve ser ≤ 12:00
   const corRaw=document.getElementById('taf-log-corrida').value;
   const corNum=parseInt(corRaw);
+  const corTempoRaw=document.getElementById('taf-log-corrida-tempo').value||'';
   const corEl=document.getElementById('taf-log-corrida-score');
+  // Validar tempo: se informado, deve ser ≤ 12:00 (720s)
+  let corTempoOk=true;
+  if(corTempoRaw){
+    const parts=corTempoRaw.split(':');
+    const corSecs=(parseInt(parts[0])||0)*60+(parseInt(parts[1])||0);
+    if(corSecs>720) corTempoOk=false;
+  }
   if(corRaw!==''&&!isNaN(corNum)){
-    const s=scoreCorrida(corNum); total+=s; filled++;
+    const s=corTempoOk?scoreCorrida(corNum):0; total+=s; filled++;
     if(s===0)anyElim=true;
     const cls=s===0?'score-elim':s===50?'score-50':s===60?'score-60':s===70?'score-70':s<100?'score-80':'score-100';
-    corEl.textContent=(s===0?'ELIM':s); corEl.className='taf-field-score '+cls;
+    const tempoLabel=!corTempoOk?' ⚠️':'';
+    corEl.textContent=(s===0?'ELIM':s)+tempoLabel; corEl.className='taf-field-score '+cls;
   } else { corEl.textContent='—'; corEl.className='taf-field-score score-nd'; }
   const totEl=document.getElementById('taf-log-total');
   const stEl=document.getElementById('taf-log-status');
@@ -9041,6 +8664,57 @@ function deleteTAFLogEntry(){
 // ============================================================
 const CHART_COLORS = {barra:'#3b82f6',abd:'#10b981',shuttle:'#f59e0b',corrida:'#ef4444',total:'#a855f7'};
 let chartActiveFilters = {barra:true, abd:true, shuttle:true, corrida:true};
+let _tafChartData = { show:[], metrics:[], P:{}, xOf:null }; // dados do último render para tooltip
+
+function tafChartLeave(){
+  const t=document.getElementById('taf-chart-tooltip'); if(t) t.style.display='none';
+}
+
+function tafChartHover(evt, canvas){
+  const tooltip=document.getElementById('taf-chart-tooltip'); if(!tooltip) return;
+  const {show, metrics, P, xOf} = _tafChartData;
+  if(!show.length||!xOf) return;
+  const rect=canvas.getBoundingClientRect();
+  const mx=(evt.clientX-rect.left)*(canvas.width/rect.width)/(window.devicePixelRatio||1);
+  const my=(evt.clientY-rect.top)*(canvas.height/rect.height)/(window.devicePixelRatio||1);
+
+  // Encontrar ponto mais próximo no eixo X
+  let closestIdx=-1, minDist=30;
+  show.forEach((_,i)=>{
+    const dist=Math.abs(xOf(i)-mx);
+    if(dist<minDist){ minDist=dist; closestIdx=i; }
+  });
+  if(closestIdx===-1){ tooltip.style.display='none'; return; }
+
+  const entry=show[closestIdx];
+  const d=entry.date;
+  const log=entry.log;
+  let html=`<div style="font-family:'DM Mono',monospace;font-size:10px;color:#64748b;margin-bottom:6px;">${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}</div>`;
+  if(chartActiveFilters.barra && log.barra!==''){
+    html+=`<div style="color:#60a5fa;margin-bottom:3px;">🏋️ Barra: <b>${log.barra} reps</b></div>`;
+  }
+  if(chartActiveFilters.abd && log.abd!==''){
+    const tempo=log.abd_tempo?` / ${log.abd_tempo}s`:'';
+    html+=`<div style="color:#34d399;margin-bottom:3px;">🔄 Abd: <b>${log.abd} reps${tempo}</b></div>`;
+  }
+  if(chartActiveFilters.shuttle && log.shuttle!==''){
+    html+=`<div style="color:#fbbf24;margin-bottom:3px;">🏃 Shuttle: <b>${log.shuttle}s</b></div>`;
+  }
+  if(chartActiveFilters.corrida && log.corrida!==''){
+    const tempo=log.corrida_tempo?` / ${log.corrida_tempo}`:'';
+    html+=`<div style="color:#f87171;margin-bottom:3px;">🏅 Corrida: <b>${log.corrida}m${tempo}</b></div>`;
+  }
+  if(log.obs) html+=`<div style="color:#64748b;font-size:10px;margin-top:4px;border-top:1px solid #2a3147;padding-top:4px;">${log.obs.slice(0,50)}</div>`;
+  tooltip.innerHTML=html;
+  tooltip.style.display='block';
+
+  // Posicionar tooltip
+  let tx=evt.clientX-rect.left+12;
+  let ty=evt.clientY-rect.top-10;
+  if(tx+150>rect.width) tx=evt.clientX-rect.left-160;
+  tooltip.style.left=tx+'px';
+  tooltip.style.top=ty+'px';
+}
 
 function toggleChartFilter(key, btn){
   chartActiveFilters[key] = !chartActiveFilters[key];
@@ -9083,106 +8757,153 @@ function renderTAFChart(){
 
   const dpr = Math.min(window.devicePixelRatio||1, 3);
   const wrap = canvas.parentElement;
-  const W = wrap.clientWidth || wrap.offsetWidth || 700;
-  const H = 280;
+  const containerW = wrap.clientWidth || wrap.offsetWidth || 700;
+  const show = entries.slice(-20);
+  const n = show.length;
+
+  // Largura: mínimo 80px por intervalo entre pontos, com scroll se necessário
+  const P = { t:44, r:16, b:52, l:56 };
+  const minW = P.l + P.r + 80 * Math.max(n - 1, 1);
+  const W = Math.max(containerW, minW);
+  const H = 340;
+
   canvas.width  = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
   canvas.style.width  = W + 'px';
   canvas.style.height = H + 'px';
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
 
-  const show = entries.slice(-20);
-  const n = show.length;
-  const P = { t:36, r:20, b:48, l:52 };
   const CW = W - P.l - P.r;
   const CH = H - P.t - P.b;
+  const SPACING = n <= 1 ? CW : CW / (n - 1);
+  function xOf(i){ return n <= 1 ? P.l + CW/2 : P.l + i * SPACING; }
 
-  // Espaçamento fixo centralizado — igual ao gráfico de questões
-  const SPACING = Math.min(80, CW / Math.max(n-1, 1));
-  const totalLineW = SPACING * (n-1);
-  const lineStartX = P.l + (CW - totalLineW) / 2;
-  function xOf(i){ return n<=1 ? P.l+CW/2 : lineStartX + i*SPACING; }
-
-  // Fundo
-  ctx.fillStyle = '#0d0f14';
-  ctx.fillRect(0, 0, W, H);
-
-  // Normaliza todos os valores para 0–100 (pontuação)
+  // Métricas — pontuação para posição Y, valor bruto para labels
   const METRICS = [
-    { key:'barra',   color:'#60a5fa', label:'Barra',
-      vals: show.map(e=>{ const v=parseInt(e.log.barra);   return isNaN(v)||e.log.barra===''  ?null:scoreBarra(v);   }) },
-    { key:'abd',     color:'#34d399', label:'Abdominal',
-      vals: show.map(e=>{ const v=parseInt(e.log.abd);     return isNaN(v)||e.log.abd===''    ?null:scoreAbd(v);     }) },
-    { key:'shuttle', color:'#fbbf24', label:'Shuttle',
-      vals: show.map(e=>{ const v=parseFloat(e.log.shuttle); return isNaN(v)||e.log.shuttle===''?null:scoreShuttle(v); }) },
-    { key:'corrida', color:'#f87171', label:'Corrida',
-      vals: show.map(e=>{ const v=parseInt(e.log.corrida); return isNaN(v)||e.log.corrida===''?null:scoreCorrida(v); }) },
+    { key:'barra',   color:'#60a5fa', label:'Barra',   unit:'reps',
+      raw:  show.map(e=>{ const v=parseInt(e.log.barra);   return isNaN(v)||e.log.barra===''  ?null:v; }),
+      vals: show.map(e=>{ const v=parseInt(e.log.barra);   return isNaN(v)||e.log.barra===''  ?null:scoreBarra(v);  }) },
+    { key:'abd',     color:'#34d399', label:'Abdominal',unit:'reps',
+      raw:  show.map(e=>{ const v=parseInt(e.log.abd);     return isNaN(v)||e.log.abd===''    ?null:v; }),
+      vals: show.map(e=>{ const v=parseInt(e.log.abd); const t=parseInt(e.log.abd_tempo)||0;
+                          return isNaN(v)||e.log.abd===''?null:((t>0&&t>60)?0:scoreAbd(v)); }) },
+    { key:'shuttle', color:'#fbbf24', label:'Shuttle',  unit:'s',
+      raw:  show.map(e=>{ const v=parseFloat(e.log.shuttle);return isNaN(v)||e.log.shuttle===''?null:v; }),
+      vals: show.map(e=>{ const v=parseFloat(e.log.shuttle);return isNaN(v)||e.log.shuttle===''?null:scoreShuttle(v); }) },
+    { key:'corrida', color:'#f87171', label:'Corrida',  unit:'m',
+      raw:  show.map(e=>{ const v=parseInt(e.log.corrida); return isNaN(v)||e.log.corrida===''?null:v; }),
+      vals: show.map(e=>{
+        const v=parseInt(e.log.corrida); if(isNaN(v)||e.log.corrida==='') return null;
+        const tp=e.log.corrida_tempo||''; let ok=true;
+        if(tp){ const pp=tp.split(':'); const s=(parseInt(pp[0])||0)*60+(parseInt(pp[1])||0); if(s>720) ok=false; }
+        return ok?scoreCorrida(v):0;
+      }) },
   ];
 
-  // Grid Y — pontuação 0 a 100
-  [0,25,50,75,100].forEach(v=>{
-    const y = P.t + CH - (v/100)*CH;
+  // Salvar dados para tooltip
+  _tafChartData = { show, P, xOf };
+
+  // Escala Y dinâmica: centrada nos dados com padding proporcional
+  const activeVals = METRICS.filter(m=>chartActiveFilters[m.key])
+                            .flatMap(m=>m.vals.filter(v=>v!==null));
+  const minV = activeVals.length ? Math.min(...activeVals) : 0;
+  const maxV = activeVals.length ? Math.max(...activeVals) : 100;
+  const pad  = Math.max(15, (maxV - minV) * 0.5);
+  const yMin = Math.max(0,   Math.floor(minV - pad));
+  const yMax = Math.min(100, Math.ceil( maxV + pad));
+  const yRange = Math.max(1, yMax - yMin);
+  function yOf(v){ return P.t + CH - ((v - yMin) / yRange) * CH; }
+
+  // Estilos de linha distintos por série — sempre o mesmo índice
+  const DASH_STYLES = [[], [8,4], [3,3], [12,3,3,3]];
+  const LINE_WIDTHS = [2.5, 2.5, 2.5, 2.5];
+
+  // Fundo
+  ctx.fillStyle='#0d0f14';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid Y — marcas nas pontuações relevantes dentro do range visível
+  [0, 50, 60, 70, 100].forEach(v => {
+    if(v < yMin || v > yMax) return;
+    const y = yOf(v);
     ctx.save(); ctx.setLineDash([4,5]);
-    ctx.strokeStyle = v===0?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.06)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+CW,y); ctx.stroke(); ctx.restore();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.l, y); ctx.lineTo(P.l+CW, y); ctx.stroke(); ctx.restore();
     ctx.fillStyle='#475569'; ctx.font='10px DM Mono,monospace';
     ctx.textAlign='right'; ctx.textBaseline='middle';
     ctx.fillText(v+'pts', P.l-6, y);
   });
 
-  // Linha de aprovação mínima: 50 pts em cada prova e média ≥ 60
-  const aprovY = P.t + CH - (50/100)*CH;
-  ctx.save(); ctx.setLineDash([8,4]);
-  ctx.strokeStyle='rgba(251,191,36,0.7)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(P.l,aprovY); ctx.lineTo(P.l+CW,aprovY); ctx.stroke(); ctx.restore();
-  ctx.fillStyle='#fbbf24'; ctx.font='bold 9px DM Sans,sans-serif';
-  ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText('mín 50pts', P.l-4, aprovY-2);
+  // Linha mínima 50pts (tracejada amarela)
+  if(50 >= yMin && 50 <= yMax){
+    const ay = yOf(50);
+    ctx.save(); ctx.setLineDash([8,4]);
+    ctx.strokeStyle='rgba(251,191,36,0.7)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(P.l,ay); ctx.lineTo(P.l+CW,ay); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 9px DM Sans,sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='bottom';
+    ctx.fillText('mín 50pts', P.l+4, ay-3);
+  }
 
-  // Labels X
-  const step = Math.max(1, Math.ceil(n/8));
+  // Grid X + labels de data
   show.forEach((e,i)=>{
-    if(i%step!==0 && i!==n-1) return;
-    ctx.fillStyle='#64748b'; ctx.font='10px DM Sans,sans-serif';
+    const x = xOf(i);
+    ctx.save(); ctx.setLineDash([2,6]);
+    ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,P.t); ctx.lineTo(x,P.t+CH); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#64748b'; ctx.font='11px DM Sans,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='top';
-    ctx.fillText(`${e.date.getDate()}/${e.date.getMonth()+1}`, xOf(i), P.t+CH+8);
+    ctx.fillText(e.date.getDate()+'/'+(e.date.getMonth()+1), x, P.t+CH+10);
   });
 
-  // Área + linha bezier por métrica
-  METRICS.forEach(m=>{
+  // Detectar sobreposições: série que cobre outra de mesmo Y usa dot vazio + linha fina
+  const overlapMap = {};
+  METRICS.forEach((m, mi) => {
+    overlapMap[m.key] = {};
+    if(!chartActiveFilters[m.key]) return;
+    m.vals.forEach((v, i) => {
+      if(v === null) return;
+      const coveredBy = METRICS.slice(0, mi).find(other =>
+        chartActiveFilters[other.key] && other.vals[i] === v
+      );
+      overlapMap[m.key][i] = !!coveredBy;
+    });
+  });
+
+  // Linhas por série
+  METRICS.forEach((m, mi) => {
     if(!chartActiveFilters[m.key]) return;
     const col = m.color;
-    const pts = m.vals.map((v,i)=> v===null ? null : [xOf(i), P.t+CH-(v/100)*CH]);
+    const dash = DASH_STYLES[mi];
+    const lw   = LINE_WIDTHS[mi];
+    const pts  = m.vals.map((v,i) => v===null ? null : [xOf(i), yOf(v)]);
     const valid = pts.filter(Boolean);
     if(!valid.length) return;
 
-    // Área gradiente
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(valid[0][0], P.t+CH);
-    pts.forEach(p=>{ if(p) ctx.lineTo(p[0],p[1]); });
-    ctx.lineTo(valid[valid.length-1][0], P.t+CH);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(0,P.t,0,P.t+CH);
-    grad.addColorStop(0, col+'30'); grad.addColorStop(1, col+'05');
-    ctx.fillStyle=grad; ctx.fill(); ctx.restore();
-
-    // Linha bezier
-    if(valid.length>=2){
+    // Linha bezier com dash estilo próprio
+    if(valid.length >= 2){
+      // Série que fica POR BAIXO de outra: linha mais grossa para aparecer nas bordas
+      // Série que fica POR CIMA: linha mais fina para deixar a de baixo visível
+      const hasAnyOverlap = Object.values(overlapMap[m.key]).some(Boolean);
+      // hasAnyOverlap=true significa que esta série cobre uma anterior → fina
+      // Verificar também se esta série É coberta por outra → grossa
+      const isCoveredByLater = METRICS.some((other, oi) =>
+        oi > mi && chartActiveFilters[other.key] &&
+        m.vals.some((v, i) => v !== null && other.vals[i] === v)
+      );
+      const lw = hasAnyOverlap ? 1.5 : isCoveredByLater ? 5 : 2.5;
       ctx.save();
-      ctx.strokeStyle=col; ctx.lineWidth=2.5;
+      ctx.strokeStyle=col; ctx.lineWidth=lw;
       ctx.lineJoin='round'; ctx.lineCap='round';
-      ctx.shadowColor=col+'88'; ctx.shadowBlur=8;
+      ctx.setLineDash(dash);
+      ctx.shadowColor=col+'66'; ctx.shadowBlur=6;
       ctx.beginPath();
-      let first=true;
       let prev=null;
       pts.forEach(p=>{
-        if(!p) return;
-        if(first){ ctx.moveTo(p[0],p[1]); first=false; prev=p; return; }
+        if(!p){ prev=null; return; }
+        if(!prev){ ctx.moveTo(p[0],p[1]); prev=p; return; }
         const cpx=(prev[0]+p[0])/2;
         ctx.bezierCurveTo(cpx,prev[1],cpx,p[1],p[0],p[1]);
         prev=p;
@@ -9190,38 +8911,37 @@ function renderTAFChart(){
       ctx.stroke(); ctx.restore();
     }
 
-    // Dots com glow
-    pts.forEach((p,i)=>{
+    // Dots: preenchido se primário, vazio (só borda) se sobreposto
+    pts.forEach((p, i)=>{
       if(!p) return;
-      ctx.save(); ctx.shadowColor=col+'99'; ctx.shadowBlur=10;
-      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(p[0],p[1],4.5,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5; ctx.shadowBlur=0; ctx.stroke(); ctx.restore();
+      const isOverlap = overlapMap[m.key][i];
+      ctx.save();
+      ctx.shadowColor=col+'99'; ctx.shadowBlur=8;
+      ctx.beginPath(); ctx.arc(p[0],p[1],4.5,0,Math.PI*2);
+      if(isOverlap){
+        // Dot vazio: borda colorida, interior transparente — a série de baixo aparece
+        ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.shadowBlur=0;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle=col; ctx.fill();
+        ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5; ctx.shadowBlur=0; ctx.stroke();
+      }
+      ctx.restore();
     });
-
-    // Label apenas no último ponto
-    const lastPt = [...pts].reverse().find(Boolean);
-    const lastVal = [...m.vals].reverse().find(v=>v!==null);
-    if(lastPt && lastVal!==undefined){
-      ctx.fillStyle=col; ctx.font='bold 9px DM Mono,monospace';
-      ctx.textAlign='left'; ctx.textBaseline='middle';
-      ctx.fillText(lastVal+'pts', lastPt[0]+8, lastPt[1]);
-    }
   });
 
   // Eixos
-  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+CH); ctx.lineTo(P.l+CW,P.t+CH); ctx.stroke();
 
-  // Legenda
-  let lx=P.l, ly=P.t+CH+26;
-  METRICS.forEach((m,di)=>{
-    if(!chartActiveFilters[m.key]) return;
-    ctx.font='10px DM Sans,sans-serif';
-    const tw=ctx.measureText(m.label).width+20;
-    if(lx+tw>W-P.r && di>0){ lx=P.l; ly+=16; }
-    ctx.fillStyle=m.color; ctx.beginPath(); ctx.roundRect(lx,ly-5,10,10,2); ctx.fill();
-    ctx.fillStyle='#94a3b8'; ctx.textAlign='left'; ctx.textBaseline='middle';
-    ctx.fillText(m.label, lx+14, ly); lx+=tw;
+  // Atualizar legenda HTML com último valor de cada série
+  const legMap  = {barra:'taf-leg-barra', abd:'taf-leg-abd', shuttle:'taf-leg-shuttle', corrida:'taf-leg-corrida'};
+  METRICS.forEach(m=>{
+    const el = document.getElementById(legMap[m.key]);
+    if(!el) return;
+    const lastRaw = [...m.raw].reverse().find(v=>v!==null);
+    el.textContent = lastRaw!=null ? lastRaw+' '+m.unit : '';
   });
 }
 
@@ -9624,8 +9344,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(hojeBtn) showTab('hoje', hojeBtn);
     renderHeatmap();
     renderComparativoEdital();
-    renderProjecaoTAF();
-    renderPicoTAF();
     renderBancoQuestoes();
     renderFotosGrid();
     // Resize handlers for all charts
@@ -9683,6 +9401,7 @@ async function salvarNoDrive() {
   if (!clientId) { openDriveConfig(); return; }
 
   const btn = document.getElementById('drive-btn-float');
+  if(!btn) return;
   const orig = btn.innerHTML;
 
   // Check if GIS library loaded
@@ -9824,74 +9543,57 @@ function calcStreak(){
   return streak;
 }
 
-// ── Histórico de Hidratação ───────────────────────────────────
-let _hidroView = 'diario';
+
+// ── Histórico de Hidratação ────────────────────────────────
+var _hidroView = 'diario';
 function setHidroView(v){
   _hidroView = v;
-  document.getElementById('hidro-btn-diario').style.background = v==='diario'?'var(--blue)':'var(--surface2)';
-  document.getElementById('hidro-btn-diario').style.borderColor = v==='diario'?'var(--blue)':'var(--border)';
-  document.getElementById('hidro-btn-diario').style.color = v==='diario'?'#fff':'var(--muted)';
-  document.getElementById('hidro-btn-mensal').style.background = v==='mensal'?'var(--blue)':'var(--surface2)';
-  document.getElementById('hidro-btn-mensal').style.borderColor = v==='mensal'?'var(--blue)':'var(--border)';
-  document.getElementById('hidro-btn-mensal').style.color = v==='mensal'?'#fff':'var(--muted)';
+  var bd=document.getElementById('hidro-btn-diario'), bm=document.getElementById('hidro-btn-mensal');
+  if(bd){ bd.style.background=v==='diario'?'var(--blue)':'var(--surface2)'; bd.style.borderColor=v==='diario'?'var(--blue)':'var(--border)'; bd.style.color=v==='diario'?'#fff':'var(--muted)'; }
+  if(bm){ bm.style.background=v==='mensal'?'var(--blue)':'var(--surface2)'; bm.style.borderColor=v==='mensal'?'var(--blue)':'var(--border)'; bm.style.color=v==='mensal'?'#fff':'var(--muted)'; }
   renderHidroHistorico();
 }
 function renderHidroHistorico(){
-  const el = document.getElementById('hidro-historico-chart'); if(!el) return;
-  const pesoLog = loadPesoLog();
-  const kg = pesoLog.length ? pesoLog[pesoLog.length-1].kg : 75;
-  const metaCopos = Math.ceil(Math.round(kg*35)/250);
-
-  if(_hidroView === 'diario'){
-    // Últimos 7 dias
-    const dias = [];
-    for(let i=6;i>=0;i--){
-      const d = new Date(); d.setDate(d.getDate()-i);
-      const n = (() => { try{ return JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(d)))||0; }catch(e){ return 0; } })();
-      dias.push({ label: d.getDate()+'/'+(d.getMonth()+1), n });
+  var el=document.getElementById('hidro-historico-chart'); if(!el) return;
+  var pesoLog=loadPesoLog();
+  var kg=pesoLog.length?pesoLog[pesoLog.length-1].kg:75;
+  var metaCopos=Math.ceil(Math.round(kg*35)/250);
+  var monoFont="DM Mono,monospace";
+  if(_hidroView==='diario'){
+    var dias=[];
+    for(var i=6;i>=0;i--){
+      var d=new Date(); d.setDate(d.getDate()-i);
+      var n=0; try{ n=JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(d)))||0; }catch(e){}
+      dias.push({label:d.getDate()+'/'+(d.getMonth()+1),n:n});
     }
-    const maxN = Math.max(metaCopos, ...dias.map(d=>d.n), 1);
-    el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:6px;height:70px;">` +
-      dias.map(d => {
-        const pct = Math.min(100, Math.round(d.n/maxN*100));
-        const col = d.n >= metaCopos ? '#22c55e' : d.n >= metaCopos*0.6 ? '#f59e0b' : '#60a5fa';
-        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:${col};">${d.n}</div>
-          <div style="width:100%;height:${Math.max(4,pct*0.56)}px;background:${col};border-radius:3px 3px 0 0;opacity:0.85;"></div>
-          <div style="font-size:9px;color:var(--muted);white-space:nowrap;">${d.label}</div>
-        </div>`;
-      }).join('') +
-      `</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Meta diária: <span style="color:#22c55e;">${metaCopos} copos</span></div>`;
+    var maxN=Math.max.apply(null,[metaCopos].concat(dias.map(function(d){return d.n;})).concat([1]));
+    el.innerHTML='<div style="display:flex;align-items:flex-end;gap:6px;height:70px;">'+
+      dias.map(function(d){
+        var pct=Math.min(100,Math.round(d.n/maxN*100));
+        var col=d.n>=metaCopos?'#22c55e':d.n>=metaCopos*0.6?'#f59e0b':'#60a5fa';
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="font-family:'+monoFont+';font-size:9px;color:'+col+';">'+d.n+'</div><div style="width:100%;height:'+Math.max(4,pct*0.56)+'px;background:'+col+';border-radius:3px 3px 0 0;opacity:0.85;"></div><div style="font-size:9px;color:var(--muted);white-space:nowrap;">'+d.label+'</div></div>';
+      }).join('')+
+      '</div><div style="font-size:10px;color:var(--muted);margin-top:6px;">Meta: <span style="color:#22c55e;">'+metaCopos+' copos</span></div>';
   } else {
-    // Mensal: total de copos por semana do mês atual
-    const hoje = new Date();
-    const ano = hoje.getFullYear(), mes = hoje.getMonth();
-    const semanas = [{label:'Sem 1',total:0,dias:0},{label:'Sem 2',total:0,dias:0},{label:'Sem 3',total:0,dias:0},{label:'Sem 4',total:0,dias:0},{label:'Sem 5',total:0,dias:0}];
-    const diasNoMes = new Date(ano, mes+1, 0).getDate();
-    for(let day=1;day<=diasNoMes;day++){
-      const d = new Date(ano, mes, day);
-      if(d > hoje) break;
-      const n = (() => { try{ return JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(d)))||0; }catch(e){ return 0; } })();
-      const si = Math.min(4, Math.floor((day-1)/7));
-      semanas[si].total += n;
-      semanas[si].dias++;
+    var hoje=new Date(), ano=hoje.getFullYear(), mes=hoje.getMonth();
+    var semanas=[{label:'Sem 1',total:0,dias:0},{label:'Sem 2',total:0,dias:0},{label:'Sem 3',total:0,dias:0},{label:'Sem 4',total:0,dias:0},{label:'Sem 5',total:0,dias:0}];
+    var diasNoMes=new Date(ano,mes+1,0).getDate();
+    for(var day=1;day<=diasNoMes;day++){
+      var dd=new Date(ano,mes,day); if(dd>hoje) break;
+      var nn=0; try{ nn=JSON.parse(localStorage.getItem(AGUA_KEY+dateKey(dd)))||0; }catch(e){}
+      var si=Math.min(4,Math.floor((day-1)/7));
+      semanas[si].total+=nn; semanas[si].dias++;
     }
-    const semAtivas = semanas.filter(s=>s.dias>0);
-    const maxMedia = Math.max(metaCopos, ...semAtivas.map(s=>s.dias?s.total/s.dias:0), 1);
-    el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:8px;height:70px;">` +
-      semAtivas.map(s => {
-        const media = s.dias ? (s.total/s.dias) : 0;
-        const pct = Math.min(100, Math.round(media/maxMedia*100));
-        const col = media >= metaCopos ? '#22c55e' : media >= metaCopos*0.6 ? '#f59e0b' : '#60a5fa';
-        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:${col};">${media.toFixed(1)}</div>
-          <div style="width:100%;height:${Math.max(4,pct*0.56)}px;background:${col};border-radius:3px 3px 0 0;opacity:0.85;"></div>
-          <div style="font-size:9px;color:var(--muted);">${s.label}</div>
-        </div>`;
-      }).join('') +
-      `</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Média de copos/dia por semana · Meta: <span style="color:#22c55e;">${metaCopos}</span></div>`;
+    var semAtivas=semanas.filter(function(s){return s.dias>0;});
+    var maxMedia=Math.max.apply(null,[metaCopos].concat(semAtivas.map(function(s){return s.dias?s.total/s.dias:0;})).concat([1]));
+    el.innerHTML='<div style="display:flex;align-items:flex-end;gap:8px;height:70px;">'+
+      semAtivas.map(function(s){
+        var media=s.dias?(s.total/s.dias):0;
+        var pct=Math.min(100,Math.round(media/maxMedia*100));
+        var col=media>=metaCopos?'#22c55e':media>=metaCopos*0.6?'#f59e0b':'#60a5fa';
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="font-family:'+monoFont+';font-size:9px;color:'+col+';">'+media.toFixed(1)+'</div><div style="width:100%;height:'+Math.max(4,pct*0.56)+'px;background:'+col+';border-radius:3px 3px 0 0;opacity:0.85;"></div><div style="font-size:9px;color:var(--muted);">'+s.label+'</div></div>';
+      }).join('')+
+      '</div><div style="font-size:10px;color:var(--muted);margin-top:6px;">Média copos/dia · Meta: <span style="color:#22c55e;">'+metaCopos+'</span></div>';
   }
 }
 
@@ -9928,9 +9630,15 @@ function renderAguaCopos(){
 
 // ── Bem-estar ────────────────────────────────────────────────
 function salvarBemEstar(){
-  const sono=document.getElementById('hoje-sono')?.value||'';
-  const prev=loadBemEstar();
-  saveBemEstarData({...prev, sono});
+  var input=document.getElementById('hoje-sono');
+  if(!input) return;
+  var sono=input.value||'';
+  var v=parseFloat(sono);
+  if(sono===''||isNaN(v)||v<0||v>24) return;
+  var prev=loadBemEstar();
+  saveBemEstarData(Object.assign({},prev,{sono:String(v)}));
+  var btn=document.getElementById('sono-salvar-btn');
+  if(btn){ var orig=btn.textContent; btn.textContent='✓ Salvo!'; btn.style.background='var(--green)'; setTimeout(function(){ btn.textContent=orig; btn.style.background='var(--blue)'; },1200); }
   renderSonoChart();
 }
 function loadBemEstar(){ try{ return JSON.parse(localStorage.getItem(BEM_ESTAR_KEY+dateKey()))||{}; }catch(e){ return {}; } }
@@ -10089,11 +9797,18 @@ function renderHoje(){
   // Aulas hoje / total
   let aulasHoje=0, aulasTotal=0;
   const hoje=new Date();
+  const hojeStr=hoje.toISOString().slice(0,10);
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(!k||!k.startsWith('aula_')) continue;
-    aulasTotal++;
-    if(k.includes(`${hoje.getFullYear()}_${String(hoje.getMonth()+1).padStart(2,'0')}_${String(hoje.getDate()).padStart(2,'0')}`)) aulasHoje++;
+    if(!k) continue;
+    // Total: chaves aula_X com valor '1' (excluindo _edit_ e _note_ e _date)
+    if(k.startsWith('aula_') && !k.includes('_edit_') && !k.includes('_note_') && !k.endsWith('_date')){
+      if(localStorage.getItem(k)==='1') aulasTotal++;
+    }
+    // Hoje: chaves aula_X_date com valor = hoje
+    if(k.startsWith('aula_') && k.endsWith('_date')){
+      if(localStorage.getItem(k)===hojeStr) aulasHoje++;
+    }
   }
   const ahEl=document.getElementById('hoje-aulas-hoje'); if(ahEl) ahEl.textContent=aulasHoje;
   const atEl=document.getElementById('hoje-aulas-total'); if(atEl) atEl.textContent=aulasTotal;
@@ -10117,10 +9832,8 @@ function renderHoje(){
   renderAguaCopos();
   renderHidroHistorico();
 
-  // IMC (altura fixa 170cm)
+  // IMC
   calcIMC();
-
-  // Sono chart
   renderSonoChart();
 
   // Bem-estar restore
@@ -10300,24 +10013,34 @@ function renderComparativoEdital(){
   const el=document.getElementById('taf-comparativo'); if(!el) return;
   const entries=getAllTAFLogs();
   if(!entries.length){ el.innerHTML='<div style="color:var(--muted);font-size:13px;">Nenhum treino registrado ainda.</div>'; return; }
-  // Get best values per exercise
+
+  // Melhor valor e data correspondente por exercício
   const best={barra:0,abd:0,shuttle:999,corrida:0};
+  const bestDate={barra:null,abd:null,shuttle:null,corrida:null};
   entries.forEach(e=>{
-    const b=parseInt(e.log.barra)||0; if(b>best.barra) best.barra=b;
-    const a=parseInt(e.log.abd)||0; if(a>best.abd) best.abd=a;
-    const s=parseFloat(e.log.shuttle)||999; if(s<best.shuttle) best.shuttle=s;
-    const cr=parseInt(e.log.corrida)||0; if(cr>best.corrida) best.corrida=cr;
+    const b=parseInt(e.log.barra)||0;
+    if(b>best.barra){ best.barra=b; bestDate.barra=e.date; }
+    const a=parseInt(e.log.abd)||0;
+    if(a>best.abd){ best.abd=a; bestDate.abd=e.date; }
+    const s=parseFloat(e.log.shuttle)||999;
+    if(s<best.shuttle){ best.shuttle=s; bestDate.shuttle=e.date; }
+    const cr=parseInt(e.log.corrida)||0;
+    if(cr>best.corrida){ best.corrida=cr; bestDate.corrida=e.date; }
   });
   if(best.shuttle===999) best.shuttle=0;
+
+  function fmtDate(d){ if(!d) return '—'; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
+
   const rows=[
-    {key:'barra',  label:'🏋️ Barra Fixa', unit:'reps', higher:true},
-    {key:'abd',    label:'🔄 Abdominal',   unit:'reps', higher:true},
-    {key:'shuttle',label:'🏃 Shuttle Run', unit:'seg',  higher:false},
-    {key:'corrida',label:'🏅 Corrida 12min',unit:'m',   higher:true},
+    {key:'barra',  label:'🏋️ Barra Fixa',  unit:'reps', higher:true},
+    {key:'abd',    label:'🔄 Abdominal',    unit:'reps', higher:true},
+    {key:'shuttle',label:'🏃 Shuttle Run',  unit:'seg',  higher:false},
+    {key:'corrida',label:'🏅 Corrida 12min',unit:'m',    higher:true},
   ];
+
   el.innerHTML=`
-    <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:8px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 12px;">
-      <span>Exercício</span><span>Seu melhor</span><span>Mínimo edital</span><span>Status</span>
+    <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:10px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 12px;">
+      <span>Exercício</span><span>Seu melhor</span><span>Mínimo edital</span><span>Data</span>
     </div>`+
   rows.map(r=>{
     const v=best[r.key];
@@ -10325,18 +10048,15 @@ function renderComparativoEdital(){
     const otimo=EDITAL_OTIMO_M[r.key];
     const apto=r.higher?v>=min:v<=min;
     const excelente=r.higher?v>=otimo:v<=otimo;
-    const badge=!v?'<span class="edital-badge" style="background:#ffffff11;color:var(--muted);">Sem dado</span>':
-                 excelente?'<span class="edital-badge edital-apto">🌟 Excelente</span>':
-                 apto?'<span class="edital-badge edital-apto">✓ Apto</span>':
-                      '<span class="edital-badge edital-inapto">✗ Inapto</span>';
+    const valColor=!v?'var(--muted)':excelente?'#4ade80':apto?'#fbbf24':'#f87171';
     const pct=!v?0:r.higher?Math.min(100,Math.round(v/otimo*100)):Math.min(100,Math.round(min/v*100));
     return `<div class="edital-row">
-      <span style="font-size:13px;font-weight:600;">${r.label}</span>
-      <span style="font-size:15px;font-family:'DM Mono',monospace;color:${apto&&v?'#4ade80':'#f87171'};">${v||'—'}${v?' '+r.unit:''}</span>
+      <span style="font-size:13px;font-weight:600;color:var(--text);">${r.label}</span>
+      <span style="font-size:14px;font-family:'DM Mono',monospace;font-weight:700;color:${valColor};">${v||'—'}${v?' '+r.unit:''}</span>
       <span style="font-size:13px;color:var(--muted);">${min} ${r.unit}</span>
-      ${badge}
+      <span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);">${fmtDate(bestDate[r.key])}</span>
     </div>
-    <div style="background:var(--surface2);border-radius:4px;height:6px;margin:-4px 0 8px;overflow:hidden;">
+    <div style="background:var(--surface);border-radius:4px;height:5px;margin:0 0 8px;overflow:hidden;">
       <div style="height:100%;width:${pct}%;background:${excelente?'#4ade80':apto?'#fbbf24':'#ef4444'};border-radius:4px;transition:width 0.5s;"></div>
     </div>`;
   }).join('');
@@ -10345,39 +10065,6 @@ function renderComparativoEdital(){
 // ═══════════════════════════════════════════════════════════
 // PROJEÇÃO TAF
 // ═══════════════════════════════════════════════════════════
-function renderProjecaoTAF(){
-  const el=document.getElementById('taf-projecao'); if(!el) return;
-  const entries=getAllTAFLogs();
-  if(entries.length<2){ el.innerHTML='<div style="color:var(--muted);font-size:13px;">Registre ao menos 2 treinos para ver a projeção.</div>'; return; }
-  const metrics=[
-    {key:'barra',  label:'Barra',   min:3, fn:v=>parseInt(v)||0, higher:true},
-    {key:'abd',    label:'Abdominal',min:31,fn:v=>parseInt(v)||0, higher:true},
-    {key:'corrida',label:'Corrida', min:2200,fn:v=>parseInt(v)||0,higher:true},
-    {key:'shuttle',label:'Shuttle', min:13, fn:v=>parseFloat(v)||0,higher:false},
-  ];
-  el.innerHTML=metrics.map(m=>{
-    const vals=entries.map(e=>({t:e.date.getTime(), v:m.fn(e.log[m.key])})).filter(x=>x.v>0);
-    if(vals.length<2) return `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);">${m.label}: dados insuficientes</div>`;
-    // Linear regression
-    const n=vals.length, sx=vals.reduce((s,x)=>s+x.t,0), sy=vals.reduce((s,x)=>s+x.v,0);
-    const sxy=vals.reduce((s,x)=>s+x.t*x.v,0), sxx=vals.reduce((s,x)=>s+x.t*x.t,0);
-    const slope=(n*sxy-sx*sy)/(n*sxx-sx*sx);
-    const intercept=(sy-slope*sx)/n;
-    const latest=vals[vals.length-1].v;
-    // Days to reach minimum
-    const daysNeeded=slope?Math.round((m.min-intercept-slope*vals[vals.length-1].t)/(slope*86400000)):null;
-    const apto=m.higher?latest>=m.min:latest<=m.min;
-    const eta=apto?'<span style="color:#4ade80;font-weight:700;">✓ Já apto!</span>':
-              (daysNeeded&&daysNeeded>0&&daysNeeded<365)?`<span style="color:#fbbf24;">~${daysNeeded} dias</span>`:
-              '<span style="color:#f87171;">Mantenha o ritmo</span>';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
-      <span style="font-size:13px;font-weight:600;">${m.label}</span>
-      <span style="font-size:13px;color:var(--muted);">Atual: <b style="color:var(--text);">${latest}</b></span>
-      <span style="font-size:13px;">Meta: <b>${m.min}</b></span>
-      ${eta}
-    </div>`;
-  }).join('');
-}
 
 // ═══════════════════════════════════════════════════════════
 // SONO — GRÁFICO
@@ -10388,37 +10075,30 @@ function renderSonoChart(){
   for(let i=13;i>=0;i--){
     const d=new Date(); d.setDate(d.getDate()-i);
     const k=BEM_ESTAR_KEY+dateKey(d);
-    try{ const v=JSON.parse(localStorage.getItem(k)); if(v?.sono) logs.push({date:d,h:parseFloat(v.sono)}); else logs.push({date:d,h:null}); }
+    try{ const v=JSON.parse(localStorage.getItem(k)); if(v&&v.sono) logs.push({date:d,h:parseFloat(v.sono)}); else logs.push({date:d,h:null}); }
     catch(e){ logs.push({date:d,h:null}); }
   }
-  if(!logs.some(l=>l.h)){
+  if(!logs.some(function(l){return l.h;})){
     el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px;">Nenhum registro de sono ainda. Registre as horas de sono diariamente para ver o histórico.</div>'; return;
   }
   const W=el.offsetWidth||400, H=110;
   const P={t:14,r:20,b:30,l:32};
   const CW=W-P.l-P.r, CH=H-P.t-P.b;
   const n=logs.length;
-  const xOf=i=>P.l+(i/(n-1))*CW;
-  const yOf=h=>P.t+CH-Math.max(0,Math.min(1,(h-4)/8))*CH;
-  // build line path
-  const pts=logs.reduce((acc,l,i)=>{ if(!l.h) return acc; return acc+(acc===''?`M${xOf(i).toFixed(1)},${yOf(l.h).toFixed(1)}`:`L${xOf(i).toFixed(1)},${yOf(l.h).toFixed(1)}`); },'');
-  el.innerHTML=`<svg width="${W}" height="${H}" style="overflow:visible;display:block;">
-    <rect width="${W}" height="${H}" fill="transparent"/>
-    <line x1="${P.l}" y1="${yOf(8)}" x2="${P.l+CW}" y2="${yOf(8)}" stroke="rgba(34,197,94,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
-    <text x="${P.l+CW+2}" y="${yOf(8)+4}" fill="#22c55e" font-size="9">8h</text>
-    ${pts?`<path d="${pts}" fill="none" stroke="rgba(96,165,250,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`:''}
-    ${logs.map((l,i)=>{
-      if(!l.h) return '';
-      const x=xOf(i), y=yOf(l.h);
-      const col=l.h>=7?'#4ade80':l.h>=6?'#fbbf24':'#f87171';
-      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${col}" opacity="0.9"/>
-              <text x="${x.toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9">${l.h}h</text>`;
-    }).join('')}
-    ${logs.filter((_,i)=>i%2===0||i===n-1).map(l=>{
-      const i=logs.indexOf(l);
-      return `<text x="${xOf(i).toFixed(1)}" y="${H-4}" text-anchor="middle" fill="#475569" font-size="8">${l.date.getDate()}/${l.date.getMonth()+1}</text>`;
-    }).join('')}
-  </svg>`;
+  const xOf=function(i){return P.l+(i/(n-1))*CW;};
+  const yOf=function(h){return P.t+CH-Math.max(0,Math.min(1,(h-4)/8))*CH;};
+  let pts=logs.reduce(function(acc,l,i){ if(!l.h) return acc; var x=xOf(i).toFixed(1),y=yOf(l.h).toFixed(1); return acc+(acc===''?'M'+x+','+y:'L'+x+','+y); },'');
+  const circles=logs.map(function(l,i){
+    if(!l.h) return '';
+    const x=xOf(i).toFixed(1), y=yOf(l.h).toFixed(1);
+    const col=l.h>=7?'#4ade80':l.h>=6?'#fbbf24':'#f87171';
+    return '<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+col+'" opacity="0.9"/><text x="'+x+'" y="'+(yOf(l.h)-8).toFixed(1)+'" text-anchor="middle" fill="'+col+'" font-size="9">'+l.h+'h</text>';
+  }).join('');
+  const labels=logs.filter(function(_,i){return i%2===0||i===n-1;}).map(function(l){
+    const i=logs.indexOf(l);
+    return '<text x="'+xOf(i).toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" fill="#475569" font-size="8">'+l.date.getDate()+'/'+(l.date.getMonth()+1)+'</text>';
+  }).join('');
+  el.innerHTML='<svg width="'+W+'" height="'+H+'" style="overflow:visible;display:block;"><rect width="'+W+'" height="'+H+'" fill="transparent"/><line x1="'+P.l+'" y1="'+yOf(8).toFixed(1)+'" x2="'+(P.l+CW)+'" y2="'+yOf(8).toFixed(1)+'" stroke="rgba(34,197,94,0.3)" stroke-width="1" stroke-dasharray="4,4"/><text x="'+(P.l+CW+2)+'" y="'+(yOf(8)+4).toFixed(1)+'" fill="#22c55e" font-size="9">8h</text>'+(pts?'<path d="'+pts+'" fill="none" stroke="rgba(96,165,250,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' :'')+circles+labels+'</svg>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -10600,95 +10280,6 @@ function selectFotoMes(mes){
   renderFotosGrid();
 }
 
-
-// ═══════════════════════════════════════════════════════════
-// PLANEJAMENTO DE PICO TAF
-// ═══════════════════════════════════════════════════════════
-
-const TAF_PHASE_SCHEDULE = [
-  { fase:'Ativação',    semanas:[1,2],   cor:'#64748b', desc:'Técnica e base — adaptação' },
-  { fase:'Base',        semanas:[3,6],   cor:'#3b82f6', desc:'Construção de força e resistência' },
-  { fase:'Desenvolvimento',semanas:[7,10],cor:'#8b5cf6',desc:'Volume e intensidade crescentes' },
-  { fase:'Volume',      semanas:[11,14], cor:'#f59e0b', desc:'Alta demanda — máximo volume' },
-  { fase:'Pico',        semanas:[15,18], cor:'#ef4444', desc:'Intensidade máxima — simulados' },
-  { fase:'Simulação',   semanas:[19,20], cor:'#22c55e', desc:'Simulados completos do TAF' },
-];
-const TOTAL_SEMANAS_TAF = 20;
-
-function renderPicoTAF(){
-  const el = document.getElementById('taf-pico-container'); if(!el) return;
-  const provaDate = getProvaDate();
-  if(!provaDate){
-    el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:8px;">Configure a data da prova na aba <b>🏠 Hoje</b> para ver o planejamento de pico.</div>`;
-    return;
-  }
-  const prova = new Date(provaDate+'T12:00:00');
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const diasTotal = Math.ceil((prova - hoje) / 86400000);
-  const semanasTotal = Math.ceil(diasTotal / 7);
-
-  if(diasTotal <= 0){
-    el.innerHTML='<div style="color:#4ade80;font-weight:700;font-size:14px;padding:8px;">🎯 A data da prova já chegou! Boa sorte!</div>';
-    return;
-  }
-
-  // Which phase should you be in TODAY based on weeks remaining
-  const semanasDecorridas = Math.max(0, TOTAL_SEMANAS_TAF - semanasTotal);
-  const semanasRestantes = semanasTotal;
-  const faseAtual = TAF_PHASE_SCHEDULE.find(p => semanasDecorridas+1 >= p.semanas[0] && semanasDecorridas+1 <= p.semanas[1]) || TAF_PHASE_SCHEDULE[0];
-
-  let html = `
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:rgba(99,102,241,0.08);border-radius:10px;border:1px solid rgba(99,102,241,0.3);">
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Fase atual recomendada</div>
-        <div style="font-size:18px;font-weight:700;color:${faseAtual.cor};">${faseAtual.fase}</div>
-        <div style="font-size:12px;color:var(--muted);">${faseAtual.desc}</div>
-      </div>
-      <div style="margin-left:auto;text-align:right;">
-        <div style="font-size:11px;color:var(--muted);">Semana</div>
-        <div style="font-size:24px;font-weight:700;color:#a5b4fc;">${Math.min(semanasDecorridas+1, TOTAL_SEMANAS_TAF)}/${TOTAL_SEMANAS_TAF}</div>
-      </div>
-    </div>
-    <div style="margin-bottom:12px;">`;
-
-  // Timeline bar
-  TAF_PHASE_SCHEDULE.forEach(p => {
-    const startSem = p.semanas[0], endSem = p.semanas[1];
-    const width = ((endSem - startSem + 1) / TOTAL_SEMANAS_TAF * 100).toFixed(1);
-    const isCurrent = semanasDecorridas+1 >= startSem && semanasDecorridas+1 <= endSem;
-    const isPast = semanasDecorridas+1 > endSem;
-    // Date range
-    const startDate = new Date(hoje); startDate.setDate(hoje.getDate() + (startSem-1-semanasDecorridas)*7);
-    const endDate = new Date(hoje); endDate.setDate(hoje.getDate() + (endSem-semanasDecorridas)*7);
-    const fmt = d => d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-    html += `
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;margin-bottom:6px;
-        background:${isCurrent?`${p.cor}15`:isPast?'rgba(255,255,255,0.02)':'rgba(255,255,255,0.03)'};
-        border:1px solid ${isCurrent?p.cor:'var(--border)'};
-        opacity:${isPast?0.5:1};">
-        <div style="width:12px;height:12px;border-radius:50%;background:${p.cor};flex-shrink:0;${isCurrent?`box-shadow:0 0 8px ${p.cor};`:''}"></div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:${isCurrent?'700':'500'};color:${isCurrent?p.cor:'var(--text)'};">${p.fase} ${isCurrent?'← você está aqui':''}</div>
-          <div style="font-size:11px;color:var(--muted);">Semanas ${startSem}–${endSem} · ${fmt(startDate)} a ${fmt(endDate)}</div>
-        </div>
-        <div style="font-size:11px;color:var(--muted);text-align:right;">${isPast?'✓ concluída':isCurrent?'em curso':'aguardando'}</div>
-      </div>`;
-  });
-
-  // Progress bar
-  const pct = Math.min(100,(semanasDecorridas/TOTAL_SEMANAS_TAF*100)).toFixed(1);
-  html += `</div>
-    <div style="margin-top:8px;">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;">
-        <span>Início do plano</span><span>${pct}% concluído</span><span>Prova em ${diasTotal} dias</span>
-      </div>
-      <div style="background:var(--surface2);border-radius:4px;height:8px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(to right,#3b82f6,#8b5cf6,#ef4444);border-radius:4px;transition:width 0.5s;"></div>
-      </div>
-    </div>`;
-
-  el.innerHTML = html;
-}
 
 
 // ── Foto meta (data, peso, obs) ──────────────────────────────
@@ -10913,7 +10504,7 @@ function renderAlertaDisc(){
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">🚨</span><div style="font-size:13px;font-weight:700;color:#f87171;letter-spacing:1px;text-transform:uppercase;">Atenção — Disciplinas críticas hoje</div></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       ${criticas.map(({disc,pct,total})=>{
-        const col=DISC_COLOR_EST?.[disc]||'#64748b';
+        const col=getDiscColor(disc);
         return `<div style="background:var(--surface);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:10px 14px;flex:1;min-width:160px;">
           <div style="font-size:11px;font-weight:700;color:${col};margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${disc}</div>
           <div style="font-size:24px;font-weight:700;font-family:'Bebas Neue',sans-serif;color:#f87171;">${pct}%</div>
@@ -10974,7 +10565,7 @@ function renderPainelQuestoes(){
     const rows=qs.map((q,i)=>{
       const ok=q.meu&&q.oficial&&q.meu.toUpperCase()===q.oficial.toUpperCase();
       const res=!q.meu||!q.oficial?'<span style="color:var(--muted);">—</span>':ok?'<span style="color:#4ade80;font-size:16px;">✓</span>':'<span style="color:#f87171;font-size:16px;">✗</span>';
-      const dc=(DISC_COLOR_EST&&DISC_COLOR_EST[q.disciplina])||'#64748b';
+      const dc=getDiscColor(q.disciplina);
       return `<tr style="border-bottom:1px solid rgba(42,49,71,0.4);"><td style="padding:8px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);">${q.num||i+1}</td><td style="padding:8px 12px;font-size:11px;font-weight:700;color:${dc};">${q.disciplina||'—'}</td><td style="padding:8px 12px;font-size:12px;color:var(--muted);">${q.assunto||'—'}</td><td style="padding:8px 12px;text-align:center;"><span style="background:rgba(100,116,139,0.2);color:var(--text);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;">${q.meu||'—'}</span></td><td style="padding:8px 12px;text-align:center;"><span style="background:${ok&&q.oficial?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'};color:${ok&&q.oficial?'#4ade80':'#f87171'};padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;">${q.oficial||'—'}</span></td><td style="padding:8px 12px;text-align:center;">${res}</td></tr>`;
     }).join('');
     return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;"><div style="padding:12px 16px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"><span style="font-size:13px;font-weight:600;color:var(--text);text-transform:capitalize;">${dateLabel}</span><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;color:var(--muted);">${qs.length} questão${qs.length!==1?'es':''}</span><span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${col};">${pct}%</span></div></div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid var(--border);"><th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Nº</th><th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Disciplina</th><th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Assunto</th><th style="padding:8px 12px;text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Meu</th><th style="padding:8px 12px;text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Oficial</th><th style="padding:8px 12px;text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Resultado</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
@@ -11012,7 +10603,7 @@ function renderSimuladoQuestao(){
     return;
   }
   const q=_simQuestoes[_simIdx];
-  const dc=(DISC_COLOR_EST&&DISC_COLOR_EST[q.disciplina])||'#64748b';
+  const dc=getDiscColor(q.disciplina);
   area.innerHTML=`<div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;"><span style="font-size:11px;font-weight:700;color:${dc};">${q.disciplina||'—'}</span><span style="font-size:11px;color:var(--muted);">${_simIdx+1} / ${_simQuestoes.length} &nbsp;|&nbsp; <span style="color:#4ade80;">${_simAcertos} acertos</span></span></div><div style="background:var(--surface2);border-radius:8px;padding:14px 16px;margin-bottom:14px;"><div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Nº ${q.num||'—'} · ${q.assunto||'Sem assunto'}</div><div style="font-size:14px;color:var(--text);line-height:1.6;">${q.enunciado||'<span style="color:var(--muted);">Enunciado não registrado</span>'}</div></div><div style="margin-bottom:14px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Qual seria sua resposta agora?</div><div style="display:flex;gap:8px;flex-wrap:wrap;" id="sim-opcoes">${['A','B','C','D','E'].map(l=>`<button onclick="responderSimulado('${l}')" style="width:44px;height:44px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:15px;font-weight:700;cursor:pointer;">${l}</button>`).join('')}<button onclick="pularSimulado()" style="margin-left:8px;background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0 14px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;">Pular →</button></div></div>`;
 }
 function responderSimulado(resp){
@@ -11054,6 +10645,27 @@ const DISC_COLOR_EST={
   'Aspectos Geopolíticos do Distrito Federal':'#0891b2','Lei Orgânica do Distrito Federal':'#06b6d4',
   'Inteligência Emocional':'#ec4899',
 };
+// Paleta de cores para disciplinas não mapeadas — garante cor única por nome
+const _DISC_COLOR_PALETTE=['#3b82f6','#f59e0b','#22c55e','#a855f7','#ef4444','#f97316',
+  '#06b6d4','#ec4899','#84cc16','#14b8a6','#8b5cf6','#dc2626','#0891b2','#d946ef',
+  '#fb923c','#a3e635','#38bdf8','#f43f5e','#4ade80','#facc15'];
+const _discColorCache={};
+function getDiscColor(disc){
+  if(!disc) return '#64748b';
+  if(DISC_COLOR_EST[disc]) return DISC_COLOR_EST[disc];
+  // Verificar correspondência parcial (começo do nome)
+  for(const key of Object.keys(DISC_COLOR_EST)){
+    if(disc.startsWith(key.slice(0,12)) || key.startsWith(disc.slice(0,12)))
+      return DISC_COLOR_EST[key];
+  }
+  // Cache para consistência entre renders
+  if(_discColorCache[disc]) return _discColorCache[disc];
+  // Gerar cor por hash do nome
+  let hash=0; for(let i=0;i<disc.length;i++) hash=(hash*31+disc.charCodeAt(i))&0xffffffff;
+  const col=_DISC_COLOR_PALETTE[Math.abs(hash)%_DISC_COLOR_PALETTE.length];
+  _discColorCache[disc]=col;
+  return col;
+}
 function getAcertoColor(pct){return pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444';}
 function getAllQuestaoDia(){
   const result=[];
@@ -11081,7 +10693,7 @@ function renderAcertoDiscCards(){
   const sorted=Object.entries(byDisc).sort((a,b)=>b[1].total-a[1].total);
   cardsEl.innerHTML=sorted.map(([disc,s])=>{
     const pct=s.total>0?Math.round(s.acertos/s.total*100):0;
-    const col=DISC_COLOR_EST[disc]||'#64748b';
+    const col=getDiscColor(disc);
     const barCol=getAcertoColor(pct);
     const emoji=pct>=80?'🟢':pct>=60?'🟡':'🔴';
     return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;border-top:3px solid ${barCol};"><div style="font-size:11px;font-weight:700;color:${col};margin-bottom:4px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${disc}">${disc}</div><div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;"><span style="font-size:28px;font-weight:700;font-family:'DM Mono',monospace;color:${barCol};">${pct}%</span><span style="font-size:13px;">${emoji}</span></div><div style="height:5px;border-radius:3px;background:var(--surface2);overflow:hidden;margin-bottom:6px;"><div style="height:100%;width:${pct}%;background:${barCol};border-radius:3px;transition:width .5s;"></div></div><div style="font-size:11px;color:var(--muted);">${s.acertos} de ${s.total} questões</div></div>`;
@@ -11124,33 +10736,61 @@ function renderEstudosQChart(){
   const activeDiscs=Object.keys(series);
   if(!activeDiscs.length){wrap.innerHTML='';return;}
 
-  const H=240;
-  wrap.innerHTML=`<div style="position:relative;width:100%;"><canvas id="estudos-q-canvas" style="width:100%;display:block;border-radius:8px;"></canvas><div id="estudos-q-tooltip" style="display:none;position:absolute;background:#1e2433;border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;pointer-events:none;z-index:10;white-space:nowrap;"></div></div>`;
+  // Montar estrutura: canvas + legenda HTML separada
+  wrap.innerHTML=
+    '<div style="position:relative;width:100%;overflow-x:auto;overflow-y:hidden;">'
+    +'<canvas id="estudos-q-canvas" style="display:block;border-radius:8px;"></canvas>'
+    +'<div id="estudos-q-tooltip" style="display:none;position:absolute;background:#1e2433;'
+    +'border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2e8f0;'
+    +'pointer-events:none;z-index:10;white-space:nowrap;"></div>'
+    +'</div>'
+    +'<div id="estudos-q-legend" style="display:flex;flex-wrap:wrap;gap:8px 16px;'
+    +'margin-top:10px;padding:0 4px;"></div>';
+
   const canvas=document.getElementById('estudos-q-canvas');
   const tooltip=document.getElementById('estudos-q-tooltip');
+  const legendEl=document.getElementById('estudos-q-legend');
   const DPR=Math.min(window.devicePixelRatio||1,3);
-  const W=wrap.offsetWidth||700;
+
+  const containerW=wrap.offsetWidth||700;
+  const nd=dates.length;
+  const P={t:44,r:20,b:40,l:50};
+  const minW=P.l+P.r+80*Math.max(nd-1,1);
+  const W=Math.max(containerW,minW);
+  const H=300;
+
   canvas.width=Math.round(W*DPR); canvas.height=Math.round(H*DPR);
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
   ctx.scale(DPR,DPR);
   ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
 
-  const P={t:36,r:52,b:48,l:46},CW=W-P.l-P.r,CH=H-P.t-P.b;
-  const SPACING=Math.min(80,CW/Math.max(dates.length-1,1));
-  const totalLineW=SPACING*(dates.length-1);
-  const lineStartX=P.l+(CW-totalLineW)/2;
-  function xOf(i){return dates.length<=1?P.l+CW/2:lineStartX+i*SPACING;}
-  function yOf(pct){return P.t+CH-(pct/100)*CH;}
+  const CW=W-P.l-P.r, CH=H-P.t-P.b;
+  const SPACING=nd<=1?CW:CW/(nd-1);
+  function xOf(i){return nd<=1?P.l+CW/2:P.l+i*SPACING;}
 
-  // Fundo escuro
+  // Escala Y dinâmica com padding generoso
+  const allPcts=activeDiscs.flatMap(d=>series[d].map(p=>p.pct));
+  const minP=allPcts.length?Math.min(...allPcts):0;
+  const maxP=allPcts.length?Math.max(...allPcts):100;
+  const rawPad=Math.max(12,(maxP-minP)*0.4);
+  const yMin=Math.max(0, Math.floor((minP-rawPad)/5)*5);
+  const yMax=Math.min(100,Math.ceil((maxP+rawPad)/5)*5);
+  const yRange=Math.max(1,yMax-yMin);
+  function yOf(pct){return P.t+CH-((pct-yMin)/yRange)*CH;}
+
+  // Estilos de linha distintos (cicla pelos 4 padrões)
+  const DASH_STYLES=[[], [8,4], [3,3], [12,3,3,3]];
+
+  // Fundo
   ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H);
 
-  // Grid Y
+  // Grid Y — marks em múltiplos de 25 dentro do range
   [0,25,50,75,100].forEach(v=>{
+    if(v<yMin||v>yMax) return;
     const y=yOf(v);
     ctx.save(); ctx.setLineDash([4,5]);
-    ctx.strokeStyle=v===0?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+CW,y); ctx.stroke(); ctx.restore();
     ctx.fillStyle='#475569'; ctx.font='10px DM Mono,monospace';
     ctx.textAlign='right'; ctx.textBaseline='middle';
@@ -11158,42 +10798,59 @@ function renderEstudosQChart(){
   });
 
   // Linha meta 85%
-  const metaY=yOf(85);
-  ctx.save(); ctx.setLineDash([8,4]);
-  ctx.strokeStyle='rgba(251,191,36,0.7)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(P.l,metaY); ctx.lineTo(P.l+CW,metaY); ctx.stroke(); ctx.restore();
-  ctx.fillStyle='#fbbf24'; ctx.font='bold 9px DM Sans,sans-serif';
-  ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText('85%',P.l-4,metaY-2);
+  if(85>=yMin&&85<=yMax){
+    const metaY=yOf(85);
+    ctx.save(); ctx.setLineDash([8,4]);
+    ctx.strokeStyle='rgba(251,191,36,0.7)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(P.l,metaY); ctx.lineTo(P.l+CW,metaY); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 9px DM Sans,sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='bottom';
+    ctx.fillText('meta 85%',P.l+4,metaY-3);
+  }
 
-  // Labels X
-  const maxL=Math.max(1,Math.floor(CW/55)),step=Math.max(1,Math.ceil(dates.length/maxL));
+  // Grid X + labels de data
   dates.forEach((ds,i)=>{
-    if(i%step!==0&&i!==dates.length-1) return;
+    const x=xOf(i);
+    ctx.save(); ctx.setLineDash([2,6]);
+    ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,P.t); ctx.lineTo(x,P.t+CH); ctx.stroke(); ctx.restore();
     const p=ds.split('_');
-    ctx.fillStyle='#64748b'; ctx.font='10px DM Sans,sans-serif';
+    ctx.fillStyle='#64748b'; ctx.font='11px DM Sans,sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='top';
-    ctx.fillText(p[2]+'/'+p[1],xOf(i),P.t+CH+8);
+    ctx.fillText(p[2]+'/'+p[1],x,P.t+CH+8);
   });
 
-  // Área + linha bezier por disciplina
-  activeDiscs.forEach(disc=>{
-    const pts=series[disc]; const col=DISC_COLOR_EST[disc]||'#64748b';
+  // Detectar sobreposições
+  const overlapMap={};
+  activeDiscs.forEach((disc,di)=>{
+    overlapMap[disc]={};
+    series[disc].forEach(p=>{
+      const coveredBy=activeDiscs.slice(0,di).find(other=>
+        series[other].some(op=>op.i===p.i&&op.pct===p.pct)
+      );
+      overlapMap[disc][p.i]=!!coveredBy;
+    });
+  });
+
+  // Linhas + dots por disciplina
+  activeDiscs.forEach((disc,di)=>{
+    const col=getDiscColor(disc);
+    const dash=DASH_STYLES[di%4];
+    const pts=series[disc];
     if(pts.length<1) return;
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(xOf(pts[0].i),P.t+CH);
-    pts.forEach(p=>ctx.lineTo(xOf(p.i),yOf(p.pct)));
-    ctx.lineTo(xOf(pts[pts.length-1].i),P.t+CH);
-    ctx.closePath();
-    const grad=ctx.createLinearGradient(0,P.t,0,P.t+CH);
-    grad.addColorStop(0,col+'35'); grad.addColorStop(1,col+'05');
-    ctx.fillStyle=grad; ctx.fill(); ctx.restore();
+
+    const isCoveredByLater=activeDiscs.some((other,oi)=>
+      oi>di&&series[other].some(op=>series[disc].some(p=>p.i===op.i&&p.pct===op.pct))
+    );
+    const hasAnyOverlap=Object.values(overlapMap[disc]).some(Boolean);
+    const lw=hasAnyOverlap?1.5:isCoveredByLater?5:2.5;
+
     if(pts.length>=2){
       ctx.save();
-      ctx.strokeStyle=col; ctx.lineWidth=2.5;
+      ctx.strokeStyle=col; ctx.lineWidth=lw;
       ctx.lineJoin='round'; ctx.lineCap='round';
-      ctx.shadowColor=col+'88'; ctx.shadowBlur=8;
+      ctx.setLineDash(dash);
+      ctx.shadowColor=col+'55'; ctx.shadowBlur=5;
       ctx.beginPath();
       pts.forEach((p,j)=>{
         if(j===0){ctx.moveTo(xOf(p.i),yOf(p.pct));return;}
@@ -11203,60 +10860,71 @@ function renderEstudosQChart(){
       });
       ctx.stroke(); ctx.restore();
     }
-  });
 
-  // Dots com glow + label % no último ponto
-  activeDiscs.forEach(disc=>{
-    const pts=series[disc]; const col=DISC_COLOR_EST[disc]||'#64748b';
     pts.forEach(p=>{
       if(!p.hasDayData) return;
-      const x=xOf(p.i),y=yOf(p.pct);
-      ctx.save(); ctx.shadowColor=col+'99'; ctx.shadowBlur=10;
-      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5; ctx.shadowBlur=0; ctx.stroke(); ctx.restore();
+      const x=xOf(p.i), y=yOf(p.pct);
+      const isOverlap=overlapMap[disc][p.i];
+      ctx.save(); ctx.shadowColor=col+'88'; ctx.shadowBlur=6;
+      ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+      if(isOverlap){
+        ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.shadowBlur=0; ctx.stroke();
+      } else {
+        ctx.fillStyle=col; ctx.fill();
+        ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5; ctx.shadowBlur=0; ctx.stroke();
+      }
+      ctx.restore();
     });
-    const last=pts[pts.length-1];
-    ctx.fillStyle=col; ctx.font='bold 9px DM Mono,monospace';
-    ctx.textAlign='left'; ctx.textBaseline='middle';
-    ctx.fillText(last.pct+'%',xOf(last.i)+8,yOf(last.pct));
-  });
-
-  // Legenda
-  let lx=P.l,ly=P.t+CH+26;
-  activeDiscs.forEach((disc,di)=>{
-    const col=DISC_COLOR_EST[disc]||'#64748b';
-    const label=disc.length>22?disc.slice(0,20)+'…':disc;
-    ctx.font='10px DM Sans,sans-serif';
-    const tw=ctx.measureText(label).width+20;
-    if(lx+tw>W-P.r+10&&di>0){lx=P.l;ly+=16;}
-    ctx.fillStyle=col; ctx.beginPath(); ctx.roundRect(lx,ly-5,10,10,2); ctx.fill();
-    ctx.fillStyle='#94a3b8'; ctx.textAlign='left'; ctx.textBaseline='middle';
-    ctx.fillText(label,lx+14,ly); lx+=tw;
   });
 
   // Eixos
-  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+CH); ctx.lineTo(P.l+CW,P.t+CH); ctx.stroke();
 
+  // Legenda HTML fora do canvas — sem limite de altura
+  const DASH_SVG=['','8,4','3,3','12,3,3,3'];
+  legendEl.innerHTML=activeDiscs.map((disc,di)=>{
+    const col=getDiscColor(disc);
+    const dashAttr=DASH_SVG[di%4];
+    const last=series[disc][series[disc].length-1];
+    const pctLabel=last?last.pct+'%':'';
+    return '<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;">'
+      +'<svg width="20" height="10" style="flex-shrink:0">'
+      +'<line x1="0" y1="5" x2="20" y2="5" stroke="'+col+'" stroke-width="2" '+(dashAttr?'stroke-dasharray="'+dashAttr+'"':'')+'/>'
+      +'</svg>'
+      +'<span style="color:'+col+';font-weight:700;">'+pctLabel+'</span>'
+      +'<span style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+disc+'">'
+      +disc+'</span>'
+      +'</div>';
+  }).join('');
+
   // Tooltip
-  const allPts=[];
+  const allPtsFlat=[];
   activeDiscs.forEach(disc=>{
     series[disc].forEach(p=>{
-      if(p.hasDayData) allPts.push({...p,disc,col:DISC_COLOR_EST[disc]||'#64748b',cx:xOf(p.i),cy:yOf(p.pct)});
+      if(p.hasDayData) allPtsFlat.push({...p,disc,col:getDiscColor(disc),cx:xOf(p.i),cy:yOf(p.pct)});
     });
   });
   canvas.onmousemove=function(e){
-    const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width);
+    const my=(e.clientY-rect.top)*(H/rect.height);
     let closest=null,minD=999;
-    allPts.forEach(p=>{const d=Math.sqrt((p.cx-mx)**2+(p.cy-my)**2);if(d<minD){minD=d;closest=p;}});
+    allPtsFlat.forEach(p=>{const d=Math.sqrt((p.cx-mx)**2+(p.cy-my)**2);if(d<minD){minD=d;closest=p;}});
     if(closest&&minD<28){
       const parts=closest.ds.split('_');
       tooltip.style.display='block';
-      tooltip.innerHTML=`<div style="font-size:10px;color:#64748b;margin-bottom:4px;">${parts[2]+'/'+parts[1]+'/'+parts[0]}</div><div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${closest.col};"></span><span>${closest.disc}</span><span style="font-weight:700;color:${closest.col};margin-left:8px;">${closest.pct}%</span></div>`;
+      tooltip.innerHTML='<div style="font-size:10px;color:#64748b;margin-bottom:4px;">'+parts[2]+'/'+parts[1]+'/'+parts[0]+'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px;">'
+        +'<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+closest.col+'"></span>'
+        +'<span>'+closest.disc+'</span>'
+        +'<span style="font-weight:700;color:'+closest.col+';margin-left:8px;">'+closest.pct+'%</span>'
+        +'</div>';
       let tx=e.clientX-rect.left+14,ty=e.clientY-rect.top-40;
-      if(tx+180>rect.width) tx=e.clientX-rect.left-180;
+      if(tx+200>rect.width) tx=e.clientX-rect.left-200;
       tooltip.style.left=tx+'px'; tooltip.style.top=ty+'px';
-    } else tooltip.style.display='none';
+    } else { tooltip.style.display='none'; }
   };
   canvas.onmouseleave=()=>tooltip.style.display='none';
 }
@@ -11327,7 +10995,7 @@ function renderPainelMetas(){
     const progQ=Math.min(100,Math.round(s.total/metaQ*100));
     const colQ=progQ>=100?'#22c55e':progQ>=60?'#f59e0b':'#ef4444';
     const colA=pct>=85?'#22c55e':pct>=70?'#f59e0b':'#ef4444';
-    const col=DISC_COLOR_EST[disc]||'#64748b';
+    const col=getDiscColor(disc);
     const restam=Math.max(0,metaQ-s.total);
     return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid ${col};"><div style="font-size:11px;font-weight:700;color:${col};margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${disc}">${disc}</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);">Resolvidas</span><span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${colQ};">${s.total}<span style="color:var(--muted);font-size:10px;font-weight:400;"> / ${metaQ}</span></span></div><div style="height:5px;background:var(--surface);border-radius:3px;overflow:hidden;margin-bottom:8px;"><div style="height:100%;width:${progQ}%;background:${colQ};border-radius:3px;"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:11px;color:var(--muted);">% Acerto</span><span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${colA};">${pct}%</span></div>${restam>0?`<div style="font-size:10px;color:var(--muted);text-align:right;">faltam ${restam} questões</div>`:'<div style="font-size:10px;color:#22c55e;text-align:right;">✓ meta atingida</div>'}</div>`;
   }).join('');
