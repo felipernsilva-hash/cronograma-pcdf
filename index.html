@@ -501,7 +501,7 @@
   .estudos-search-wrap { position:relative; margin-bottom:16px; }
   .estudos-search-input { width:100%; box-sizing:border-box; background:var(--surface); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; padding:10px 14px 10px 38px; }
   .estudos-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
-  .estudos-search-results { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-top:8px; max-height:320px; overflow-y:auto; display:none; }
+  .estudos-search-results { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-top:8px; max-height:480px; overflow-y:auto; display:none; }
   .estudos-search-item { padding:10px 14px; border-bottom:1px solid var(--border); cursor:pointer; font-size:13px; }
   .estudos-search-item:hover { background:var(--surface2); }
   .estudos-search-item .sr-disciplina { font-size:11px; color:var(--muted); }
@@ -9895,45 +9895,243 @@ function renderHoje(){
 // ═══════════════════════════════════════════════════════════
 // BUSCA DE AULAS
 // ═══════════════════════════════════════════════════════════
+function _srItemId(aulaId){ return 'sr-item-'+aulaId.replace(/[^a-z0-9_]/gi,'_'); }
+
+function _srItemHTML(mesStr, diaData, a, label, platColor){
+  const subj    = getAulaSubject(a.nome);
+  const st      = getSubjectStyle(subj);
+  const titulo  = a.nome.indexOf('|')>0 ? a.nome.slice(a.nome.indexOf('|')+1).trim() : a.nome;
+  const tipoIcon= a.tipo==='Pdf'?'📄':a.tipo==='Exercício'?'✏️':a.tipo==='Rev'?'🔁':'▶️';
+  const done    = loadAula(a.id);
+  const dateStr = buildDateStr(diaData, mesStr);
+  const qs      = dateStr ? loadQuestoesDia(dateStr) : [];
+  const qBadge  = qs.length ? `<span style="font-size:10px;color:#818cf8;background:rgba(99,102,241,0.15);padding:1px 6px;border-radius:10px;">${qs.length}Q</span>` : '';
+  const itemId  = _srItemId(a.id);
+  const ns      = dateStr+'__'+a.id;   // unique namespace per aula
+  const discs   = Object.keys(SUBJECT_STYLE);
+
+  return `<div class="estudos-search-item${done?' done':''}" id="${itemId}" style="cursor:default;"
+    data-mes="${mesStr.replace(/"/g,'&quot;')}"
+    data-dia="${diaData.replace(/"/g,'&quot;')}"
+    data-nome="${(a.nome||'').replace(/"/g,'&quot;')}"
+    data-tipo="${a.tipo||''}"
+    data-label="${label}"
+    data-color="${platColor}">
+    <!-- header row: info + actions -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <span>${st.icon}</span>
+      <span style="color:${st.color};font-weight:700;font-size:12px;">${subj}</span>
+      <span style="font-size:10px;color:${platColor};background:${platColor}22;padding:1px 7px;border-radius:10px;font-weight:700;">${label}</span>
+      ${qBadge}
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+        <button data-toggle="aula" onclick="toggleAulaSearch('${a.id}')" style="font-size:11px;padding:3px 9px;border-radius:8px;border:1px solid ${done?'#4ade80':'#475569'};background:${done?'rgba(74,222,128,0.12)':'var(--surface2)'};color:${done?'#4ade80':'var(--muted)'};cursor:pointer;font-weight:700;white-space:nowrap;">${done?'✓ Feita':'Marcar feita'}</button>
+        ${dateStr?`<button onclick="toggleQFormSearch('${ns}')" style="font-size:11px;padding:3px 9px;border-radius:8px;border:1px solid #6366f1;background:rgba(99,102,241,0.1);color:#818cf8;cursor:pointer;font-weight:700;">📝 Questões</button>`:''}
+        <button onclick="goToAula('${mesStr}')" style="font-size:11px;padding:3px 9px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">↗ Ver mês</button>
+      </span>
+    </div>
+    <!-- title + date -->
+    <div style="font-size:12px;color:var(--text);margin-top:4px;">${tipoIcon} ${titulo}</div>
+    <div class="sr-disciplina" style="margin-top:2px;">${mesStr} · ${diaData}</div>
+    <!-- questoes mini-form (hidden by default) -->
+    ${dateStr?`
+    <div id="qform-sr-${ns}" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+      <div style="font-size:11px;font-weight:700;color:#818cf8;margin-bottom:8px;letter-spacing:.5px;">📝 QUESTÕES · ${diaData} · ${mesStr}</div>
+      <!-- existing questions table -->
+      <div id="qsr-table-${ns}"></div>
+      <!-- add form -->
+      <div class="q-add-form" style="margin-top:6px;">
+        <input  class="q-input" id="qnum-${ns}"     type="text"   placeholder="Nº"      style="width:52px;"   maxlength="6">
+        <select class="q-input" id="qdisc-${ns}"    style="min-width:130px;">
+          <option value="">Disciplina…</option>
+          ${discs.map(d=>`<option value="${d}"${d===subj?' selected':''}>${d}</option>`).join('')}
+        </select>
+        <input  class="q-input" id="qassunto-${ns}" type="text"   placeholder="Assunto" style="flex:1;min-width:80px;">
+        <select class="q-input" id="qmeu-${ns}"     style="width:64px;">
+          <option value="">Meu</option>${['A','B','C','D','E'].map(l=>`<option>${l}</option>`).join('')}
+        </select>
+        <select class="q-input" id="qoficial-${ns}" style="width:68px;">
+          <option value="">Oficial</option>${['A','B','C','D','E'].map(l=>`<option>${l}</option>`).join('')}
+        </select>
+        <button onclick="addQuestaoSearch('${dateStr}','${ns}')" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">+ Salvar</button>
+      </div>
+    </div>`:''}
+  </div>`;
+}
+
 function searchAulas(query){
   const res=document.getElementById('estudos-search-results'); if(!res) return;
   if(!query||query.length<2){ res.style.display='none'; return; }
   const q=query.toLowerCase();
-  const plat=localStorage.getItem('estudos_platform')||'grancursos';
-  const src=plat==='smartpol'?SMARTPOL_STUDY_DATA:STUDY_DATA;
-  const matches=[];
-  for(const [mes,aulas] of Object.entries(src)){
-    for(const a of aulas){
-      const titulo=(a.titulo||a.disciplina||'').toLowerCase();
-      const disc=(a.disciplina||'').toLowerCase();
-      if(titulo.includes(q)||disc.includes(q)){
-        matches.push({mes, a});
-        if(matches.length>=30) break;
+
+  // Coleta matches de cada fonte separadamente (sem limite)
+  const sources=[
+    {data:SMARTPOL_STUDY_DATA, label:'SmartPol',   color:'#a78bfa'},
+    {data:STUDY_DATA,          label:'Gran Cursos', color:'#38bdf8'},
+  ];
+
+  const bySource=sources.map(({data,label,color})=>{
+    const found=[];
+    for(const mesObj of data){
+      for(const dia of (mesObj.dias||[])){
+        for(const a of (dia.aulas||[])){
+          const nome=(a.nome||'').toLowerCase();
+          const subj=getAulaSubject(a.nome).toLowerCase();
+          if(nome.includes(q)||subj.includes(q)){
+            found.push({mesStr:mesObj.mes, diaData:dia.data, a, label, color});
+          }
+        }
       }
     }
-    if(matches.length>=30) break;
+    return found;
+  });
+
+  // Intercala SmartPol e Gran Cursos para nenhuma fonte dominar
+  const matches=[];
+  const maxLen=Math.max(bySource[0].length, bySource[1].length);
+  for(let i=0;i<maxLen;i++){
+    if(i<bySource[0].length) matches.push(bySource[0][i]);
+    if(i<bySource[1].length) matches.push(bySource[1][i]);
   }
-  if(!matches.length){ res.style.display='block'; res.innerHTML='<div class="estudos-search-item" style="color:var(--muted);">Nenhuma aula encontrada</div>'; return; }
+
+  if(!matches.length){
+    res.style.display='block';
+    res.innerHTML='<div class="estudos-search-item" style="color:var(--muted);cursor:default;">Nenhuma aula encontrada</div>';
+    return;
+  }
+
+  const spCount=bySource[0].length, gcCount=bySource[1].length;
+  const totalLabel=`<div style="padding:7px 14px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);display:flex;gap:10px;">
+    <span>🔍 <b style="color:var(--text);">${matches.length}</b> resultado${matches.length!==1?'s':''} encontrado${matches.length!==1?'s':''}</span>
+    ${spCount?`<span style="color:#a78bfa;">SmartPol: ${spCount}</span>`:''}
+    ${gcCount?`<span style="color:#38bdf8;">Gran Cursos: ${gcCount}</span>`:''}
+  </div>`;
+
   res.style.display='block';
-  res.innerHTML=matches.map(({mes,a})=>{
-    const st=SUBJECT_STYLE[a.disciplina]||{color:'#64748b',icon:'📖'};
-    return `<div class="estudos-search-item" onclick="goToAula('${mes}')">
-      <div>${st.icon} <span style="color:${st.color};font-weight:600;">${a.titulo||a.disciplina}</span></div>
-      <div class="sr-disciplina">${a.disciplina} · ${mes}</div>
-    </div>`;
-  }).join('');
+  res.innerHTML= totalLabel + matches.map(({mesStr,diaData,a,label,color})=>
+    _srItemHTML(mesStr,diaData,a,label,color)
+  ).join('');
+
+  // Renderiza tabelas de questões já existentes
+  matches.forEach(({mesStr,diaData,a})=>{
+    const dateStr=buildDateStr(diaData,mesStr);
+    if(dateStr) _renderQTableSearch(dateStr, dateStr+'__'+a.id);
+  });
 }
 function goToAula(mes){
   document.getElementById('estudos-search-results').style.display='none';
   document.getElementById('estudos-search').value='';
-  // navigate to that month
   const parts=mes.split(' ');
   if(parts.length===2){
     const mIdx=MONTHS.indexOf(parts[0]);
     const yr=parseInt(parts[1]);
-    if(mIdx!==-1&&yr){ currentMonth=mIdx; currentYear=yr; renderEstudos(); }
+    if(mIdx!==-1&&yr){
+      currentMonth=mIdx;
+      currentYear=yr;
+      // Navigate to estudos tab
+      const btn=document.getElementById('nav-estudos');
+      showTab('estudos', btn);
+      setTimeout(renderEstudos, 80);
+    }
   }
 }
+
+// Toggle aula done/undone from search results.
+// Atualiza APENAS os elementos visuais que mudam (sem outerHTML),
+// preservando o nó no DOM para que o event bubbling funcione
+// corretamente e o painel não feche.
+function toggleAulaSearch(aulaId){
+  const newVal = !loadAula(aulaId);
+  saveAula(aulaId, newVal);
+  const itemEl = document.getElementById(_srItemId(aulaId));
+  if(itemEl){
+    // 1. Classe .done no container
+    itemEl.classList.toggle('done', newVal);
+    // 2. Atualiza só o botão de toggle (primeiro botão do item)
+    const btn = itemEl.querySelector('button[data-toggle="aula"]');
+    if(btn){
+      btn.textContent = newVal ? '✓ Feita' : 'Marcar feita';
+      btn.style.color       = newVal ? '#4ade80' : 'var(--muted)';
+      btn.style.borderColor = newVal ? '#4ade80' : '#475569';
+      btn.style.background  = newVal ? 'rgba(74,222,128,0.12)' : 'var(--surface2)';
+    }
+  }
+  updateStats();
+  if(document.getElementById('tab-hoje')?.classList.contains('active')) renderHoje();
+}
+
+// Show/hide questoes mini-form in search result
+function toggleQFormSearch(ns){
+  const el = document.getElementById('qform-sr-'+ns);
+  if(!el) return;
+  const open = el.style.display==='none' || el.style.display==='';
+  el.style.display = open ? 'block' : 'none';
+  if(open) _renderQTableSearch(ns.split('__')[0], ns);
+}
+
+// Render questoes table inside a search result
+function _renderQTableSearch(dateStr, ns){
+  const wrap = document.getElementById('qsr-table-'+ns);
+  if(!wrap) return;
+  const qs = loadQuestoesDia(dateStr);
+  if(!qs.length){
+    wrap.innerHTML='<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Nenhuma questão registrada ainda.</div>';
+    return;
+  }
+  const rows = qs.map((q,i)=>{
+    const correct = q.meu&&q.oficial&&q.meu.toUpperCase()===q.oficial.toUpperCase();
+    const res = !q.meu||!q.oficial ? `<span class="q-gab neutral">—</span>` :
+      correct ? `<span class="q-gab correct">✓</span>` : `<span class="q-gab wrong">✗</span>`;
+    return `<tr>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;">${q.num||'—'}</td>
+      <td style="font-size:11px;color:#a5b4fc;">${(q.disciplina||'—').split(' ')[0]}</td>
+      <td style="font-size:11px;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q.assunto||'—'}</td>
+      <td><span class="q-gab neutral">${q.meu||'—'}</span></td>
+      <td><span class="q-gab ${q.oficial?(correct?'correct':'wrong'):''}">${q.oficial||'—'}</span></td>
+      <td>${res}</td>
+      <td><button onclick="removeQuestaoSearch('${dateStr}','${ns}',${i})" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:12px;padding:0 2px;">✕</button></td>
+    </tr>`;
+  }).join('');
+  const total=qs.length;
+  const acertos=qs.filter(q=>q.meu&&q.oficial&&q.meu.toUpperCase()===q.oficial.toUpperCase()).length;
+  const pct=Math.round(acertos/total*100);
+  const col=pct>=70?'#4ade80':pct>=50?'#fbbf24':'#f87171';
+  wrap.innerHTML=`
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${total} questão${total>1?'es':''} · <b style="color:${col}">${pct}% acerto</b> (${acertos}/${total})</div>
+    <table class="q-table" style="margin-bottom:6px;">
+      <thead><tr><th>Nº</th><th>Disc.</th><th>Assunto</th><th>Meu</th><th>Gab.</th><th>Res.</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// Add questao from search result mini-form
+function addQuestaoSearch(dateStr, ns){
+  const num     = document.getElementById('qnum-'+ns)?.value.trim();
+  const disc    = document.getElementById('qdisc-'+ns)?.value;
+  const assunto = document.getElementById('qassunto-'+ns)?.value.trim();
+  const meu     = document.getElementById('qmeu-'+ns)?.value;
+  const oficial = document.getElementById('qoficial-'+ns)?.value;
+  if(!disc&&!num){ alert('Informe pelo menos a disciplina ou o número da questão.'); return; }
+  const arr = loadQuestoesDia(dateStr);
+  arr.push({num, disciplina:disc, assunto, meu, oficial, ts:Date.now()});
+  saveQuestoesDia(dateStr, arr);
+  ['qnum','qassunto','qmeu','qoficial'].forEach(k=>{
+    const el=document.getElementById(k+'-'+ns); if(el) el.value='';
+  });
+  _renderQTableSearch(dateStr, ns);
+  renderAcertoDiscCards();
+  setTimeout(renderEstudosQChart,80);
+}
+
+// Remove questao from search result table
+function removeQuestaoSearch(dateStr, ns, idx){
+  const arr=loadQuestoesDia(dateStr);
+  arr.splice(idx,1);
+  saveQuestoesDia(dateStr,arr);
+  _renderQTableSearch(dateStr, ns);
+  renderAcertoDiscCards();
+  setTimeout(renderEstudosQChart,80);
+}
+
 // Close search on click outside
 document.addEventListener('click',e=>{
   if(!e.target.closest('.estudos-search-wrap')){
