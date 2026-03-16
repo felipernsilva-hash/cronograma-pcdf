@@ -614,7 +614,7 @@
   <div style="display:flex;align-items:center;">
     <button class="nav-btn" onclick="showTab('hoje',this)" id="nav-hoje">🏠 Hoje</button>
     <button class="nav-btn" onclick="showTab('calendario',this)">📅 Calendário</button>
-    <button class="nav-btn active" onclick="showTab('estudos',this)">📚 Estudos</button>
+    <button id="nav-estudos" class="nav-btn active" onclick="showTab('estudos',this)">📚 Estudos</button>
     <button class="nav-btn" onclick="showTab('questoes',this)">❓ Questões</button>
     <button class="nav-btn" onclick="showTab('alimentacao',this)">🥗 Alimentação</button>
     <button class="nav-btn" onclick="showTab('taf',this)">💪 TAF</button>
@@ -639,7 +639,7 @@
     </div>
     <div class="peso-stat" style="background:linear-gradient(135deg,#1c1917,#292524);border:1px solid #f97316;">
       <div class="peso-stat-val" id="hoje-streak" style="color:#fb923c;font-size:32px;">—</div>
-      <div class="peso-stat-lbl">🔥 dias de streak</div>
+      <div class="peso-stat-lbl" style="display:flex;align-items:center;justify-content:center;gap:3px;"><span style="letter-spacing:0;text-transform:none;">🔥</span><span>dias de estudo</span></div>
     </div>
     <div class="peso-stat" style="background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid #22c55e;">
       <div class="peso-stat-val" id="hoje-aulas-hoje" style="color:#4ade80;font-size:32px;">—</div>
@@ -2502,7 +2502,7 @@ function _drawCalorias(ctx,W,H,data){
   const CW=W-P.l-P.r, CH=H-P.t-P.b;
   const DOW=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const today=new Date().toDateString();
-  const calGoal=parseInt(localStorage.getItem('cal_goal'))||2000;
+  const calGoal=parseInt(localStorage.getItem('cal_goal'))||2400;
   const n=data.length;
   const maxV=Math.ceil(Math.max(...data.map(d=>d.cal), calGoal*1.15, 800)/500)*500;
 
@@ -9277,19 +9277,8 @@ async function salvarArquivo(){
   const btn = document.getElementById('save-btn-float');
   const origHTML = btn ? btn.innerHTML : '';
 
-  // Build HTML content
-  const state = {};
-  try{
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k&&(k.startsWith('fp_')||k.startsWith('aula_')||k.startsWith('aula_edit_')||k.startsWith('taf_')||k.startsWith('cal_')||k.startsWith('peso_')||k.startsWith('aula_note_')||k.startsWith('custom_mes_'))){ state[k]=localStorage.getItem(k); }
-    }
-  }catch(e){}
-  let html = document.documentElement.outerHTML;
-  html = '<!DOCTYPE html>\n'+html;
-  html = html.replace(/\/\*BEGIN_SAVED_STATE\*\/[\s\S]*?\/\*END_SAVED_STATE\*\//,
-    '/*BEGIN_SAVED_STATE*/var __SAVED_STATE__='+JSON.stringify(state)+';/*END_SAVED_STATE*/');
-
+  // Reutiliza buildSaveContent() — mesma lógica do Drive, mesmo marcador
+  const html = buildSaveContent();
   const blob = new Blob([html],{type:'text/html;charset=utf-8'});
 
   // Try File System Access API (save in-place)
@@ -9320,8 +9309,7 @@ async function salvarArquivo(){
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1500);
-  if(btn){btn.innerHTML='✅ Download feito!';btn.style.background='#1d4ed8';setTimeout(()=>{btn.innerHTML=origHTML;btn.style.background='';},
-    {n:'Frango Caipira + Arroz + Couve',   d:'80g frango caipira cozido + 80g arroz + couve refogada',  cal:320, prot:30, carb:38, fat:8},2500);}
+  if(btn){btn.innerHTML='✅ Download feito!';btn.style.background='#1d4ed8';setTimeout(()=>{btn.innerHTML=origHTML;btn.style.background='';},2500);}
 }
 
 // Reset file handle (force re-pick)
@@ -9370,18 +9358,37 @@ function buildSaveContent() {
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && (k.startsWith('fp_')||k.startsWith('aula_')||k.startsWith('aula_edit_')||
-          k.startsWith('taf_')||k.startsWith('cal_')||k.startsWith('peso_')||
-          k.startsWith('aula_note_')||k.startsWith('custom_mes_')||
-          k==='estudos_platform'||k==='peso_meta')) {
+      if (!k) continue;
+      if (
+        k.startsWith('fp_')              ||  // diário de felicidade
+        k.startsWith('aula_')            ||  // aulas vistas + datas
+        k.startsWith('aula_edit_')       ||  // edições de aulas
+        k.startsWith('aula_note_')       ||  // notas de aulas
+        k.startsWith('taf_')             ||  // treino TAF
+        k.startsWith('cal_')             ||  // alimentação
+        k.startsWith('peso_')            ||  // peso (inclui peso_log, peso_meta)
+        k.startsWith('custom_mes_')      ||  // meses customizados
+        k.startsWith('hoje_')            ||  // aba hoje: sono, agua, bem-estar, prova
+        k.startsWith('q_dia_')           ||  // questões por dia
+        k.startsWith('horas_')           ||  // horas de estudo
+        k.startsWith('meta_')            ||  // metas gerais
+        k === 'estudos_platform'         ||  // plataforma ativa (smartpol/grancursos)
+        k === 'banco_questoes'           ||  // banco de questões
+        k === 'fotos_corpo'              ||  // fotos de evolução
+        k === 'prova_date'               ||  // data da prova (countdown global)
+        k === 'gdrive_client_id'         ||  // config Drive
+        k === 'gdrive_file_id'              // file id Drive
+      ) {
         state[k] = localStorage.getItem(k);
       }
     }
   } catch(e) {}
   let html = document.documentElement.outerHTML;
-  const stateStr = JSON.stringify(state);
-  html = html.replace(/\/\*__SAVED_STATE__\*\/[\s\S]*?\/\*END_SAVED_STATE\*\//, 
-    `/*__SAVED_STATE__*/\nconst __SAVED_STATE__ = ${stateStr};\n/*END_SAVED_STATE*/`);
+  // Usa o mesmo marcador BEGIN_SAVED_STATE do arquivo — regex não falha mais
+  html = html.replace(
+    /\/\*BEGIN_SAVED_STATE\*\/[\s\S]*?\/\*END_SAVED_STATE\*\//,
+    '/*BEGIN_SAVED_STATE*/var __SAVED_STATE__=' + JSON.stringify(state) + ';/*END_SAVED_STATE*/'
+  );
   return '<!DOCTYPE html>\n' + html;
 }
 
@@ -9389,10 +9396,10 @@ function buildSaveContent() {
 function openDriveConfig() {
   const stored = localStorage.getItem('gdrive_client_id') || '';
   document.getElementById('driveClientIdInput').value = stored;
-  const dm=document.getElementById('driveConfigModal');dm.style.display='flex';;
+  const dm=document.getElementById('driveConfigModal');dm.style.display='flex';
 }
 function closeDriveConfig() {
-  document.getElementById('driveConfigModal').style.display='none';;
+  document.getElementById('driveConfigModal').style.display='none';
 }
 function saveDriveConfig() {
   const val = document.getElementById('driveClientIdInput').value.trim();
@@ -9757,12 +9764,11 @@ function exCard(ex){
 
 // ── Aulas do dia ─────────────────────────────────────────────
 function getAulasDia(){
-  const today = new Date();
+  const today  = new Date();
   const dayNum = today.getDate();
   const mesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const mesStr = mesNomes[today.getMonth()] + ' ' + today.getFullYear();
 
-  // Find today's aulas in a dataset array
   function findAulasInData(data){
     for(const mesObj of data){
       if(mesObj.mes !== mesStr) continue;
@@ -9774,30 +9780,28 @@ function getAulasDia(){
     return [];
   }
 
-  // Render one aula row
   function renderRow(a){
-    const done = loadAula(a.id);
-    const subj = getAulaSubject(a.nome);
-    const st = getSubjectStyle(subj);
+    const done  = loadAula(a.id);
+    const subj  = getAulaSubject(a.nome);
+    const st    = getSubjectStyle(subj);
     const titulo = a.nome.indexOf('|') > 0 ? a.nome.slice(a.nome.indexOf('|')+1).trim() : a.nome;
     const tipoIcon = a.tipo==='Pdf'?'📄':a.tipo==='Exercício'?'✏️':a.tipo==='Rev'?'🔁':a.tipo==='Planejado'?'🗓️':'▶️';
-    return `<div style="display:flex;gap:7px;align-items:flex-start;padding:4px 0;opacity:${done?0.4:1};line-height:1.4;">
-      <span style="font-size:13px;flex-shrink:0;margin-top:1px;">${st.icon}</span>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:11px;font-weight:700;color:${st.color};text-transform:uppercase;letter-spacing:0.5px;">${subj}</div>
-        <div style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${tipoIcon} ${titulo}</div>
-      </div>
-      ${done?'<span style="color:#4ade80;font-size:11px;flex-shrink:0;">✓</span>':''}
-    </div>`;
+    const q = "'";
+    return '<div class="aula-row" style="padding:6px 4px;cursor:pointer;" onclick="toggleHojeAula(' + q + a.id + q + ')">'
+      + '<input type="checkbox" class="aula-check"' + (done?' checked':'') + ' onclick="event.stopPropagation()" onchange="toggleHojeAula(' + q + a.id + q + ')">'
+      + '<span class="aula-nome' + (done?' done':'') + '" style="display:flex;flex-direction:column;gap:2px;">'
+      + '<span style="font-size:10px;font-weight:700;color:' + st.color + ';text-transform:uppercase;letter-spacing:0.5px;">' + st.icon + ' ' + subj + '</span>'
+      + '<span>' + tipoIcon + ' ' + titulo + '</span>'
+      + '</span>'
+      + '</div>';
   }
 
-  // Render a platform block with label badge
   function renderBlock(aulas, label, color){
     if(!aulas.length) return '';
-    return `<div style="margin-bottom:10px;">
-      <div style="font-size:10px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:2px 6px;background:${color}22;border-radius:4px;display:inline-block;">${label}</div>
-      ${aulas.map(renderRow).join('')}
-    </div>`;
+    return '<div style="margin-bottom:10px;">'
+      + '<div style="font-size:10px;font-weight:700;color:' + color + ';text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:2px 6px;background:' + color + '22;border-radius:4px;display:inline-block;">' + label + '</div>'
+      + aulas.map(renderRow).join('')
+      + '</div>';
   }
 
   const spAulas = findAulasInData(SMARTPOL_STUDY_DATA);
@@ -9807,8 +9811,33 @@ function getAulasDia(){
     return '<span style="color:var(--muted);font-size:12px;">Nenhuma aula prevista para hoje</span>';
   }
 
-  return renderBlock(spAulas, 'SmartPol', '#a78bfa') +
-         renderBlock(gcAulas, 'Gran Cursos', '#38bdf8');
+  return renderBlock(spAulas, 'SmartPol', '#a78bfa')
+       + renderBlock(gcAulas, 'Gran Cursos', '#38bdf8');
+}
+
+function toggleHojeAula(id){
+  const newVal = !loadAula(id);
+  saveAula(id, newVal);
+  // Re-render the aulas list
+  const alEl = document.getElementById('hoje-aulas-lista');
+  if(alEl) alEl.innerHTML = getAulasDia();
+  // Update counters — same logic as renderHoje (SmartPol only)
+  const _h = new Date();
+  const _dn = _h.getDate();
+  const _mn = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const _ms = _mn[_h.getMonth()] + ' ' + _h.getFullYear();
+  let _sp = [];
+  for(const mesObj of SMARTPOL_STUDY_DATA){
+    if(mesObj.mes !== _ms) continue;
+    for(const dia of (mesObj.dias||[])){
+      if(parseInt(dia.data.split(' ')[0]) === _dn){ _sp = dia.aulas||[]; break; }
+    }
+    break;
+  }
+  const ahEl = document.getElementById('hoje-aulas-hoje');
+  const atEl = document.getElementById('hoje-aulas-total');
+  if(ahEl) ahEl.textContent = _sp.length;
+  if(atEl) atEl.textContent = _sp.filter(a => loadAula(a.id)).length + '/' + _sp.length;
 }
 
 
@@ -9831,27 +9860,27 @@ function renderHoje(){
   const strEl=document.getElementById('hoje-streak');
   if(strEl) strEl.textContent=calcStreak();
 
-  // Aulas hoje / total
-  let aulasHoje=0, aulasTotal=0;
-  const hoje=new Date();
-  const hojeStr=hoje.toISOString().slice(0,10);
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(!k) continue;
-    // Total: chaves aula_X com valor '1' (excluindo _edit_ e _note_ e _date)
-    if(k.startsWith('aula_') && !k.includes('_edit_') && !k.includes('_note_') && !k.endsWith('_date')){
-      if(localStorage.getItem(k)==='1') aulasTotal++;
+  // Aulas hoje / total (SmartPol)
+  const _hoje = new Date();
+  const _dayNum = _hoje.getDate();
+  const _mesNomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const _mesStr = _mesNomes[_hoje.getMonth()] + ' ' + _hoje.getFullYear();
+  // Busca aulas do dia na SmartPol
+  let _spHoje = [];
+  for(const mesObj of SMARTPOL_STUDY_DATA){
+    if(mesObj.mes !== _mesStr) continue;
+    for(const dia of (mesObj.dias||[])){
+      if(parseInt(dia.data.split(' ')[0]) === _dayNum){ _spHoje = dia.aulas||[]; break; }
     }
-    // Hoje: chaves aula_X_date com valor = hoje
-    if(k.startsWith('aula_') && k.endsWith('_date')){
-      if(localStorage.getItem(k)===hojeStr) aulasHoje++;
-    }
+    break;
   }
+  const aulasHoje  = _spHoje.length;
+  const aulasFeitas = _spHoje.filter(a => loadAula(a.id)).length;
   const ahEl=document.getElementById('hoje-aulas-hoje'); if(ahEl) ahEl.textContent=aulasHoje;
-  const atEl=document.getElementById('hoje-aulas-total'); if(atEl) atEl.textContent=aulasTotal;
+  const atEl=document.getElementById('hoje-aulas-total'); if(atEl) atEl.textContent=aulasFeitas+'/'+aulasHoje;
 
   // Cal hoje
-  const calHoje=loadCalDay(hoje).reduce((s,e)=>s+(e.cal||0),0);
+  const calHoje=loadCalDay(_hoje).reduce((s,e)=>s+(e.cal||0),0);
   const calEl=document.getElementById('hoje-cal-hoje'); if(calEl) calEl.textContent=calHoje||'—';
 
   // Peso atual
@@ -10205,8 +10234,8 @@ function addQuestao(){
   const arr=loadQuestoes();
   arr.push({id:Date.now(),disciplina:disc,enunciado,motivo,data:new Date().toLocaleDateString('pt-BR'),revisado:false});
   saveQuestoes(arr);
-  document.getElementById('q-enunciado').value='';
-  document.getElementById('q-motivo').value='';
+  document.getElementById('q-enunciado')?.value && (document.getElementById('q-enunciado').value='');
+  document.getElementById('q-motivo')?.value && (document.getElementById('q-motivo').value='');
   renderBancoQuestoes();
 }
 function toggleRevisado(id){
