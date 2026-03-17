@@ -1461,6 +1461,30 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
         <div><div class="taf-modal-total-label">TOTAL</div><div class="taf-modal-total-num score-nd" id="taf-log-total">—</div></div>
         <div style="text-align:right"><div class="taf-modal-total-label">STATUS</div><div id="taf-log-status" style="font-size:13px;font-weight:600;color:var(--muted);">—</div></div>
       </div>
+      <!-- Exercícios Complementares -->
+      <div style="margin:14px 0 8px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#a855f7;margin-bottom:10px;">💪 Complementares (treino do dia)</div>
+        <div class="taf-field-row" style="margin-bottom:6px;">
+          <div class="taf-field-label"><strong>💪 Apoio</strong><span>reps totais</span></div>
+          <input type="number" class="taf-field-input" id="taf-log-apoio" min="0" max="200" placeholder="reps">
+          <div class="taf-field-score score-nd" style="min-width:36px;"></div>
+        </div>
+        <div class="taf-field-row" style="margin-bottom:6px;">
+          <div class="taf-field-label"><strong>🧱 Prancha</strong><span>segundos totais</span></div>
+          <input type="number" class="taf-field-input" id="taf-log-prancha" min="0" max="600" placeholder="seg">
+          <div class="taf-field-score score-nd" style="min-width:36px;"></div>
+        </div>
+        <div class="taf-field-row" style="margin-bottom:6px;">
+          <div class="taf-field-label"><strong>🦵 Agachamento</strong><span>reps totais</span></div>
+          <input type="number" class="taf-field-input" id="taf-log-agacha" min="0" max="300" placeholder="reps">
+          <div class="taf-field-score score-nd" style="min-width:36px;"></div>
+        </div>
+        <div class="taf-field-row">
+          <div class="taf-field-label"><strong>🔄 Remada Invertida</strong><span>reps totais</span></div>
+          <input type="number" class="taf-field-input" id="taf-log-remada" min="0" max="200" placeholder="reps">
+          <div class="taf-field-score score-nd" style="min-width:36px;"></div>
+        </div>
+      </div>
       <div style="margin-bottom:10px;"><label style="font-size:12px;color:var(--muted);">Observações</label><textarea id="taf-log-obs" style="width:100%;margin-top:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:12px;resize:vertical;min-height:56px;outline:none;" placeholder="Ex: Condição física boa, pista molhada, etc."></textarea></div>
       </div><!-- end taf-log-fields -->
       <button class="taf-modal-save-btn" onclick="saveTAFLogEntry()">💾 Salvar Resultado</button>
@@ -1531,6 +1555,19 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
       <div id="taf-chart-tooltip" style="display:none;position:absolute;background:#1e2433;border:1px solid #2a3147;border-radius:8px;padding:8px 12px;font-size:11px;color:#e2e8f0;pointer-events:none;z-index:10;min-width:120px;box-shadow:0 4px 16px rgba(0,0,0,0.4);"></div>
     </div>
     <div id="taf-chart-empty" class="taf-chart-empty" style="display: block;">Nenhum treino registrado ainda.<br>Use o calendário abaixo para registrar seus treinos!</div>
+    <!-- Gráfico complementares -->
+    <div id="taf-chart-comp-wrap" style="margin-top:20px;display:none;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#a855f7;margin-bottom:8px;">💪 Exercícios Complementares (reps / seg brutos)</div>
+      <div class="taf-chart-canvas-wrap" style="position:relative;overflow-x:auto;overflow-y:hidden;">
+        <canvas id="taf-chart-comp-canvas" height="220" style="display:block;"></canvas>
+      </div>
+      <div class="taf-chart-legend" style="margin-top:10px;">
+        <div class="taf-legend-item"><svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#a855f7" stroke-width="2.5"/></svg><span>Apoio (reps)</span></div>
+        <div class="taf-legend-item"><svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="8,4"/></svg><span>Prancha (seg)</span></div>
+        <div class="taf-legend-item"><svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="3,3"/></svg><span>Agachamento (reps)</span></div>
+        <div class="taf-legend-item"><svg width="24" height="10" style="margin-right:5px;flex-shrink:0"><line x1="0" y1="5" x2="24" y2="5" stroke="#34d399" stroke-width="2.5" stroke-dasharray="12,3,3,3"/></svg><span>Remada (reps)</span></div>
+      </div>
+    </div>
     <div id="taf-chart-legend-wrap">
       <div class="taf-chart-legend">
         <div class="taf-legend-item">
@@ -8195,8 +8232,10 @@ function renderTAFCal(){
       const exs=getTAFDayExercises(date);
       if(exs.length>0){
         // Day type tag
-        const typeColors={work:'#475569',post:'#64748b',forca:'#3b82f6',cardio:'#ef4444',simulado:'#f59e0b'};
-        const typeLabels={work:'🛌 Trabalho',post:'🧘 Recuperação',forca:'💪 Força',cardio:'🏃 Cardio',simulado:'🎯 Simulado'};
+        const _calPhase=getTAFPhase(date);
+        const _isSimPhase=_calPhase==='simulacao'||_calPhase==='afunilamento';
+        const typeColors={work:'#475569',post:'#64748b',forca:'#3b82f6',cardio:'#ef4444',simulado:_isSimPhase?'#f59e0b':'#475569'};
+        const typeLabels={work:'🛌 Trabalho',post:'🧘 Recuperação',forca:'💪 Força',cardio:'🏃 Cardio',simulado:_isSimPhase?'🎯 Simulado':'🛌 Descanso'};
         const tagEl=document.createElement('div');
         tagEl.style.cssText=`font-size:8px;font-weight:700;color:${typeColors[dtype]||'#94a3b8'};margin-top:2px;letter-spacing:0.5px;`;
         tagEl.textContent=typeLabels[dtype]||dtype;
@@ -8261,222 +8300,231 @@ function getTAFDayType(date){
 // Cada exercício: {id, icon, color, title, series, detail}
 // id: 'barra'|'abd'|'shuttle'|'corrida'|'auxiliar'|'rest'
 const TAF_PLAN = {
-  // ── MÊS 1 Sem 1-2: ATIVAÇÃO ─────────────────────────────────────────
+
+  // ── MÊS 1 Sem 1-2: ATIVAÇÃO (09/03 – 22/03/2026) ────────────────────
   ativacao: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',  series:'—', detail:'Não treinar. Hidrate-se, descanse. O descanso nos plantões é parte do plano.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',   series:'—',          detail:'Não treinar. Hidrate-se bem e descanse. O descanso no plantão é parte do plano — chegar no treino recuperado é fundamental.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Pós-Plantão',      series:'20 min', detail:'Caminhada leve apenas. Mobilidade de ombro: rotação com elástico 3×15. Nada intenso.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Excêntrica',           series:'4×3 descidas 5s', detail:'Suba com pulo/banco, desça em 5s. Isso constrói força sem exigir o peso todo. Descanse 3 min. Foco na técnica.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Remada Invertida (Australian)', series:'3×10 reps', detail:'Deite sob uma barra baixa ou mesa, puxe o peito até ela. Ativa dorsais sem peso total. Fundamental para quem não faz barra ainda.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Técnica',           series:'3×15 reps', detail:'Braços cruzados no tórax, mãos nos ombros OPOSTOS. Cotovelos tocam joelhos. Escápula volta ao chão a cada rep. Sem pressão de velocidade.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Agachamento Livre',             series:'3×20 reps', detail:'Peso corporal. Base para corrida e shuttle run. Mantenha joelhos acima dos pés, desça até 90°.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio (Flexão de Braço)',        series:'3 × 8 reps', detail:'Mãos na largura dos ombros, corpo reto da cabeça ao calcanhar. Desça até o peito quase tocar o chão. Se difícil, apoie os joelhos — sem vergonha, é adaptação. Descanso: 90s entre séries.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha Isométrica',             series:'3 × 20s',    detail:'Antebraços no chão, cotovelos sob os ombros. Quadril nivelado — não deixe subir nem cair. Respire normalmente. Esta é a sua linha de base. Descanso: 60s.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento Livre',              series:'3 × 15 reps', detail:'Pés na largura dos ombros, dedos levemente abertos. Desça até 90° ou mais — joelhos acompanham a direção dos pés. Suba com força. Base para corrida e shuttle. Descanso: 90s.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida (mesa)',        series:'3 × 8 reps',  detail:'Deite sob uma mesa firme, segure a borda com pegada pronada (palmas para baixo). Puxe o peito até a mesa mantendo o corpo reto. Ativa dorsais e bíceps — os músculos da barra fixa. Descanso: 90s.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Linha de Base',       series:'20-25 min trote', detail:'Ritmo de conversa — consegue falar frases completas. Registre a distância. Não force. 3x por semana este mês.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Técnica da Virada', series:'8×rep / 90s desc', detail:'9,14m entre linhas. Não agache fundo: use a mão para tocar o chão e exploda de volta. Cronometre cada rep. Anote o melhor tempo.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Linha de Base',        series:'20 min trote', detail:'Ritmo de conversa — você consegue falar frases completas sem ofegar. Registre a distância percorrida. Não force. É o seu ponto de partida.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Aprender a Virada', series:'6 × rep / 90s desc', detail:'9,14 m entre as linhas. Toque o chão com a mão (não agache fundo) e exploda de volta. Foco total na técnica da virada — velocidade vem depois. Cronometre cada rep e anote o melhor.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada Invertida — Construção', series:'4 × 8 reps',  detail:'O substituto da barra fixa até você encontrar uma. Mesmo padrão de movimento: puxar o corpo em direção a uma superfície fixa. Aumente a dificuldade inclinando mais o corpo (pés em banco = mais difícil).'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Técnica Oficial',    series:'3 × 15 reps', detail:'Braços cruzados no tórax, mãos nos ombros OPOSTOS. Cotovelos tocam a região central dos joelhos. Escápula volta ao chão a cada repetição. Sem balançar a cabeça. Esta é a técnica exigida no TAF.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Superman (Extensão Lombar)',     series:'3 × 12 reps', detail:'Deite de bruços com braços estendidos à frente. Eleve simultaneamente braços e pernas do chão. Segure 2s no topo e desça devagar. Fortalece lombar e glúteos — cadeia posterior essencial para a barra.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral',                series:'2 × 20s cada lado', detail:'Apoie no antebraço lateral, corpo alinhado da cabeça ao calcanhar. Quadril não toca o chão. Trabalha oblíquos e estabilizadores laterais — suporte direto para o abdominal do TAF.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Medir Linha de Base',  series:'máx reps', detail:'Quantas consegue hoje? Sem pressão — é só diagnóstico. Registre aqui.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — 60s diagnóstico',  series:'1×60s', detail:'Cronometre 60 segundos. Registre o número exato. Esta é sua linha de base.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Melhor de 3',        series:'3 tentativas / 3 min desc', detail:'Melhor de 3. Anote o melhor tempo. Meta futura: ≤ 12s.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — 12 min diagnóstico', series:'12 min', detail:'Corra 12 min e registre a distância. Sua linha de base atual é ~1.800m.'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',        series:'—',           detail:'Caminhada leve 20 min. Mobilidade de ombro e quadril. Alongamento. Simulados de TAF começam em setembro — agora o foco é construir a base com consistência.'},
     ],
   },
 
-  // ── MÊS 1 Sem 3-4 / MÊS 2 Sem 5-8: BASE ────────────────────────────
+  // ── MÊS 1-2 Sem 3-8: BASE (23/03 – 03/05/2026) ──────────────────────
   base: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Não treinar. Hidrate-se bem — desidratação no plantão prejudica a recuperação muscular.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Não treinar. Hidrate-se — desidratação prejudica a recuperação muscular. O descanso é treino.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Ativa Pós-Plantão', series:'30 min caminhada', detail:'Só caminhada leve. Nenhum treino pesado. O corpo acabou de ficar 24h acordado.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — GTG + Volume',         series:'5×máx (min 3 reps)', detail:'GREASE THE GROOVE: 5 séries ao longo do dia, nunca chegando ao limite. Em academia: Pulldown 4×10 60% peso máx. Auxiliar: Rosca direta 3×12 (bíceps = 40% da força na barra).'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Remada Invertida + Carga',     series:'3×12 reps', detail:'Remada invertida com mochila 5kg. Simula resistência crescente. À medida que ficar fácil, aumente o peso.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — 60s Simulado',     series:'4×60s cronôm.', detail:'4 séries de 60 segundos com 1,5 min descanso. Registre as reps de cada série. Meta semana 4: 31+ reps (50 pts).'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Afundo Caminhando',            series:'3×15 por perna', detail:'Alternando as pernas. Fortalece glúteos e isquiotibiais para a corrida e o shuttle.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio (Flexão de Braço)',         series:'4 × 12 reps', detail:'Evolução: 4 séries agora. Mantenha o corpo completamente reto. Se as 12 reps ficarem fáceis, eleve os pés em um banco para aumentar a carga. Descanso: 75s entre séries.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha Isométrica',              series:'3 × 35s',     detail:'Evolução de 20s para 35s. Concentre-se em não deixar o quadril oscitar. Respire em ritmo constante. Tente não mexer nada — quanto mais estático, mais eficaz.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento Livre',               series:'4 × 20 reps', detail:'Volume aumentado. Desça até ou abaixo de 90°. Adicione uma pausa de 1s no ponto mais baixo antes de subir — aumenta ativação muscular. Descanso: 75s.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida — Progressão',  series:'4 × 10 reps', detail:'Incline mais o corpo (pés levemente elevados) para aumentar a carga. Puxe o peito até a mesa, cotovelos apontam para trás. Pausa de 1s no topo. Descanso: 90s.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Intervalado',        series:'6×400m / 90s desc', detail:'Corra 400m um pouco mais rápido que o normal, descanse 90s, repita. Mais eficiente que trote longo para subir VO2max. Meta: 2.200m em 12 min.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Volume',         series:'10×rep / 2min desc', detail:'10 repetições. Trabalhe a saída explosiva — o 1° passo decide o tempo. Auxiliar: Sprints de 15m × 8 repetições.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Intervalado Leve',      series:'5 × 400m / 90s desc', detail:'Corra 400m num ritmo um pouco acima do normal, descanse 90s e repita. Mais eficiente que trote longo para melhorar o fôlego. Anote os tempos — devem ficar parecidos entre si.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Volume',            series:'8 × rep / 2min desc', detail:'8 repetições. Foco no 1° passo após a virada — ele define o tempo de cada rep. Auxiliar: 6 sprints de 10m com aceleração total. Anote seu melhor e pior tempo.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada Invertida — Carga',       series:'4 × 10 reps', detail:'Use uma mochila com peso (livros, garrafas d\'água) nas costas para aumentar a resistência. Alternativa: pés elevados em banco. O padrão de força é idêntico à barra fixa — este exercício é seu caminho para ela.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — 60s Simulado',        series:'3 × 60s',     detail:'3 séries de 60 segundos com 90s de descanso. Registre as reps de cada série. Meta ao final desta fase: 25+ reps em 60s. Revise a técnica: cotovelos tocam REGIÃO CENTRAL dos joelhos.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Superman com Pausa',              series:'3 × 15 reps', detail:'Segure 3s no topo antes de descer. Alternativas progressivas: braço e perna opostos (bird-dog), depois os dois lados. Fortalece a cadeia posterior que suporta barra e abdominal.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral',                 series:'3 × 30s cada lado', detail:'Evolução para 30s por lado. Se ficar fácil, eleve o quadril repetidamente (abdução de quadril) durante a prancha. Mantém os oblíquos ativos por mais tempo.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Simulado Oficial',    series:'máx reps', detail:'Pegada pronada. Cotovelos totalmente estendidos na descida. Meta: 3+ reps (50 pts = não eliminado).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — 60s',             series:'1 série oficial', detail:'60 segundos. Meta: 31+ reps (50 pts). Registre e compare com semana anterior.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Melhor de 3',       series:'3 tent / 3 min desc', detail:'Meta: ≤ 12s (50 pts). Cronometre cada tentativa.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — 12 min',            series:'12 min', detail:'Meta: 2.200 m (50 pts mínimo = não eliminado). Alvo de pace: 5:30/km.'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',         series:'—',           detail:'Caminhada 20–30 min. Mobilidade articular. Aproveite para rever a técnica de cada exercício mentalmente. Simulados de TAF começam em setembro.'},
     ],
   },
 
-  // ── MÊS 3 Sem 9-12: DESENVOLVIMENTO ─────────────────────────────────
+  // ── MÊS 3 Sem 9-12: DESENVOLVIMENTO (04/05 – 31/05/2026) ─────────────
   dev: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Descanso total. O GTG de barra pode ser feito se houver barra no quartel — mas sem exaustão.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Descanso total. Você está em fase de desenvolvimento — chegar descansado no próximo treino vale mais que qualquer extra.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Pós-Plantão',     series:'20 min', detail:'Caminhada leve + mobilidade de quadril e ombro. Retração escapular 3×15 (prepara os dorsais para o próximo treino de barra).'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Força + Isometria',  series:'6×3 reps + iso 2s', detail:'6 séries de 3 reps. No topo de cada rep, segure 2s com queixo acima da barra antes de descer. Isso consolida a força no ponto crítico. Descanso: 2 min.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Remada com Mochila 8-10kg',  series:'4×10 reps', detail:'Remada invertida com mochila carregada. Padrão de força idêntico à barra fixa com resistência extra.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Circuito',        series:'4×30 reps + cronôm.', detail:'4 séries de 30 reps + 1 simulado de 60s ao final. Meta: 38+ reps no simulado. Auxiliar: Prancha 3×45s.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Agachamento com Salto',       series:'3×12 reps', detail:'Agachamento explosivo com salto. Aterrissa suave (amortece com as pernas). Desenvolve potência para o shuttle.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Diamante + Tradicional',  series:'3×10 diamante + 2×12 trad', detail:'Apoio diamante: mãos próximas formando triângulo sob o peito — ativa mais o tríceps e centro do peitoral. Depois 2 séries tradicionais. Descanso: 75s. Tente pés no banco em pelo menos 1 série.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — Isométrica + Dinâmica', series:'3×45s + 3×10 toque ombro', detail:'3 séries de 45s estáticas + 3 séries de toque de ombro alternado (levanta uma mão, toca o ombro oposto, volta). O toque dinâmico aumenta muito o desafio estabilizador.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento + Agachamento Sumô',  series:'3×15 livre + 3×12 sumô', detail:'Agachamento sumô: pés bem abertos, dedos apontados para fora. Trabalha adutores e glúteos de forma diferente. Ótimo para potência no shuttle. Descanso: 60s.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida — Pés Elevados', series:'4 × 12 reps', detail:'Pés elevados em banco ou cadeira: agora seu ângulo está próximo de uma barra real. Pausa 2s no topo. Se tiver mochila com peso, use. Este é o exercício mais importante desta fase para preparar a barra.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Limiar Anaeróbico', series:'4×800m / 2min desc', detail:'800m no ritmo de prova com 2 min de descanso. Pace alvo: 5:00/km. Isto eleva diretamente o VO2max necessário para os 2.400m.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Agilidade + Volume', series:'3 blocos de 5 / 2min desc', detail:'3 blocos de 5 shuttles com 2 min entre blocos. Auxiliar: Ladder drill 2×10 passos (melhora coordenação dos pés na virada).'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Limiar',                series:'3 × 800m / 2min desc', detail:'800m no ritmo que consegue manter mas que exige esforço. 2 min de descanso. Pace alvo: você deve terminar cada série com dificuldade de falar. Isso eleva diretamente seu VO2max.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Potência',          series:'3 blocos de 4 / 2min desc', detail:'3 blocos de 4 reps com 2 min entre blocos. Foco: explosão máxima na saída e na virada. Auxiliar: 6 saltos laterais por cima de uma linha no chão — melhora a coordenação dos pés na virada.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada Invertida — Alta Dificuldade', series:'5 × 8 reps', detail:'Pés em banco elevado, mochila com 5–8kg nas costas. Corpo quase horizontal — muito próximo da posição da barra. Pausa 2s no topo, desce em 3s (excêntrico). Se encontrar uma barra até lá, substitua por barra real.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Circuito',             series:'4×25 reps + 1×60s', detail:'4 séries de 25 reps com técnica perfeita + 1 simulado de 60s ao final. Meta: 30+ reps no simulado de 60s. Anote o resultado toda semana para ver a evolução.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Bird-Dog + Superman',              series:'3×12 cada + 3×15 superman', detail:'Bird-dog: de quatro apoios, estenda o braço direito e a perna esquerda simultaneamente, mantenha 2s e alterne. Depois 3 séries de superman tradicional. Cadeia posterior completa ativada.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral com Elevação',    series:'3 × 40s cada lado', detail:'40s por lado. Durante a prancha, eleve o quadril e desça lentamente (não toca o chão) — 10 repetições dentro dos 40s. Máxima ativação dos oblíquos e do músculo quadrado lombar.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🎯 Simulado Completo — Barra', series:'máx reps', detail:'Meta: 5+ reps (70 pts). Semana 12: faça na sequência completa (barra → abd → shuttle → corrida, 5 min entre cada).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🎯 Simulado Completo — Abd',   series:'60s', detail:'Meta: 38+ reps (60 pts). No simulado integrado o resultado vai cair um pouco — normal. Treine assim mesmo.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🎯 Simulado Completo — Shuttle', series:'1 tentativa', detail:'Meta: ≤ 11s (60 pts). Faça após o abdominal para sentir o cansaço acumulado real.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🎯 Simulado Completo — Corrida', series:'12 min', detail:'Meta: 2.400 m (60 pts). Pace alvo: 5:00/km. Registre aqui o resultado.'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',         series:'—',           detail:'Caminhada 20–30 min. Mobilidade de ombro, quadril e tornozelo. Sem esforço intenso. Simulados de TAF começam em setembro — foco agora é acumular qualidade de movimento.'},
     ],
   },
 
-  // ── MÊS 4 Sem 13-16: INTENSIFICAÇÃO ─────────────────────────────────
+  // ── MÊS 4 Sem 13-16: INTENSIFICAÇÃO (01/06 – 28/06/2026) ────────────
   volume: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Sem treino. O GTG de barra (2-3 reps, 4x ao dia longe da falha) pode ser feito se houver condição.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Sem treino. Preserve energia — esta fase é de alta intensidade e você precisa chegar descansado.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Ativa',            series:'30 min', detail:'Caminhada + mobilidade. Facepull com elástico 3×15 (protege o manguito rotador para os meses finais).'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Força Explosiva',     series:'6×3 reps explosivo + 1 excêntrica', detail:'Sobe rápido (explosivo), desce lento (5s). 6 séries, 2 min descanso. Auxiliar avançado: Barra com elástico assistindo a fase inicial. GTG 3x ao dia nos dias de descanso.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Remada + Curl de Bíceps',     series:'3×12 + 3×12', detail:'Remada invertida com mochila 10kg + Rosca direta com halteres 3×12. Bíceps é 40% da força na barra — não negligencie.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Pico de Volume',  series:'5×30 + simulado 60s', detail:'5 séries de 30 reps, 45s descanso. Simulado de 60s ao final. Meta: 43+ reps (80 pts). Dica: distribua o esforço — não acelere demais no início.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Agachamento Búlgaro',         series:'3×10 por perna', detail:'Pé traseiro em banco. Explosão na subida. Desenvolve potência de virada no shuttle e resistência para corrida.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Volume Máximo',           series:'5 × 12 reps', detail:'5 séries com 60s de descanso — volume alto e descanso curto. Varie entre tradicional, diamante e pés elevados. Última série: execute até a falha. Registre quantas conseguiu.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — 60s + Variações',       series:'3×60s + 2×15 toque ombro', detail:'3 séries de 60s estáticas + 2 séries de toque de ombro. Nos 60s: os últimos 15s são os mais importantes — não desista. Descanso: 45s apenas.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento com Salto',           series:'4 × 12 reps', detail:'Agache e suba explodindo em salto — aterrisse suave amortecendo com as pernas. Desenvolve potência direta para o shuttle run. Descanso: 90s. Alternativa suave: agachamento normal se sentir dor no joelho.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida — Pico de Carga', series:'4 × 10 reps', detail:'Máxima dificuldade possível: pés elevados, mochila mais pesada que conseguir (10kg+), corpo o mais horizontal possível. Pausa 2s no topo. Se já tiver acesso a uma barra: substitua por barra real 4×3.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Intervalado Pesado', series:'5×800m / 2min desc', detail:'5×800m no pace de prova. 2 min descanso. Pace alvo: 4:45/km. Estratégia de prova: divide em 3 partes — 4 min abaixo do pace, 4 min no pace, 4 min acima.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Potência de Virada', series:'4 blocos de 4 / 90s desc', detail:'Foco total na virada: mão no chão, pé pivot, explosão de quadril. Auxiliar: Box jump 3×8 (potência de salto). Meta: ≤ 10s consistente.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Intervalado Pesado',    series:'4 × 800m / 90s desc', detail:'4×800m com apenas 90s de descanso — mais puxado que antes. Pace alvo: 5:20/km. Estratégia: divida os 12 min da prova em 3 partes (4+4+4 min) e treine cada parte conscientemente.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Consistência',      series:'4 blocos de 4 / 90s desc', detail:'Foco: tempos consistentes entre os blocos — não apenas o primeiro. Auxiliar: 8 saltos com agachamento (squat jump) antes de cada bloco para pré-ativar a potência de virada. Meta: ≤ 13s.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada — Excêntrico Lento',      series:'5 × 6 reps excêntrico 4s', detail:'Puxe rápido até o topo, desça em 4 segundos contando em voz alta. O excêntrico lento é o método mais eficaz para ganhar força sem barra disponível. Pés em banco, mochila pesada. Se tiver barra: excêntrica real 4×3.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Pico de Volume',      series:'5×25 reps + 1×60s', detail:'5 séries de 25 + 1 simulado de 60s ao final. Descanso de 45s. Meta no simulado: 35+ reps. Distribua o ritmo — não acelere demais nos primeiros 20s ou vai travar nos últimos 15s.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Superman + Ponte de Glúteo',      series:'3×15 superman + 3×20 ponte', detail:'Ponte de glúteo: deite de costas, pés no chão, suba o quadril até alinhar com o tronco — segure 2s. Trabalha glúteos e lombar. Combine com o superman para cadeia posterior completa.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral — Avançada',     series:'3 × 50s cada lado', detail:'50s por lado com elevação de quadril contínua (não para). Se ficar muito fácil, adicione elevação da perna superior também. Máxima ativação lateral.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🎯 Simulado — Barra',         series:'máx reps', detail:'Meta: 6 reps = 100 pts. Semana 16: teste após 2 dias de descanso (semana de descarga) — deve ser seu melhor resultado.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🎯 Simulado — Abdominal',      series:'60s', detail:'Meta: 43+ reps (80 pts). No simulado integrado (após barra, 5 min depois). Registre aqui.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🎯 Simulado — Shuttle',        series:'1 tentativa', detail:'Meta: ≤ 10s (70 pts). Foco na posição inicial e reação à largada.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🎯 Simulado — Corrida',        series:'12 min', detail:'Meta: 2.500 m (70 pts). Pace: 4:48/km. Registre aqui o resultado.'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',         series:'—',           detail:'Descanso necessário após a semana de alta intensidade. Caminhada leve, mobilidade. Faltam ~2 meses para os simulados de setembro — use este tempo para solidificar cada movimento.'},
     ],
   },
 
-  // ── MÊS 5 Sem 17-20: PICO ────────────────────────────────────────────
+  // ── MÊS 5 Sem 17-20: PICO (29/06 – 26/07/2026) ──────────────────────
   pico: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Descanso total. Preservar energia é crucial na fase de pico — treinar exausto aumenta risco de lesão.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Descanso absoluto. Na fase de pico treinar com fadiga aumenta o risco de lesão — o que seria catastrófico agora.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Total',            series:'descanso', detail:'Sem treino. Priorize sono, hidratação, proteína. O músculo cresce durante o descanso — especialmente importante no pico.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Máxima Intensidade',  series:'6×3 + barra c/ peso', detail:'6×3 explosivo. Auxiliar: Barra com halter entre as pernas 3×3 (quando tirar o peso, as 6 reps ficam mais fáceis). Isometria no topo 3×5s. Descanso: 4 min.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Remada Pesada + Facepull',    series:'3×8 pesado + 3×15', detail:'Remada com mochila 15kg+ pesada. Facepull 3×15 (saúde do ombro para aguentar os meses finais sem lesão).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Velocidade Máxima', series:'5×35 + 3×simulado 60s', detail:'5 séries de 35 reps + 3 simulados de 60s com 2 min descanso. Meta: 48+ reps nos simulados. Treine não parar nos últimos 15 segundos.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Pliometria Completa',          series:'4×10 saltos', detail:'Box jump, salto lateral, skipping alto. Máxima potência. Prepara as pernas para o sprint do shuttle.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Falha Controlada',        series:'3×falha / 3×12 pés elevados', detail:'3 séries até a falha (pare 1 rep antes de perder a forma) + 3 séries com pés em banco. Falha controlada = última rep que consegue com técnica perfeita. Registre o número de cada série.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — 75s + RKC',             series:'2×75s + 3×20s RKC', detail:'RKC prancha: contraia TUDO simultaneamente (glúteo, abdômen, quadríceps, punhos) como se fosse explodir — 20s de tensão total. Muito mais intensa que a prancha comum. Descanse 60s entre.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento Búlgaro',             series:'3 × 10 cada perna', detail:'Pé traseiro apoiado em banco ou sofá, pé da frente à frente. Desça até a coxa da frente ficar paralela ao chão. Potência máxima de perna — prepara o sprint do shuttle e a resistência da corrida.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada — Máxima Intensidade',     series:'5 × 8 reps máx carga', detail:'Máxima dificuldade possível neste movimento. Se ainda não tem barra: remada invertida pés altos + mochila máxima. Se já tem acesso à barra: barra real 5×3 explosivo. Pausa 2s no topo em toda rep.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Pace de Prova',     series:'5×1000m / 2min desc', detail:'1000m no ritmo exato que usará na prova. 2 min descanso. Meta: pace constante em todas as séries. Alvo: 4:27/km.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Sprint Máximo',     series:'3 blocos de 4 / 2min', detail:'Máximo esforço em cada rep. Auxiliar: Saldo de profundidade (drop jump) 3×6 — pula de caixa 30cm e salta imediatamente. Melhora reflexo da virada.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Pace de Prova',         series:'4 × 1000m / 2min desc', detail:'1000m no ritmo que você usará na prova, 2 min descanso. Consistência entre as séries é mais importante que velocidade. Alvo: pace abaixo de 5:20/km. Anote os tempos de cada série.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Sprint Máximo',     series:'3 blocos de 4 / 2min', detail:'Máximo esforço absoluto em cada rep. Grave um vídeo para analisar a virada — olhe a posição do pé pivot e a angulação do tronco. Meta: ≤ 12s consistente.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada — Explosiva + Excêntrica', series:'6 × 4 reps', detail:'Sobe explosivo (1s), desce em 5s contando. 6 séries com 2 min descanso. Este é o protocolo que mais desenvolve força funcional sem barra. Se tiver barra: barra real explosiva 6×3.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Velocidade Máxima',   series:'4×30 reps + 2×60s simulado', detail:'4 séries de 30 reps rápidas (sem sacrificar técnica) + 2 simulados de 60s. Meta: 40+ reps nos simulados. Treine não parar nos últimos 15s — é onde a maioria perde reps.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Superman + Ponte com Elevação',   series:'4×15 superman + 3×15 ponte c/ elevação', detail:'Ponte com elevação: no topo da ponte, eleve uma perna estendida e segure 2s. Alterne. Glúteo e lombar em carga unilateral — estabilidade superior para a corrida.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral — Série Longa',  series:'3 × 60s cada lado', detail:'60s por lado. Últimos 15s: adicione elevação de quadril pulsante (sobe e desce 2–3cm sem tocar o chão). Máxima ativação dos oblíquos que suportam o abdominal do TAF.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🎯 SIMULADO COMPLETO — Barra',    series:'máx reps', detail:'Sequência oficial: barra → 5 min → abd → 5 min → shuttle → 5 min → corrida. Meta barra: 6+ reps (100 pts).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🎯 SIMULADO COMPLETO — Abd',      series:'60s', detail:'5 min após a barra. Meta: 48+ reps (90 pts). Se chegou aqui: 51+ reps (100 pts).'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🎯 SIMULADO COMPLETO — Shuttle',  series:'1 tentativa', detail:'5 min após o abd. Meta: ≤ 8s (90 pts). Registre o tempo aqui.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🎯 SIMULADO COMPLETO — Corrida',  series:'12 min', detail:'5 min após o shuttle. Meta: 2.700 m (90 pts). Registre aqui. Em qual volta o pace caiu?'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',         series:'—',           detail:'Recuperação total. Caminhada leve, mobilidade articular. Em 2–4 semanas começam os simulados de TAF em setembro — o corpo precisa chegar inteiro.'},
     ],
   },
 
-  // ── MÊS 6 Sem 21-24: CONSOLIDAÇÃO ────────────────────────────────────
+  // ── MÊS 6 Sem 21-24: CONSOLIDAÇÃO (27/07 – 23/08/2026) ───────────────
   consolidacao: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Sem treino. Você está na fase de manutenção — o condicionamento não cai em 1 dia.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Sem treino. Fase de consolidação: o volume cai um pouco, a qualidade sobe. O descanso é fundamental.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Ativa',            series:'20 min', detail:'Caminhada leve. Mobilidade de ombro e quadril. Facepull 2×15.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Manutenção de Pico',  series:'4×3 reps + GTG', detail:'4×3 com 2 min. GTG 2x ao dia nos outros dias. Foco em PERFEIÇÃO técnica: cotovelos totalmente estendidos na descida (fiscal pode anular rep incorreta no edital).'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Manutenção Dorsais + Bíceps', series:'3×10 + 3×12', detail:'Remada + Rosca direta. Volume reduzido — manutenção, não sobrecarga.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Técnica Perfeita', series:'4×35 + simulado 60s', detail:'Revise: mãos tocam ombro OPOSTO (mão esquerda no ombro direito). Cotovelos tocam REGIÃO CENTRAL da patela (não lateral). Fiscal anula rep errada.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Manutenção Membros Inferiores', series:'3×12 reps', detail:'Agachamento búlgaro ou afundo. Volume reduzido. Preservar os tendões para a fase final.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Técnica Perfeita',        series:'4 × 12 reps', detail:'Volume reduzido em relação ao pico — foco em qualidade total. Cada rep: desce em 2s, pausa 1s no baixo, sobe em 1s. Controle absoluto do movimento. Descanso: 90s.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — Manutenção',            series:'3×60s + 2×20s RKC', detail:'Manutenção do nível de pico. RKC no final para manter a ativação máxima. Descanso: 60s.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento — Manutenção',        series:'3 × 15 reps', detail:'Volume reduzido. Mantenha a qualidade — agachamento profundo com pausa no baixo. Sem forçar tendões nesta fase próxima ao simulado.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida — Manutenção',  series:'3 × 10 reps', detail:'Manutenção da força conquistada. Se tiver barra: 3×3 barra real. Foco em técnica impecável — cotovelos totalmente estendidos na descida (mesmo padrão exigido na barra do TAF).'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Fartlek',            series:'40 min (3 min forte + 2 mod)', detail:'Alterne 3 min forte + 2 min moderado durante 40 min. Trabalha exatamente a queda de ritmo do 7°-10° minuto (ponto mais comum de colapso).'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Automatização',      series:'3 blocos de 4 / 2min', detail:'Deve ser automático agora. Foque nos detalhes do edital: não pisar NA linha, não jogar o bloco (colocar no chão). Treine esses detalhes explicitamente.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Fartlek',               series:'35 min (3min forte + 2min leve)', detail:'Alterne 3 min forte + 2 min leve durante 35 min. Trabalha exatamente a queda de ritmo do 7°–10° minuto (onde a maioria colapsa). Treine contar voltas em voz alta ao passar pela largada.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle Run — Automatização',     series:'3 blocos de 4 / 2min', detail:'O movimento deve ser automático agora. Foque nos detalhes do edital: NÃO pisar NA linha, colocar o bloco (não jogar). Grave um vídeo e revise. Meta: ≤ 12s em todos os blocos.'},
+    ],
+    forca: [
+      {id:'remada2',  icon:'🏋️', color:'#3b82f6', title:'Remada — Manutenção de Pico',    series:'4 × 6 reps', detail:'4×6 com carga máxima e técnica perfeita. Se tiver barra real: 4×3 com forma impecável — cotovelos totalmente estendidos na descida (o fiscal pode anular rep incorreta). GTG leve nos outros dias.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Técnica do Edital',   series:'3×30 reps + 1×60s', detail:'Revise: mãos tocam ombro OPOSTO (mão esquerda no ombro direito). Cotovelos tocam REGIÃO CENTRAL da patela (não lateral do joelho). Fiscal anula rep errada. Meta no simulado: 40+ reps.'},
+      {id:'superman', icon:'🦸', color:'#f59e0b', title:'Superman + Prancha RKC',          series:'3×15 superman + 3×20s RKC', detail:'Manutenção da cadeia posterior. RKC 20s de tensão total. Suficiente para manter sem sobrecarga nesta semana de consolidação pré-simulado.'},
+      {id:'platlat',  icon:'🧱', color:'#06b6d4', title:'Prancha Lateral — Manutenção',   series:'3 × 45s cada lado', detail:'Manutenção. 45s por lado com qualidade. Adicione 5 elevações de quadril nos últimos 10s de cada série. Foco em não perder o que foi construído.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Simulado + Revisão Regras',    series:'máx reps', detail:'Meta: 6+ reps estável. Semana 24 (descarga): teste após 2 dias de descanso — deve ser melhor resultado. Releia o item 13.10.1 do edital.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Simulado + Revisão Técnica',   series:'60s', detail:'Meta: 51+ reps consistente. Semana 24: 1 simulado após descanso — use para ganhar confiança.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Simulado + Revisão Regras',    series:'1 tentativa', detail:'Meta: ≤ 7s estável. Releia regras: não pisar na linha, não jogar o bloco. Visualize a execução.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Simulado — Estratégia de Pace', series:'12 min', detail:'Meta: 2.700m+ consistente. Pratique contar voltas em voz alta (exigência do edital). Use o relógio permitido.'},
+      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Descanso Ativo — 4º Dia',         series:'—',           detail:'Última semana antes dos simulados de setembro. Caminhada 20 min, mobilidade articular. Durma bem, hidrate-se. O condicionamento está construído — agora é preservar.'},
     ],
   },
 
-  // ── MÊS 7 Sem 25-28: SIMULAÇÃO TÁTICA ───────────────────────────────
+  // ── MÊS 7 Sem 25-28: SIMULAÇÃO TÁTICA (24/08 – 20/09/2026) ──────────
   simulacao: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Descanso absoluto. Visualização mental: imagine a sequência completa da prova com calma.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Descanso absoluto. Visualização mental: imagine a sequência completa da prova com calma e confiança.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Ativa',            series:'20 min', detail:'Caminhada leve. Nada intenso. O simulado semanal exige recuperação total.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Manutenção + Detalhes', series:'3×3 reps impecáveis', detail:'3×3 com forma perfeita. Revisar proibições do edital: sem kipping, sem apoio do queixo na barra, sem flexão de joelhos. GTG 2x ao dia. Defina: pegada pronada ou supinada? Use sempre a mesma.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Manutenção Força — Leve',     series:'2×10 remada + 2×12 rosca', detail:'Volume reduzido. Só manutenção. Não sobrecarregar 1 semana antes do simulado completo.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Condições Reais', series:'3×60s simulado', detail:'Treine com a roupa que usará na prova. Em colchonete similar ao da prova (EVA). Com alguém segurando os pés. Revisar: mãos NÃO seguram a nuca.'},
-      {id:'auxiliar', icon:'🦵', color:'#a855f7', title:'Variáveis Externas — Piso',   series:'shuttle em superfície diferente', detail:'Treine em piso diferente (grama, asfalto, quadra) se possível. Treine com o calçado que usará na prova. Adaptar a variáveis externas reduz surpresas.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Manutenção Leve',         series:'3 × 10 reps', detail:'Volume reduzido — manutenção apenas. Foco em qualidade. Não sobrecarregue a semana com simulado.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — Manutenção',            series:'2×45s + 1×20s RKC', detail:'Manutenção mínima necessária. Não force nesta fase — o simulado semanal é o treino mais importante.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento — Leve',              series:'2 × 12 reps', detail:'Apenas para manter padrão motor. Sem agachamento com salto nesta fase. Preserve os tendões.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada Invertida — Manutenção',  series:'2 × 8 reps', detail:'Manutenção. Se tiver barra: 2×3 com técnica perfeita. Revise os critérios do edital: cotovelos totalmente estendidos na descida, queixo acima da barra.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Estratégia de Prova', series:'4×1000m com estratégia', detail:'Execute SUA estratégia definida: volta 1-2 aquecimento (5:00/km), 3-8 pace alvo (4:27/km), 9-12 tudo que tiver. Pratique contar voltas em voz alta ao passar pela largada.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Reação ao Comando', series:'6 reps c/ comando verbal', detail:'Peça alguém para dar o comando "Atenção! Iniciar!" em voz alta. Não inicie antes. Cada 0,1s de reação = 0,1s no tempo. Grave um vídeo para analisar a técnica de virada.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Estratégia de Prova',   series:'3 × 1000m estratégia definida', detail:'Execute SUA estratégia: defina o pace alvo e siga. Treine contar voltas em voz alta ao passar pela largada (exigência do edital). Use o relógio que levará na prova.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Reação ao Comando',     series:'6 reps com comando verbal', detail:'Peça a alguém para dar o comando "Atenção! Iniciar!" em voz alta. Não inicie antes do comando. Cada 0,1s de reação conta. Revise: não pisar NA linha, colocar o bloco sem jogá-lo.'},
+    ],
+    forca: [
+      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra Fixa — Simulado / Remada',  series:'máx reps ou 3×5 remada', detail:'Se tiver barra: execute o máximo de reps com técnica perfeita (pegada pronada, cotovelos estendidos na descida, queixo acima). Sem barra: remada invertida 3×8 pés elevados + mochila. Registre o resultado.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Condições Reais',     series:'3 × 60s simulado', detail:'Execute com alguém segurando os pés, em colchonete similar ao da prova, com a roupa que usará. Revisar: mãos NÃO seguram a nuca. Meta: 40+ reps consistente.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Detalhes do Edital',    series:'4 reps técnica', detail:'4 reps com foco exclusivo nos detalhes: posição da mão ao tocar o chão, posição do pé pivot, não pisar na linha. Grave vídeo se possível.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — 12 min Estratégia',     series:'12 min', detail:'Execute a estratégia completa de 12 min. Meta mínima de não eliminação: 2.200m. Registre aqui e anote em qual minuto o pace caiu.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🏆 SIMULADO OFICIAL COMPLETO — Barra',   series:'máx reps', detail:'SEQUÊNCIA EXATA DA PROVA. Grave ou peça alguém para contar. Meta: 6+ reps (100 pts).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🏆 SIMULADO OFICIAL COMPLETO — Abd',     series:'60s', detail:'5 min após a barra. Com alguém segurando os pés. Técnica perfeita. Meta: 51+ reps (100 pts).'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🏆 SIMULADO OFICIAL COMPLETO — Shuttle', series:'1 tentativa', detail:'5 min após o abd. Com comando verbal "Atenção! Iniciar!". Meta: ≤ 7s (100 pts).'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🏆 SIMULADO OFICIAL COMPLETO — Corrida', series:'12 min', detail:'5 min após o shuttle. Execute sua estratégia de pace. Meta: >2.700m (100 pts). Registre aqui.'},
+      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🏆 SIMULADO OFICIAL — Barra',     series:'máx reps', detail:'SEQUÊNCIA EXATA DA PROVA. Pegada pronada, cotovelos estendidos na descida, queixo acima da barra. Grave ou peça alguém para contar. Meta: máximo possível. Registre aqui.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🏆 SIMULADO OFICIAL — Abdominal', series:'60s', detail:'5 min após a barra. Com alguém segurando os pés, técnica perfeita. Registre as reps. Compare com o simulado anterior.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🏆 SIMULADO OFICIAL — Shuttle',   series:'1 tentativa', detail:'5 min após o abdominal. Com comando verbal "Atenção! Iniciar!". Não pisar na linha, colocar o bloco. Cronometre e registre.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🏆 SIMULADO OFICIAL — Corrida',   series:'12 min', detail:'5 min após o shuttle. Execute sua estratégia de pace. Conte as voltas em voz alta. Registre a distância total aqui.'},
     ],
   },
 
-  // ── MÊS 8 Sem 29-32: AFUNILAMENTO ────────────────────────────────────
+  // ── MÊS 8 Sem 29-32: AFUNILAMENTO (21/09 – 18/10/2026) ──────────────
   afunilamento: {
     work: [
-      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Sem Treino', series:'—', detail:'Plantão 24h. Descanso total. Não tente compensar treinando após o plantão — o risco de lesão agora é inaceitável.'},
+      {id:'rest',     icon:'🛌', color:'#64748b', title:'Dia de Trabalho — Turno 24h',    series:'—',           detail:'Plantão 24h. Descanso total. Não tente compensar treinando após o plantão — o risco de lesão agora é inaceitável.'},
     ],
     post: [
-      {id:'rest',     icon:'🧘', color:'#94a3b8', title:'Recuperação Total — Taper',   series:'descanso', detail:'Taper: redução de volume mantendo intensidade. Sem treino pesado. Apenas mobilidade leve.'},
-    ],
-    forca: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra — Manutenção Mínima',  series:'2×3 reps + GTG leve', detail:'Apenas 2 séries de 3 reps. GTG suave (1-2 reps, 3x ao dia). 3 dias antes da prova: ZERO treino de barra. No dia: 5 min de aquecimento (remada invertida leve + dead hang 10s).'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Volume Mínimo',   series:'2×20 reps suave', detail:'2 séries de 20 reps apenas. Não corra risco de lesão muscular abdominal agora — impede a prova. 3 dias antes: nada. No dia: 30 abdominais leves de aquecimento.'},
-      {id:'auxiliar', icon:'💪', color:'#f59e0b', title:'Mobilidade + Ativação',       series:'15 min', detail:'Mobilidade completa: ombros, quadril, tornozelo. Termina com 5 min de corrida leve. Preservar a saúde é a prioridade absoluta desta semana.'},
+      {id:'apoio',    icon:'💪', color:'#3b82f6', title:'Apoio — Volume Mínimo',           series:'2 × 10 reps', detail:'Manutenção mínima. 3 dias antes da prova: ZERO exercícios de força. No dia da prova: nada além do aquecimento oficial.'},
+      {id:'prancha',  icon:'🧱', color:'#06b6d4', title:'Prancha — Taper',                 series:'2 × 30s', detail:'Manutenção mínima do padrão motor. Leve, sem esforço máximo. Preserve o corpo para a prova.'},
+      {id:'agacha',   icon:'🦵', color:'#a855f7', title:'Agachamento — Leve',              series:'2 × 10 reps', detail:'Apenas para manter a circulação ativa. Sem agachamento com salto. Sem dor, sem fadiga.'},
+      {id:'remada',   icon:'🔄', color:'#f59e0b', title:'Remada — Taper',                  series:'2 × 6 reps leves', detail:'Volume mínimo. Se tiver barra: 2×2 bem descansado. 3 dias antes: nada. Preserve os dorsais e bíceps para a prova.'},
     ],
     cardio: [
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Taper',             series:'20-25 min trote leve', detail:'Trote leve sem esforço máximo. O cardiorrespiratório não cai em 2 semanas — o descanso só faz bem. Confie no treino. No dia: 10 min de aquecimento antes de ser chamado.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Pouquíssimos',      series:'4 reps máximas apenas', detail:'Só 4 reps com 100% de intensidade. Não mais que isso. Revise mentalmente a técnica. 3 dias antes da prova: 4-5 acelerações de 10m e 1-2 shuttles de aquecimento.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Taper',                 series:'20 min trote leve', detail:'Trote leve, sem esforço máximo. O condicionamento não cai em 2 semanas — o descanso só faz bem. Confie nos meses de treino.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — Mínimo',                series:'4 reps apenas', detail:'Só 4 reps para manter a sensação de virada. 3 dias antes da prova: 2–3 acelerações de 10m e 1 shuttle de aquecimento apenas.'},
+    ],
+    forca: [
+      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'Barra / Remada — Manutenção Mínima', series:'2 × 3 reps leves', detail:'2 séries de 3 reps apenas. 3 dias antes da prova: ZERO. No dia: dead hang de 10s e 5 min de remada invertida leve como aquecimento.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'Abdominal — Volume Mínimo',       series:'2 × 20 reps suave', detail:'2 séries leves apenas. NÃO force nesta fase — lesão muscular abdominal agora impede a prova. 3 dias antes: nada. No dia: 20–30 abdominais leves de aquecimento.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'Shuttle — 3 Reps',                series:'3 reps', detail:'3 reps para manter a sensação de virada e posição de partida. Visualize a execução ideal.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'Corrida — Trote Final',            series:'15 min leve', detail:'15 min de trote muito leve. Última atividade antes da prova. Você treinou meses para este momento — confie no processo.'},
     ],
     simulado: [
-      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🏁 PRÉ-PROVA — Barra',        series:'3×3 reps leves', detail:'Últimas reps antes da prova. Técnica perfeita. Visualize a execução ideal. Você treinou 8 meses para isso.'},
-      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🏁 PRÉ-PROVA — Abdominal',    series:'1×30 reps leve', detail:'30 reps leves, sem cronômetro. Apenas para manter o padrão motor. 3 dias antes da prova: NADA.'},
-      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🏁 PRÉ-PROVA — Shuttle',      series:'3 reps apenas', detail:'3 reps para manter a sensação de virada. Foco na posição inicial e primeiro passo.'},
-      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🏁 PRÉ-PROVA — Corrida Leve', series:'15 min trote', detail:'15 min de trote muito leve. Última atividade antes da prova. Confie no treino — 8 meses de trabalho estão no seu corpo.'},
+      {id:'barra',    icon:'🏋️', color:'#3b82f6', title:'🏁 PRÉ-PROVA — Barra',            series:'3 × 3 reps leves', detail:'Últimas reps antes da prova. Técnica perfeita. Visualize a execução ideal. Você construiu a força ao longo de meses.'},
+      {id:'abd',      icon:'🔄', color:'#22c55e', title:'🏁 PRÉ-PROVA — Abdominal',        series:'1 × 30 reps leve', detail:'30 reps leves, sem cronômetro. Apenas para manter o padrão motor. 3 dias antes da prova: NADA.'},
+      {id:'shuttle',  icon:'🏃', color:'#f97316', title:'🏁 PRÉ-PROVA — Shuttle',          series:'3 reps apenas', detail:'3 reps para manter a sensação. Foco na posição inicial e primeiro passo explosivo.'},
+      {id:'corrida',  icon:'🏅', color:'#ef4444', title:'🏁 PRÉ-PROVA — Corrida Leve',     series:'15 min trote', detail:'15 min de trote tranquilo. Última atividade. Confie no treino — meses de trabalho estão no seu corpo.'},
     ],
   },
 
   // ── Fora do plano ─────────────────────────────────────────────────────
   livre: {
-    work:     [{id:'rest',    icon:'🛌', color:'#64748b', title:'Dia de Trabalho',   series:'—',       detail:'Turno 24h. Foco no trabalho. Hidrate-se bem.'}],
-    post:     [{id:'rest',    icon:'🧘', color:'#94a3b8', title:'Recuperação',       series:'—',       detail:'Descanse após o turno.'}],
-    forca:    [{id:'barra',   icon:'🏋️', color:'#3b82f6', title:'Treino Livre',     series:'à vontade', detail:'Barra, abd, corrida — mantenha o ritmo até o início do plano.'}],
-    cardio:   [{id:'corrida', icon:'🏅', color:'#ef4444', title:'Corrida Livre',    series:'20-30 min', detail:'Corra no seu ritmo. Prepare a base aeróbica.'}],
-    simulado: [{id:'barra',   icon:'🏋️', color:'#3b82f6', title:'Teste Livre',      series:'registre', detail:'Faça um teste e registre como ponto de partida.'}],
+    work:     [{id:'rest',    icon:'🛌', color:'#64748b', title:'Dia de Trabalho',          series:'—',            detail:'Turno 24h. Foco no trabalho. Hidrate-se bem.'}],
+    post:     [{id:'apoio',   icon:'💪', color:'#3b82f6', title:'Apoio + Prancha + Remada', series:'3×10 cada',    detail:'Apoio 3×10, prancha 3×30s, remada invertida 3×8. Mantenha o ritmo até o início do plano.'}],
+    cardio:   [{id:'corrida', icon:'🏅', color:'#ef4444', title:'Corrida Livre',            series:'20–30 min',    detail:'Corra no seu ritmo. Prepare a base aeróbica.'}],
+    forca:    [{id:'remada2', icon:'🏋️', color:'#3b82f6', title:'Remada + Abd',             series:'3×8 + 3×15',   detail:'Remada invertida 3×8 + Abdominal 3×15. Base de força.'}],
+    simulado: [{id:'rest',    icon:'🧘', color:'#94a3b8', title:'Descanso',                 series:'—',            detail:'Descanse. Simulados começam em setembro.'}],
   }
-};
+}
+;
 
 function getTAFPhase(date){
   const start=new Date(2026,2,9); start.setHours(0,0,0,0);
@@ -8509,7 +8557,8 @@ function getTAFDayLabel(date){
   const dtype=getTAFDayType(date);
   if(dtype==='past') return '';
   const phaseLabels={ativacao:'Ativação',base:'Base',dev:'Desenv.',volume:'Intensif.',pico:'Pico',consolidacao:'Consol.',simulacao:'Sim.Tática',afunilamento:'Afunil.',livre:'Livre'};
-  const typeLabels={work:'Trabalho',post:'Recuperação',forca:'Força',cardio:'Cardio',simulado:'Simulado'};
+  const isSimPhase=phase==='simulacao'||phase==='afunilamento';
+  const typeLabels={work:'Trabalho',post:'Recuperação',forca:'Força',cardio:'Cardio',simulado:isSimPhase?'Simulado':'Descanso'};
   return (phaseLabels[phase]||'') + ' · ' + (typeLabels[dtype]||'');
 }
 
@@ -8555,6 +8604,10 @@ function openTAFModal(y,m,d){
   document.getElementById('taf-log-shuttle').value        = log&&log.shuttle!==undefined      ? log.shuttle        : '';
   document.getElementById('taf-log-corrida').value        = log&&log.corrida!==undefined      ? log.corrida        : '';
   document.getElementById('taf-log-corrida-tempo').value  = log&&log.corrida_tempo            ? log.corrida_tempo  : '';
+  document.getElementById('taf-log-apoio')&&(document.getElementById('taf-log-apoio').value   = log&&log.apoio   ? log.apoio   : '');
+  document.getElementById('taf-log-prancha')&&(document.getElementById('taf-log-prancha').value = log&&log.prancha ? log.prancha : '');
+  document.getElementById('taf-log-agacha')&&(document.getElementById('taf-log-agacha').value   = log&&log.agacha  ? log.agacha  : '');
+  document.getElementById('taf-log-remada')&&(document.getElementById('taf-log-remada').value   = log&&log.remada  ? log.remada  : '');
   document.getElementById('taf-log-obs').value            = log&&log.obs                      ? log.obs            : '';
   const delBtn = document.getElementById('taf-del-btn');
   if(delBtn) delBtn.style.display = log ? 'block' : 'none';
@@ -8648,6 +8701,10 @@ function saveTAFLogEntry(){
     shuttle:       document.getElementById('taf-log-shuttle').value,
     corrida:       document.getElementById('taf-log-corrida').value,
     corrida_tempo: document.getElementById('taf-log-corrida-tempo').value,
+    apoio:         document.getElementById('taf-log-apoio')?.value||'',
+    prancha:       document.getElementById('taf-log-prancha')?.value||'',
+    agacha:        document.getElementById('taf-log-agacha')?.value||'',
+    remada:        document.getElementById('taf-log-remada')?.value||'',
     obs:           document.getElementById('taf-log-obs').value,
     ts:            Date.now()
   };
@@ -8952,6 +9009,119 @@ function renderTAFChart(){
     const lastRaw = [...m.raw].reverse().find(v=>v!==null);
     el.textContent = lastRaw!=null ? lastRaw+' '+m.unit : '';
   });
+  renderTAFChartComp(entries);
+}
+
+function renderTAFChartComp(entries){
+  const wrap = document.getElementById('taf-chart-comp-wrap');
+  const canvas = document.getElementById('taf-chart-comp-canvas');
+  if(!wrap||!canvas) return;
+  // Only show if any complementary data exists
+  const hasComp = entries.some(e=>
+    (e.log.apoio&&e.log.apoio!=='')||(e.log.prancha&&e.log.prancha!=='')||
+    (e.log.agacha&&e.log.agacha!=='')||(e.log.remada&&e.log.remada!=='')
+  );
+  wrap.style.display = hasComp ? 'block' : 'none';
+  if(!hasComp) return;
+
+  const show = entries.slice(-20);
+  const n = show.length;
+  const dpr = Math.min(window.devicePixelRatio||1,3);
+  const containerW = wrap.clientWidth || wrap.offsetWidth || 700;
+  const P = {t:32,r:16,b:44,l:56};
+  const minW = P.l+P.r+80*Math.max(n-1,1);
+  const W = Math.max(containerW,minW);
+  const H = 220;
+  canvas.width  = Math.round(W*dpr);
+  canvas.height = Math.round(H*dpr);
+  canvas.style.width  = W+'px';
+  canvas.style.height = H+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const CW=W-P.l-P.r, CH=H-P.t-P.b;
+  const SPACING = n<=1?CW:CW/(n-1);
+  function xOf(i){ return n<=1?P.l+CW/2:P.l+i*SPACING; }
+
+  const COMP = [
+    {key:'apoio',  color:'#a855f7', label:'Apoio',        unit:'reps', dash:[],        raw:show.map(e=>{ const v=parseInt(e.log.apoio);  return isNaN(v)||!e.log.apoio  ?null:v; })},
+    {key:'prancha',color:'#06b6d4', label:'Prancha',       unit:'seg',  dash:[8,4],     raw:show.map(e=>{ const v=parseInt(e.log.prancha);return isNaN(v)||!e.log.prancha?null:v; })},
+    {key:'agacha', color:'#f59e0b', label:'Agachamento',   unit:'reps', dash:[3,3],     raw:show.map(e=>{ const v=parseInt(e.log.agacha); return isNaN(v)||!e.log.agacha ?null:v; })},
+    {key:'remada', color:'#34d399', label:'Remada',        unit:'reps', dash:[12,3,3,3],raw:show.map(e=>{ const v=parseInt(e.log.remada); return isNaN(v)||!e.log.remada ?null:v; })},
+  ];
+
+  // Y scale from all values
+  const allVals = COMP.flatMap(m=>m.raw.filter(v=>v!==null));
+  const minV = allVals.length?Math.min(...allVals):0;
+  const maxV = allVals.length?Math.max(...allVals):50;
+  const pad  = Math.max(5,(maxV-minV)*0.2);
+  const yMin = Math.max(0,Math.floor(minV-pad));
+  const yMax = Math.ceil(maxV+pad);
+  const yRange = Math.max(1,yMax-yMin);
+  function yOf(v){ return P.t+CH-((v-yMin)/yRange)*CH; }
+
+  // Background
+  ctx.fillStyle='#0d0f14'; ctx.fillRect(0,0,W,H);
+
+  // Y grid — 4 lines
+  const step = Math.ceil(yRange/4);
+  for(let v=Math.ceil(yMin/step)*step; v<=yMax; v+=step){
+    const y=yOf(v);
+    ctx.save(); ctx.setLineDash([4,5]);
+    ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+CW,y); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#475569'; ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(v, P.l-6, y);
+  }
+
+  // X labels
+  show.forEach((e,i)=>{
+    const x=xOf(i);
+    ctx.save(); ctx.setLineDash([2,6]);
+    ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,P.t); ctx.lineTo(x,P.t+CH); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#64748b'; ctx.font='11px DM Sans,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText(e.date.getDate()+'/'+(e.date.getMonth()+1), x, P.t+CH+8);
+  });
+
+  // Lines + dots
+  COMP.forEach(m=>{
+    const pts = m.raw.map((v,i)=>v===null?null:[xOf(i),yOf(v)]);
+    const valid = pts.filter(Boolean);
+    if(!valid.length) return;
+    if(valid.length>=2){
+      ctx.save();
+      ctx.strokeStyle=m.color; ctx.lineWidth=2.5;
+      ctx.lineJoin='round'; ctx.lineCap='round';
+      ctx.setLineDash(m.dash);
+      ctx.shadowColor=m.color+'66'; ctx.shadowBlur=5;
+      ctx.beginPath();
+      let prev=null;
+      pts.forEach(p=>{
+        if(!p){prev=null;return;}
+        if(!prev){ctx.moveTo(p[0],p[1]);prev=p;return;}
+        const cpx=(prev[0]+p[0])/2;
+        ctx.bezierCurveTo(cpx,prev[1],cpx,p[1],p[0],p[1]);
+        prev=p;
+      });
+      ctx.stroke(); ctx.restore();
+    }
+    pts.forEach(p=>{
+      if(!p) return;
+      ctx.save();
+      ctx.shadowColor=m.color+'99'; ctx.shadowBlur=7;
+      ctx.beginPath(); ctx.arc(p[0],p[1],4,0,Math.PI*2);
+      ctx.fillStyle=m.color; ctx.fill();
+      ctx.strokeStyle='#0d0f14'; ctx.lineWidth=1.5; ctx.shadowBlur=0; ctx.stroke();
+      ctx.restore();
+    });
+  });
+
+  // Axes
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+CH); ctx.lineTo(P.l+CW,P.t+CH); ctx.stroke();
 }
 
 
@@ -9012,9 +9182,6 @@ function calcTAF(){
 // TAF — CRONOGRAMA EVOLUTIVO
 // ============================================================
 const TAF_WEEKS=[
-  // ══════════════════════════════════════════
-  // MÊS 1 — ATIVAÇÃO E TÉCNICA
-  // ══════════════════════════════════════════
   {label:'Mês 1 · Sem 1–2',fase:'Ativação',cls:'phase-base',
    desc:'Estabelecer linha de base real. Sem pressão de resultado — foco em aprender a técnica de cada teste e ativar musculatura atrofiada.',
    treinos:[
@@ -9026,6 +9193,16 @@ const TAF_WEEKS=[
      desc:'9,14 metros entre duas linhas. O segredo: NÃO agache fundo na virada — use a mão para tocar o chão e exploda de volta. 8 repetições com 90s de descanso. Cronometre cada uma. Foco na aceleração do 1° passo e na técnica de parada brusca.'},
     {icon:'🏅',nome:'Corrida — Base aeróbica',alvo:'20–25 min sem parar',
      desc:'Trote no ritmo de conversa (consegue falar frases inteiras). Sem cronometrar distância ainda — o objetivo é rodar tempo em pé sem parar. Faça 3x esta semana. Você está em 1.800m/12min: isso equivale a 6:40/km, vamos chegar em 4:20/km.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio (Flexão de Braço)',alvo:'3 × 8 reps',
+     desc:'Mãos na largura dos ombros, corpo reto da cabeça ao calcanhar. Desça até o peito quase tocar o chão. Se difícil, apoie os joelhos. Descanso 90s. Este é o seu ponto de partida — registre quantas conseguiu.'},
+    {icon:'🧱',nome:'Prancha Isométrica',alvo:'3 × 20s',
+     desc:'Antebraços no chão, cotovelos sob os ombros. Quadril nivelado — não sobe nem cai. Respire normalmente. 20 segundos é sua linha de base — vai dobrar ao longo das semanas.'},
+    {icon:'🦵',nome:'Agachamento Livre',alvo:'3 × 15 reps',
+     desc:'Pés na largura dos ombros, dedos levemente abertos. Desça até 90° ou mais — joelhos acompanham a direção dos pés. Suba com força. Base direta para corrida e shuttle. Descanso 90s.'},
+    {icon:'🔄',nome:'Remada Invertida (mesa)',alvo:'3 × 8 reps',
+     desc:'Deite sob uma mesa firme, segure a borda com pegada pronada (palmas para baixo). Puxe o peito até a mesa mantendo o corpo reto. Ativa dorsais e bíceps — os músculos da barra fixa. Descanso 90s.'}
   ]},
   {label:'Mês 1 · Sem 3–4',fase:'Ativação',cls:'phase-base',
    desc:'Primeiro contato real com os mínimos. Começar a sentir os exercícios auxiliares de força trabalhando.',
@@ -9038,11 +9215,17 @@ const TAF_WEEKS=[
      desc:'10 repetições com 2 min de descanso. Exercício auxiliar crítico: Sprints de 15m × 8 repetições — esses treinos de arranque curto melhoram exatamente a saída do shuttle. Cronometre cada shuttle e anote para ver evolução.'},
     {icon:'🏅',nome:'Corrida — Intervalado leve',alvo:'2.000–2.100m em 12min',
      desc:'2x semana: 25 min contínuos. 1x semana: 6×400m com 90s de descanso (pace um pouco mais rápido que o normal). O intervalado é o método mais eficiente para subir o VO2max rapidamente. Registre a distância do simulado de 12 min ao final da semana 4.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Volume crescente',alvo:'4 × 10 reps',
+     desc:'4 séries agora. Se as 10 reps ficarem fáceis em todas as séries, tente elevar os pés em um banco para aumentar a carga. Descanso 75s. Registre se conseguiu todas as séries completas.'},
+    {icon:'🧱',nome:'Prancha — Evolução',alvo:'3 × 30s',
+     desc:'Evolução de 20s para 30s. Concentre-se em não deixar o quadril oscilar. Respire em ritmo constante. Tente não mexer nada — quanto mais estático, mais eficaz.'},
+    {icon:'🦵',nome:'Agachamento com Pausa',alvo:'4 × 15 reps',
+     desc:'Adicione pausa de 1s no ponto mais baixo antes de subir — aumenta ativação muscular. Volume aumentado para 4 séries. Descanso 75s.'},
+    {icon:'🔄',nome:'Remada Invertida — Progressão',alvo:'3 × 10 reps',
+     desc:'Incline mais o corpo (pés levemente elevados em um livro ou degrau) para aumentar a carga. Puxe o peito até a mesa, cotovelos apontam para trás. Pausa de 1s no topo. Descanso 90s.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 2 — FORÇA ESPECÍFICA E RESISTÊNCIA
-  // ══════════════════════════════════════════
   {label:'Mês 2 · Sem 5–6',fase:'Força Base',cls:'phase-base',
    desc:'Superar o mínimo eliminatório em TODOS os testes. Foco máximo na barra — cada kg perdido nesse período = +0,5 rep de barra.',
    treinos:[
@@ -9054,6 +9237,16 @@ const TAF_WEEKS=[
      desc:'12 reps com 90s descanso. Auxiliar novo: Ladder drill 2×10 (se não tiver escada, marque quadrados no chão com fita). Melhora a coordenação dos pés na virada. Inclua 2×20m de corrida lateral para desenvolver os músculos da mudança de direção.'},
     {icon:'🏅',nome:'Corrida — Construção aeróbica',alvo:'2.200–2.300m (50 pts)',
      desc:'3x semana: 1 contínuo de 30 min + 2 intervalados (6×400m ou 4×600m com 90s). O foco agora é cruzar o mínimo de 2.200m. Pace alvo: 5:30/km. Dica: use o relógio permitido pelo edital para controlar pace desde já — é hábito importante.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Diamante + Tradicional',alvo:'3×10 diamante + 2×12 trad',
+     desc:'Apoio diamante: mãos próximas formando triângulo sob o peito — ativa mais o tríceps e centro do peitoral. Depois 2 séries tradicionais. Tente pés no banco em pelo menos 1 série. Descanso 75s.'},
+    {icon:'🧱',nome:'Prancha + Toque de Ombro',alvo:'3×35s + 3×10 toques',
+     desc:'3 séries de 35s estáticas + 3 séries de toque de ombro alternado (levanta uma mão, toca o ombro oposto, volta). O toque dinâmico aumenta muito o desafio de estabilização.'},
+    {icon:'🦵',nome:'Agachamento + Agachamento Sumô',alvo:'3×15 livre + 3×12 sumô',
+     desc:'Agachamento sumô: pés bem abertos, dedos apontados para fora — trabalha adutores e glúteos de forma diferente. Ótimo para potência no shuttle. Descanso 60s.'},
+    {icon:'🔄',nome:'Remada — Pés Elevados',alvo:'4 × 10 reps',
+     desc:'Pés elevados em banco ou cadeira — ângulo bem próximo de uma barra real. Pausa 2s no topo. Se tiver mochila, coloque peso dentro (livros, garrafas). Descanso 90s.'}
   ]},
   {label:'Mês 2 · Sem 7–8',fase:'Força Base',cls:'phase-base',
    desc:'Consolidar os mínimos. Introduzir sequência parcial dos testes (barra + abdominal no mesmo dia).',
@@ -9066,11 +9259,17 @@ const TAF_WEEKS=[
      desc:'12 reps com 75s descanso. Auxiliar: Agachamento búlgaro 3×10 cada perna (explosão da coxa traseira na virada), Box jump 3×8 (potência de salto). Faça 1 bloco de shuttle logo após corrida leve para simular o cansaço da sequência real.'},
     {icon:'🏅',nome:'Corrida — Pace controlado',alvo:'2.300–2.400m (50–60 pts)',
      desc:'Semana 7: 35 min contínuo + 1 simulado de 12 min. Semana 8: 5×600m com 2 min + 1 simulado de 12 min. Pace alvo no simulado: 5:10/km. Comece a controlar o pace desde o 1° minuto — quem começa rápido demais colapsa nos últimos 3 min.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Volume + Variação',alvo:'5 × 10 reps',
+     desc:'5 séries com variação: tradicional, diamante e pés elevados. Última série: execute até a falha controlada (pare 1 rep antes de perder a forma). Registre o número. Descanso 60s.'},
+    {icon:'🧱',nome:'Prancha — 45s + Dinâmica',alvo:'3×45s + 3×12 toques',
+     desc:'3 séries de 45s estáticas + 3 séries de toque de ombro. Nos 45s: os últimos 10s são os mais importantes — não desista. Descanso 45s apenas.'},
+    {icon:'🦵',nome:'Agachamento com Salto',alvo:'3 × 12 reps',
+     desc:'Agache e suba explodindo em salto — aterrisse suave amortecendo com as pernas. Desenvolve potência direta para o shuttle run. Descanso 90s. Alternativa: agachamento normal se sentir dor no joelho.'},
+    {icon:'🔄',nome:'Remada — Carga Máxima',alvo:'4 × 10 reps',
+     desc:'Pés elevados + mochila mais pesada que conseguir. Pausa 2s no topo, desce em 3s (fase excêntrica). Este é o exercício mais importante para preparar a barra fixa. Descanso 90s.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 3 — DESENVOLVIMENTO DE VOLUME
-  // ══════════════════════════════════════════
   {label:'Mês 3 · Sem 9–10',fase:'Desenvolvimento',cls:'phase-volume',
    desc:'Alvo de 60–70 pts. Aumentar volume de treino e começar a combinar exercícios na mesma sessão.',
    treinos:[
@@ -9082,6 +9281,16 @@ const TAF_WEEKS=[
      desc:'3 blocos de 5 shuttle com 2 min entre blocos. Auxiliar: Sprint 20m partindo da posição do shuttle (afastamento antero-posterior) 8×. Trabalhe especificamente a reação ao comando "Iniciar!" — no teste isso vale décimos de segundo.'},
     {icon:'🏅',nome:'Corrida — Limiar anaeróbico',alvo:'2.400–2.500m (60–70 pts)',
      desc:'3x semana. Treino 1: 40 min contínuo. Treino 2: 4×800m com 2 min (pace de prova). Treino 3: simulado de 12 min. Alvo pace: 5:00/km. Registre distância do simulado toda semana — você vai ver a evolução claramente.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Alta Intensidade',alvo:'4×12 trad + 3×8 pés elevados',
+     desc:'4 séries tradicionais + 3 séries com pés elevados em banco. Volume alto com descanso curto (60s). Mantenha técnica perfeita mesmo com cansaço — é quando mais importa.'},
+    {icon:'🧱',nome:'Prancha — 60s + RKC',alvo:'2×60s + 3×20s RKC',
+     desc:'RKC prancha: contraia TUDO simultaneamente (glúteo, abdômen, quadríceps) como se fosse explodir — 20s de tensão total. Muito mais intensa que a prancha comum. Descanso 60s entre.'},
+    {icon:'🦵',nome:'Agachamento Búlgaro',alvo:'3 × 10 cada perna',
+     desc:'Pé traseiro apoiado em banco ou sofá, pé da frente à frente. Desça até a coxa da frente ficar paralela ao chão. Potência máxima de perna — prepara o sprint do shuttle e a resistência da corrida. Descanso 90s.'},
+    {icon:'🔄',nome:'Remada — Excêntrico Lento',alvo:'5 × 6 reps excêntrico 4s',
+     desc:'Puxe rápido até o topo, desça em 4 segundos contando em voz alta. O excêntrico lento é o método mais eficaz para ganhar força sem barra disponível. Pés em banco, mochila pesada. Descanso 2 min.'}
   ]},
   {label:'Mês 3 · Sem 11–12',fase:'Desenvolvimento',cls:'phase-volume',
    desc:'Primeiro simulado completo da sequência oficial: barra → abdominal → shuttle → corrida, com 5 min entre cada.',
@@ -9094,11 +9303,17 @@ const TAF_WEEKS=[
      desc:'Semana 12: faça o shuttle 5 min após o abdominal no simulado completo. Auxiliar: Corrida lateral 4×10m + sprints de 10m em zigzag 6×. Meça o tempo do shuttle no simulado completo — o cansaço do abdominal vai afetar, prepare-se psicologicamente.'},
     {icon:'🏅',nome:'Corrida — Primeiro simulado completo',alvo:'2.500m (70 pts)',
      desc:'SEMANA 12: realize a sequência completa numa tarde: barra → 5 min → abdominal → 5 min → shuttle → 5 min → corrida 12 min. Registre tudo. Isso vai mostrar exatamente onde você está e o que priorizar nos próximos meses.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Falha Controlada',alvo:'3×falha + 2×12 pés elevados',
+     desc:'3 séries até a falha controlada + 2 séries com pés elevados. Registre o número de cada série. Falha controlada = última rep que consegue com forma perfeita. Descanso 90s.'},
+    {icon:'🧱',nome:'Prancha Lateral',alvo:'3 × 40s cada lado',
+     desc:'Apoie no antebraço lateral, corpo alinhado da cabeça ao calcanhar. Quadril não toca o chão. Eleve o quadril 10 vezes dentro dos 40s. Trabalha oblíquos e estabilizadores laterais. Descanso 60s.'},
+    {icon:'🦸',nome:'Superman (Extensão Lombar)',alvo:'3 × 15 reps',
+     desc:'Deite de bruços, braços estendidos à frente. Eleve simultaneamente braços e pernas do chão. Segure 2s no topo e desça devagar. Fortalece lombar e glúteos — cadeia posterior essencial para resistência na corrida.'},
+    {icon:'🔄',nome:'Remada — Explosiva + Volume',alvo:'5 × 8 reps',
+     desc:'Sobe explosivo (1s), desce em 4s. 5 séries com 2 min descanso. Se já encontrou uma barra fixa: substitua por barra real 5×3 explosivo. Registre se conseguiu manter a qualidade em todas as séries.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 4 — INTENSIFICAÇÃO
-  // ══════════════════════════════════════════
   {label:'Mês 4 · Sem 13–14',fase:'Intensificação',cls:'phase-volume',
    desc:'Atingir e consolidar 70–80 pts. Treinos mais exigentes. Peso corporal deve estar caindo — isso muda o jogo na barra.',
    treinos:[
@@ -9110,6 +9325,16 @@ const TAF_WEEKS=[
      desc:'4 blocos de 4 shuttles com 90s entre blocos. Auxiliar: Agachamento jump 3×10, Corrida de aceleração 15m × 10 reps. Foco total na virada: mão no chão, pé pivot, explosão de quadril. Esses detalhes valem 2–3 segundos.'},
     {icon:'🏅',nome:'Corrida — Intervalado pesado',alvo:'2.500–2.600m (70–80 pts)',
      desc:'3x semana. Treino 1: 5×800m com 2 min. Treino 2: 45 min contínuo. Treino 3: simulado de 12 min. Alvo pace: 4:45/km. Estratégia de prova: divida em 3 partes de 4 min — ligeiramente abaixo do pace, no pace, acima do pace.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Volume Máximo',alvo:'5 × 12 reps variado',
+     desc:'5 séries variando entre tradicional, diamante e pés elevados. Descanso apenas 60s — volume alto e descanso curto. Última série até a falha. Registre o número total de reps do treino.'},
+    {icon:'🧱',nome:'Prancha Lateral Avançada',alvo:'3 × 50s cada lado',
+     desc:'50s por lado com elevação de quadril contínua durante a prancha. Se ficar muito fácil, adicione elevação da perna superior também. Máxima ativação dos oblíquos que suportam o abdominal do TAF.'},
+    {icon:'🦸',nome:'Bird-Dog + Superman',alvo:'3×12 bird-dog + 3×15 superman',
+     desc:'Bird-dog: de quatro apoios, estenda o braço direito e a perna esquerda simultaneamente, mantenha 2s e alterne. Depois 3 séries de superman. Cadeia posterior completa — base para a barra fixa e para a corrida.'},
+    {icon:'🔄',nome:'Remada — Pico de Carga',alvo:'5 × 6 reps excêntrico 5s',
+     desc:'Máxima dificuldade: pés elevados + mochila máxima + excêntrico de 5s. Se já tem acesso à barra fixa: barra real 4×3 explosivo. Descanso 2 min. Pausa 2s no topo de toda rep.'}
   ]},
   {label:'Mês 4 · Sem 15–16',fase:'Intensificação',cls:'phase-volume',
    desc:'Semana de descarga na 15ª (reduz 40% do volume) e retomada pesada na 16ª. Recuperação ativa.',
@@ -9122,11 +9347,17 @@ const TAF_WEEKS=[
      desc:'Semana 15: 6 reps apenas. Semana 16: 3 blocos de 5 com 75s. Trabalhe o posicionamento inicial: pé anterior o mais próximo possível da linha sem tocá-la. Saída em sprint máximo desde o 1° passo. Registre o melhor tempo da semana.'},
     {icon:'🏅',nome:'Corrida — Treino de pace específico',alvo:'2.600m (80 pts)',
      desc:'Semana 15: 20 min leve. Semana 16: 6×600m no pace de prova + simulado de 12 min. Alvo: 4:36/km. Estratégia nova: conte as voltas em voz alta ao passar pela largada (exigência do edital) — pratique isso agora para ser automático na prova.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Descarga + Retomada',alvo:'Sem 15: 3×8 / Sem 16: 5×12',
+     desc:'Semana 15 (descarga): 3 séries de 8 apenas. Semana 16: retomada com 5 séries. Após descarga o corpo responde melhor — normal fazer mais reps na semana 16. Descanso 60s na semana 16.'},
+    {icon:'🧱',nome:'Prancha — Manutenção',alvo:'3×60s + 2×20s RKC',
+     desc:'Manutenção do nível de pico. RKC no final para manter a ativação máxima. Semana 15: 2×45s apenas. Descanso 60s.'},
+    {icon:'🦸',nome:'Ponte de Glúteo + Superman',alvo:'3×20 ponte + 3×15 superman',
+     desc:'Ponte de glúteo: deite de costas, pés no chão, suba o quadril até alinhar com o tronco — segure 2s. Trabalha glúteos e lombar. Combina com superman para cadeia posterior completa.'},
+    {icon:'🔄',nome:'Remada — Refinamento',alvo:'4 × 8 reps',
+     desc:'Semana 15: 3×6 leve. Semana 16: 4×8 com carga máxima. Foco em técnica impecável — cotovelos totalmente estendidos na descida (o mesmo padrão exigido na barra do TAF). Descanso 90s.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 5 — PICO DE PERFORMANCE
-  // ══════════════════════════════════════════
   {label:'Mês 5 · Sem 17–18',fase:'Pico',cls:'phase-peak',
    desc:'Atingir 80–90 pts em todos os testes. Simulados completos 1x por semana na sequência exata da prova.',
    treinos:[
@@ -9138,6 +9369,16 @@ const TAF_WEEKS=[
      desc:'Sprint training completo: 10×20m explosivo + 3 blocos de 4 shuttles com 2 min. Auxiliar: Saldo de profundidade (drop jump) 3×6 — desce de uma caixa de 30cm e salta imediatamente. Melhora o reflexo de extensão que é o coração da virada rápida.'},
     {icon:'🏅',nome:'Corrida — Simulado semanal obrigatório',alvo:'2.700m (90 pts)',
      desc:'3x semana. Treino 1: 5×1000m com 2 min. Treino 2: 50 min contínuo. Treino 3: simulado completo de 12 min. Alvo pace: 4:27/km. Estratégia: nos primeiros 2 min não ultrapasse o pace alvo mesmo sentindo energia — o erro mais comum é começar rápido demais.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Máxima Intensidade',alvo:'3×falha + 3×10 pés elevados',
+     desc:'3 séries até a falha + 3 séries com pés elevados. Falha controlada = última rep com técnica perfeita. Registre cada série. Descanso 90s.'},
+    {icon:'🧱',nome:'Prancha Lateral — Série Longa',alvo:'3 × 60s cada lado',
+     desc:'60s por lado. Últimos 15s: adicione elevação de quadril pulsante (sobe e desce 2–3cm sem tocar o chão). Máxima ativação dos oblíquos. Descanso 60s.'},
+    {icon:'🔄',nome:'Abdominal — Técnica TAF',alvo:'3 × 60s simulado',
+     desc:'Técnica oficial: braços cruzados no tórax (mãos nos ombros OPOSTOS), cotovelos tocam a região CENTRAL dos joelhos, escápula volta ao chão. Registre as reps de cada série. Meta: 30+ reps em 60s.'},
+    {icon:'🔄',nome:'Remada — Explosiva Máxima',alvo:'6 × 4 reps explosivo',
+     desc:'Sobe explosivo (1s), desce em 5s. 6 séries com 2 min descanso. Se tiver barra: barra real explosiva 6×3. Este é o protocolo que mais desenvolve força funcional. Registre se conseguiu manter a explosão em todas as séries.'}
   ]},
   {label:'Mês 5 · Sem 19–20',fase:'Pico',cls:'phase-peak',
    desc:'Simulações completas na sequência real da prova. Detectar e corrigir pontos fracos com 3 meses de margem.',
@@ -9150,11 +9391,17 @@ const TAF_WEEKS=[
      desc:'Semana 19: 5×shuttle no simulado completo. Semana 20: análise da técnica — grave um vídeo de você fazendo para identificar gargalos na virada. O tempo de virada (quando a mão toca o chão até o 1° passo de volta) deve ser menor que 0,5s.'},
     {icon:'🏅',nome:'Corrida — Análise e ajuste',alvo:'2.700m+ (90–100 pts)',
      desc:'Semana 20: simulado de 12 min com análise por voltas — em qual volta começa a cair o pace? Esse é o ponto de trabalho dos próximos 2 meses. Dica: a maioria cai entre o 7° e o 10° minuto. Treine explicitamente esse intervalo (corrida fartlek).'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Manutenção do Pico',alvo:'4 × 12 reps',
+     desc:'Volume reduzido em relação ao pico — foco em qualidade total. Cada rep: desce em 2s, pausa 1s no baixo, sobe em 1s. Controle absoluto do movimento. Descanso 90s.'},
+    {icon:'🧱',nome:'Prancha RKC — Máxima Tensão',alvo:'4 × 20s RKC',
+     desc:'4 séries de RKC (tensão total simultânea em todo o corpo). Descanse 60s. Este é o nível máximo de ativação do core — sustenta o ritmo alto do abdominal TAF.'},
+    {icon:'🔄',nome:'Abdominal — Volume de Pico',alvo:'4×30 reps + 2×60s simulado',
+     desc:'4 séries de 30 reps rápidas (sem sacrificar técnica) + 2 simulados de 60s. Meta: 35+ reps nos simulados. Treine não parar nos últimos 15s — é onde a maioria perde reps. Registre aqui.'},
+    {icon:'🔄',nome:'Remada — Intensidade Final',alvo:'5 × 8 reps máx carga',
+     desc:'Máxima dificuldade possível. Se tiver barra: 5×3 com técnica perfeita. Se não: remada invertida pés altos + mochila máxima + excêntrico de 5s. Pausa 2s no topo em toda rep.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 6 — CONSOLIDAÇÃO
-  // ══════════════════════════════════════════
   {label:'Mês 6 · Sem 21–22',fase:'Consolidação',cls:'phase-peak',
    desc:'Manter performance alta com volume levemente reduzido. Priorizar qualidade sobre quantidade.',
    treinos:[
@@ -9166,6 +9413,16 @@ const TAF_WEEKS=[
      desc:'O shuttle deve ser automatizado agora. 3 blocos de 4 reps com 2 min. Revisão de regras: não pisar NA linha (transpor com pelo menos um pé do outro lado), não jogar o bloco (colocar no chão). Treine explicitamente esses detalhes para não ser eliminado por falta técnica.'},
     {icon:'🏅',nome:'Corrida — Pace forte',alvo:'2.700m+ — 100 pts',
      desc:'3x semana. Treino 1: fartlek 40 min (alternando 3 min forte + 2 min moderado). Treino 2: 4×1000m com 90s. Treino 3: simulado. Alvo: >2.700m. Treino mental: no simulado, quando o corpo pedir para parar no 8° minuto, mantenha por mais 30s — esse é o ponto de colapso que precisa ser treinado.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Técnica Perfeita',alvo:'4 × 10 reps controlado',
+     desc:'Foco em qualidade total: desce em 2s, pausa 1s no baixo, sobe em 1s. Controle absoluto. Descanso 90s.'},
+    {icon:'🧱',nome:'Prancha Lateral — Manutenção',alvo:'3 × 45s cada lado',
+     desc:'Manutenção. 45s por lado com qualidade. Adicione 5 elevações de quadril nos últimos 10s. Não perca o que foi construído.'},
+    {icon:'🔄',nome:'Abdominal — Técnica do Edital',alvo:'3×30 reps + 1×60s simulado',
+     desc:'Revise: mãos tocam ombro OPOSTO (mão esquerda no ombro direito). Cotovelos tocam REGIÃO CENTRAL da patela (não lateral). Fiscal anula rep errada. Meta no simulado: 38+ reps.'},
+    {icon:'🔄',nome:'Remada — Manutenção',alvo:'3 × 10 reps',
+     desc:'Manutenção da força conquistada. Foco em técnica — cotovelos totalmente estendidos na descida. Descanso 90s. Se tiver barra: 3×3 com forma impecável.'}
   ]},
   {label:'Mês 6 · Sem 23–24',fase:'Consolidação',cls:'phase-peak',
    desc:'Semana 23: carga normal. Semana 24: segunda descarga do programa — reduz 50% volume para supercompensação.',
@@ -9178,11 +9435,17 @@ const TAF_WEEKS=[
      desc:'Semana 23: 3 blocos de 5. Semana 24: 4 reps apenas + revisão mental. Releia o item 13.10.4 do edital (ou TAF do Perito quando sair). Visualize cada detalhe: posição inicial, comando "Iniciar!", blocos no chão, cruzar a linha. Visualização reduz ansiedade.'},
     {icon:'🏅',nome:'Corrida — Consolidação final',alvo:'2.700–2.800m',
      desc:'Semana 23: 5×1000m no pace alvo. Semana 24: trote leve 25 min. Nessa altura você já deve estar correndo consistentemente acima de 2.700m. Se não: revise o treino de pace específico — é possível que esteja treinando sempre no mesmo ritmo (zona de conforto).'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Descarga Programada',alvo:'Sem 23: 4×10 / Sem 24: 2×10',
+     desc:'Semana 23: carga normal. Semana 24: 2 séries apenas. A descarga é estratégica — o corpo vai entrar nos simulados de setembro mais fresco e mais forte.'},
+    {icon:'🧱',nome:'Prancha — Leve',alvo:'2×45s + 1×20s RKC',
+     desc:'Manutenção mínima na semana 24. Suficiente para manter sem sobrecarga. Preserve o core para o início dos simulados.'},
+    {icon:'🔄',nome:'Abdominal — Simulado Final Pré-Setembro',alvo:'1 × 60s simulado',
+     desc:'Na semana 23: faça 1 simulado de 60s e registre o resultado. Este é seu ponto de partida para os simulados oficiais de setembro. Técnica perfeita. Registre no TAF.'},
+    {icon:'🔄',nome:'Remada — Manutenção Mínima',alvo:'2 × 8 reps',
+     desc:'Volume mínimo na semana 24. Preservar dorsais e bíceps para a entrada nos simulados. Se tiver barra: 2×2 leve.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 7 — SIMULAÇÕES TÁTICAS
-  // ══════════════════════════════════════════
   {label:'Mês 7 · Sem 25–26',fase:'Simulação Tática',cls:'phase-sim',
    desc:'Simulação completa da prova 2x por semana na sequência EXATA do edital. Treinar o aspecto tático e mental.',
    treinos:[
@@ -9194,6 +9457,16 @@ const TAF_WEEKS=[
      desc:'Treinar a reação ao comando verbal "Atenção! Iniciar!" — peça para alguém dar o comando (não inicie antes). Cada 0,1s de reação = 0,1s no tempo final. No simulado, o shuttle é o 3° teste — treine sempre nessa ordem para sentir o cansaço acumulado.'},
     {icon:'🏅',nome:'Corrida — Estratégia de prova',alvo:'2.800m+ (100 pts)',
      desc:'Monte SUA estratégia pessoal: em qual volta você acelera? A maioria vai bem até o 6° min. Defina: volta 1–2 aquecimento (5:00/km), volta 3–8 pace alvo (4:27/km), volta 9–12 tudo que tiver. Pratique essa estratégia em todos os simulados desta semana.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'🏋️',nome:'Barra / Remada — Simulado ou Manutenção',alvo:'máx reps ou 3×8 remada',
+     desc:'Se tiver barra: execute o máximo com técnica perfeita (pegada pronada, cotovelos estendidos, queixo acima). Sem barra: remada invertida 3×8 pés elevados + mochila. Registre o resultado no TAF.'},
+    {icon:'🔄',nome:'Abdominal — Condições Reais',alvo:'3 × 60s simulado',
+     desc:'Execute com alguém segurando os pés, em colchonete similar ao da prova, com a roupa que usará. Revisar: mãos NÃO seguram a nuca. Meta: 40+ reps. Registre cada série no TAF.'},
+    {icon:'🏃',nome:'Shuttle Run — Reação ao Comando',alvo:'6 reps com comando verbal',
+     desc:'Peça a alguém para dar o comando "Atenção! Iniciar!" em voz alta. Não inicie antes do comando. Cada 0,1s de reação conta. Grave um vídeo para analisar a virada.'},
+    {icon:'🏅',nome:'Corrida — Estratégia de Prova',alvo:'3 × 1000m estratégia',
+     desc:'Execute sua estratégia pessoal de pace. Treine contar voltas em voz alta ao passar pela largada (exigência do edital). Use o relógio que levará na prova. Registre os tempos.'}
   ]},
   {label:'Mês 7 · Sem 27–28',fase:'Simulação Tática',cls:'phase-sim',
    desc:'Ajuste fino. Corrigir qualquer detalhe técnico identificado nos simulados. Treinar as condições externas da prova.',
@@ -9206,11 +9479,17 @@ const TAF_WEEKS=[
      desc:'Treine no calçado que usará na prova. O piso pode ser diferente (grama, asfalto, quadra) — se possível treine em superfícies variadas. Detalhe: "colocar o bloco no solo" (não jogar) — pratique isso com objeto simulando o bloco.'},
     {icon:'🏅',nome:'Corrida — Variáveis externas',alvo:'2.800m+ consolidado',
      desc:'Treine com o relógio que usará na prova (é permitido). Pratique contar voltas em voz alta ao passar pela largada (obrigatório no edital). Treine em horários variados (manhã/tarde) para adaptar o corpo. A corrida é o 4° teste — treine sempre por último.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio + Prancha — Manutenção Leve',alvo:'3×10 apoio + 2×40s prancha lateral',
+     desc:'Manutenção mínima necessária. Não sobrecarregue a semana com simulado. Foco em preservar os músculos de apoio.'},
+    {icon:'🔄',nome:'Abdominal — Técnica sob Pressão',alvo:'2 × 60s simulado',
+     desc:'Treine com cansaço de outros exercícios, em condições reais. Revisar: mãos NÃO seguram a nuca, cotovelos na REGIÃO CENTRAL da patela. O fiscal anula rep errada.'},
+    {icon:'🏃',nome:'Shuttle — Variáveis Externas',alvo:'Técnica no calçado de prova',
+     desc:'Treine com o calçado que usará na prova. Se possível, treine em superfícies variadas. Detalhe: não pisar NA linha — transpor com pelo menos um pé do outro lado.'},
+    {icon:'🏅',nome:'Corrida — Variáveis Externas',alvo:'Pace de prova com relógio',
+     desc:'Treine com o relógio que usará. Pratique contar voltas em voz alta. Treine em horários variados. A corrida é sempre o 4° teste — treine por último nos simulados.'}
   ]},
-
-  // ══════════════════════════════════════════
-  // MÊS 8 — AFUNILAMENTO E PROVA
-  // ══════════════════════════════════════════
   {label:'Mês 8 · Sem 29–30',fase:'Afunilamento',cls:'phase-sim',
    desc:'Reduzir volume gradualmente mantendo a intensidade. O corpo está no pico — não exagere agora.',
    treinos:[
@@ -9222,6 +9501,16 @@ const TAF_WEEKS=[
      desc:'Semana 29: 3 blocos de 3 shuttles. Semana 30: 4 shuttles apenas (100% de intensidade). Não faça mais que isso — o shuttle é curto e explosivo, exige sistema nervoso fresco. Foque em fazer cada repetição perfeita.'},
     {icon:'🏅',nome:'Corrida — Taper',alvo:'2.800m+ — 100 pts',
      desc:'Semana 29: 30 min contínuo moderado. Semana 30: 20 min leve + 2×400m no pace de prova para manter a sensação. Sem intervalados pesados. O cardiorrespiratório não cai em 2 semanas — o descanso só vai fazer bem. Confie no treino.'},
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Volume Mínimo',alvo:'2 × 10 reps',
+     desc:'Manutenção mínima. 3 dias antes da prova: ZERO exercícios de força. Preserve o corpo para o dia da prova.'},
+    {icon:'🧱',nome:'Prancha — Taper',alvo:'2 × 30s + 1 × 20s RKC',
+     desc:'Manutenção mínima do padrão motor. Leve, sem esforço máximo. Suficiente para manter a ativação do core.'},
+    {icon:'🏃',nome:'Shuttle — Poucos e Intensos',alvo:'4 reps (100% intensidade)',
+     desc:'Apenas 4 reps para manter a sensação de virada. 3 dias antes: 1–2 shuttles de aquecimento apenas.'},
+    {icon:'🏅',nome:'Corrida — Taper',alvo:'20–25 min trote leve',
+     desc:'Trote leve, sem esforço máximo. O condicionamento não cai em 2 semanas — o descanso só faz bem. Confie nos meses de treino.'}
   ]},
   {label:'Mês 8 · Sem 31–32',fase:'Semana da Prova',cls:'phase-sim',
    desc:'Semana 31: mínimo de treino, máximo de descanso. Semana 32: prova. Tudo que precisava ser feito já foi.',
@@ -9234,8 +9523,19 @@ const TAF_WEEKS=[
      desc:'Semana 31: 2 shuttles apenas. No dia: 4–5 corridas de aceleração curtas (10m) e 1–2 shuttles de aquecimento. Posição inicial: pé anterior rente à linha. Ao ouvir "Iniciar!": exploda. Virada rápida. Coloca o bloco no chão (não joga). Cruza a linha.'},
     {icon:'🏅',nome:'Corrida — Execute a estratégia',alvo:'>2.700m — 100 pts',
      desc:'Semana 31: 15 min trote leve. No dia: aquecimento de 10 min antes de ser chamado. Execute a estratégia que treinou: pace controlado nos primeiros 2 min, ritmo de prova do 3° ao 10°, tudo que tiver nos últimos 2 min. Você já treinou esse plano dezenas de vezes. Confie.'},
-  ]},
-];
+    {icon:'➕',nome:'── Complementares ──',alvo:'',
+     desc:''},
+    {icon:'💪',nome:'Apoio — Manutenção Simbólica',alvo:'2 × 8 reps leves',
+     desc:'Semana 31: 2 séries leves. 3 dias antes da prova: ZERO. No dia: sem treino de força antes da prova. Visualize a execução perfeita na noite anterior.'},
+    {icon:'🔄',nome:'Abdominal — Semana da Prova',alvo:'30 reps leves de aquecimento',
+     desc:'Semana 31: 2×20 leve. 3 dias antes: nada. No dia: 30 abdominais leves de aquecimento antes de ser chamado. Técnica: cotovelos na patela, escápula no chão, mãos nos ombros opostos.'},
+    {icon:'🏃',nome:'Shuttle — Dia da Prova',alvo:'1–2 reps de aquecimento',
+     desc:'Semana 31: 2 shuttles apenas. No dia: 4–5 corridas curtas de 10m e 1 shuttle de aquecimento. Posição inicial: pé rente à linha. Ao ouvir "Iniciar!": exploda.'},
+    {icon:'🏅',nome:'Corrida — Execute a Estratégia',alvo:'Plano de pace definido',
+     desc:'Semana 31: 15 min trote leve. No dia: aquecimento de 10 min. Execute a estratégia que treinou: pace controlado nos primeiros 2 min, ritmo de prova do 3° ao 10°, tudo que tiver nos últimos 2 min. Você já treinou isso dezenas de vezes.'}
+  ]}
+]
+;
 
 
 function renderTAFSchedule(){
@@ -9245,7 +9545,16 @@ function renderTAFSchedule(){
   TAF_WEEKS.forEach(week=>{
     const card=document.createElement('div');
     card.className='taf-week-card';
-    const exBoxes=week.treinos.map(t=>`<div class="taf-ex-box"><div class="taf-ex-name">${t.icon} ${t.nome}</div><div class="taf-ex-target">${t.alvo}</div><div class="taf-ex-desc">${t.desc}</div></div>`).join('');
+    const exBoxes=week.treinos.map(t=>{
+      if(t.nome&&t.nome.startsWith('──')){
+        return `<div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:6px 0 2px;">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#a855f730,#a855f7);"></div>
+          <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a855f7;white-space:nowrap;background:var(--surface2);padding:3px 10px;border-radius:20px;border:1px solid #a855f740;">💪 Complementares</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#a855f7,#a855f730);"></div>
+        </div>`;
+      }
+      return `<div class="taf-ex-box"><div class="taf-ex-name">${t.icon} ${t.nome}</div><div class="taf-ex-target">${t.alvo}</div><div class="taf-ex-desc">${t.desc}</div></div>`;
+    }).join('');
     card.innerHTML=`<div class="taf-week-header" onclick="this.parentElement.classList.toggle('open')">
         <span class="taf-week-num">${week.label}</span>
         <span class="taf-phase-badge ${week.cls}">${week.fase}</span>
