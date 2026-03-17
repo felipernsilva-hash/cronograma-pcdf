@@ -9576,8 +9576,9 @@ function renderTAFSchedule(){
 function loadSavedState(){
   if(typeof __SAVED_STATE__!=='undefined'&&__SAVED_STATE__!==null){
     try{
-      // Nunca sobrescrever config local do Drive — cada máquina tem suas credenciais
-      const NEVER_OW=['gdrive_client_id','gdrive_file_id'];
+      // Nunca SOBRESCREVER config do Drive se já existir localmente (cada máquina tem suas credenciais)
+      // Mas SE não existir (máquina nova / navegador virgem), restaurar do estado embutido normalmente
+      const NEVER_OW=['gdrive_client_id','gdrive_file_id'].filter(k=>localStorage.getItem(k)!==null);
       // Arrays acumulativos: MERGE (união) em vez de substituição
       // Garante que alimentos/questões/fotos adicionados após o último save não sejam perdidos
       const MERGE_ARR=['cal_custom','banco_questoes','fotos_corpo'];
