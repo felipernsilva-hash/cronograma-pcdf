@@ -10526,8 +10526,27 @@ function buildSaveContent() {
       }
     }
   } catch(e) {}
+
+  // Garante que os botões de salvar estejam no estado padrão no HTML capturado
+  // (evita salvar o botão travado em "Enviando…" ou "Aguarde…")
+  const driveBtn = document.getElementById('drive-btn-float');
+  const saveBtn  = document.getElementById('save-btn-float');
+  const driveBak = driveBtn ? { disabled: driveBtn.disabled, html: driveBtn.innerHTML } : null;
+  const saveBak  = saveBtn  ? { disabled: saveBtn.disabled,  html: saveBtn.innerHTML  } : null;
+  if (driveBtn) {
+    driveBtn.disabled = false;
+    driveBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Drive';
+  }
+  if (saveBtn) {
+    saveBtn.disabled = false;
+  }
+
   let html = document.documentElement.outerHTML;
-  // Usa o mesmo marcador BEGIN_SAVED_STATE do arquivo — regex não falha mais
+
+  // Restaura estado real dos botões após capturar o HTML
+  if (driveBtn && driveBak) { driveBtn.disabled = driveBak.disabled; driveBtn.innerHTML = driveBak.html; }
+  if (saveBtn  && saveBak)  { saveBtn.disabled  = saveBak.disabled;  saveBtn.innerHTML  = saveBak.html;  }
+
   html = html.replace(
     /\/\*BEGIN_SAVED_STATE\*\/[\s\S]*?\/\*END_SAVED_STATE\*\//,
     '/*BEGIN_SAVED_STATE*/var __SAVED_STATE__=' + JSON.stringify(state) + ';/*END_SAVED_STATE*/'
@@ -10575,14 +10594,13 @@ async function salvarNoDrive() {
   btn.disabled = true;
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Aguarde…';
 
-  // Safety timeout — reset button after 60s if nothing happens
+  // Safety timeout — reset button after 15s if nothing happens
   let _authDone = false;
   const safetyTimer = setTimeout(() => {
     if (!_authDone) {
       resetBtn();
-      alert('Tempo esgotado. Verifique se o popup foi bloqueado pelo navegador (ícone na barra de endereço) e libere popups para este site.');
     }
-  }, 60000);
+  }, 15000);
 
   try {
     const tokenClient = google.accounts.oauth2.initTokenClient({
@@ -12578,7 +12596,7 @@ function renderPainelMetas(){
   </div>
 </div>
 
-<button class="drive-btn-float" id="drive-btn-float" onclick="salvarNoDrive()" title="Salvar no Google Drive" disabled=""><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"></path></svg> Enviando…</button>
+<button class="drive-btn-float" id="drive-btn-float" onclick="salvarNoDrive()" title="Salvar no Google Drive"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Drive</button>
 
 <button class="save-btn-float" id="save-btn-float" onclick="salvarArquivo()" title="Salvar progresso no arquivo HTML" style="">
   💾 Salvar Progresso
