@@ -10579,47 +10579,45 @@ function saveDriveConfig() {
 
 
 
-// ── OAuth manual via popup ───────────────────────────────────────────────
-// Abre popup Google OAuth diretamente, sem depender de biblioteca externa.
-// O token é retornado via window.opener.postMessage do redirect page embutida.
 function _getOAuthToken(clientId) {
   return new Promise((resolve, reject) => {
-    const state = Math.random().toString(36).slice(2);
     const redirectUri = window.location.origin + window.location.pathname;
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
       response_type: 'token',
       scope: 'https://www.googleapis.com/auth/drive.file',
-      state,
       prompt: 'select_account',
     });
     const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
-    const popup = window.open(authUrl, 'oauth2', 'width=500,height=600,left=300,top=100');
+    const popup = window.open(authUrl, 'oauth2', 'width=500,height=620,left=300,top=100');
     if (!popup) { reject(new Error('Popup bloqueado. Libere popups para este site.')); return; }
 
-    const timer = setInterval(() => {
+    // Escuta postMessage enviado pela própria página quando o Google redireciona de volta
+    const onMsg = (evt) => {
+      if (evt.origin !== window.location.origin) return;
+      if (!evt.data || evt.data.type !== 'oauth2_token') return;
+      window.removeEventListener('message', onMsg);
+      clearTimeout(timeoutId);
+      if (popup && !popup.closed) popup.close();
+      if (evt.data.access_token) resolve(evt.data.access_token);
+      else reject(new Error(evt.data.error || 'Token não recebido'));
+    };
+    window.addEventListener('message', onMsg);
+
+    // Detecta popup fechado pelo usuário
+    const pollClosed = setInterval(() => {
       if (popup.closed) {
-        clearInterval(timer);
+        clearInterval(pollClosed);
+        window.removeEventListener('message', onMsg);
+        clearTimeout(timeoutId);
         reject(new Error('popup_closed'));
       }
-      try {
-        const url = popup.location.href;
-        if (url && url.includes(window.location.origin)) {
-          clearInterval(timer);
-          popup.close();
-          const hash = new URL(url).hash.slice(1);
-          const params = new URLSearchParams(hash);
-          const token = params.get('access_token');
-          const error = params.get('error');
-          if (token) resolve(token);
-          else reject(new Error(error || 'Token não recebido'));
-        }
-      } catch(e) { /* popup ainda no domínio Google — aguarda */ }
-    }, 300);
+    }, 500);
 
-    setTimeout(() => {
-      clearInterval(timer);
+    const timeoutId = setTimeout(() => {
+      clearInterval(pollClosed);
+      window.removeEventListener('message', onMsg);
       if (!popup.closed) popup.close();
       reject(new Error('timeout'));
     }, 120000);
@@ -10629,6 +10627,16 @@ function _getOAuthToken(clientId) {
 async function salvarNoDrive() {
   const clientId = localStorage.getItem('gdrive_client_id');
   if (!clientId) { openDriveConfig(); return; }
+
+  // Se a página foi aberta pelo OAuth redirect, extrai token e envia para a janela pai
+  if (window.opener && window.location.hash.includes('access_token')) {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const token = params.get('access_token');
+    const error = params.get('error');
+    window.opener.postMessage({ type: 'oauth2_token', access_token: token, error }, window.location.origin);
+    window.close();
+    return;
+  }
 
   const btn = document.getElementById('drive-btn-float');
   if (!btn) return;
@@ -10649,6 +10657,8 @@ async function salvarNoDrive() {
     }
   }
 }
+
+
 
 async function _uploadToDrive(token, btn, orig) {
   const content = buildSaveContent();
