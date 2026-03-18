@@ -2580,25 +2580,7 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
 </div>
 
 <script>
-// ── OAuth redirect detection — roda ANTES de tudo ──────────────────────
-// Quando o Google redireciona de volta após autenticação, o access_token
-// vem no hash da URL. Detectamos aqui e fazemos o upload direto.
-(function() {
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-    try {
-      const params = new URLSearchParams(window.location.hash.slice(1));
-      const token = params.get('access_token');
-      const error = params.get('error');
-      // Limpa o hash da URL sem recarregar
-      history.replaceState(null, '', window.location.pathname);
-      if (token) {
-        // Sinaliza para o DOMContentLoaded que há um token pendente
-        sessionStorage.setItem('_oauth_token', token);
-        sessionStorage.setItem('_oauth_pending', '1');
-      }
-    } catch(e) {}
-  }
-})();
+
 
 // ============================================================
 // DADOS GERAIS
@@ -10481,10 +10463,6 @@ function resetFileHandle(){ _fileHandle=null; }
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
   loadSavedState();
-  // Processa token OAuth pendente (retorno do redirect Google)
-  if (sessionStorage.getItem('_oauth_pending') && sessionStorage.getItem('_oauth_token')) {
-    setTimeout(salvarNoDrive, 500);
-  }
   buildMonthSelector();
   renderCalendar();
   atualizarCountdownGlobal();
@@ -10603,110 +10581,42 @@ function saveDriveConfig() {
 
 
 
-function _startOAuth(clientId) {
-  // Salva o estado atual antes de redirecionar
-  sessionStorage.setItem('_oauth_pending', '1');
-  const redirectUri = window.location.origin + window.location.pathname;
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUri,
-    response_type: 'token',
-    scope: 'https://www.googleapis.com/auth/drive.file',
-    prompt: 'select_account',
-  });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
-}
+
+
+const _APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHNFtRxahHTpVFv9yAjkibOU4cCL_HvmO0DVJTjY7G3hqXpjEbzZnpjMZ6bjeevpaz/exec';
 
 async function salvarNoDrive() {
-  const clientId = localStorage.getItem('gdrive_client_id');
-  if (!clientId) { openDriveConfig(); return; }
-
   const btn = document.getElementById('drive-btn-float');
   if (!btn) return;
   const orig = btn.innerHTML;
   const resetBtn = () => { btn.disabled = false; btn.innerHTML = orig; };
 
-  // Verifica se voltamos de um redirect OAuth com token pendente
-  const pendingToken = sessionStorage.getItem('_oauth_token');
-  if (pendingToken && sessionStorage.getItem('_oauth_pending')) {
-    sessionStorage.removeItem('_oauth_token');
-    sessionStorage.removeItem('_oauth_pending');
-    btn.disabled = true;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Enviando…';
-    await _uploadToDrive(pendingToken, btn, orig);
-    return;
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Enviando…';
+
+  try {
+    const content = buildSaveContent();
+    const resp = await fetch(_APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: content,
+    });
+    const data = await resp.json().catch(()=>({}));
+    if (data.ok) {
+      btn.innerHTML = '✅ Salvo!';
+      btn.disabled = false;
+      setTimeout(() => { btn.innerHTML = orig; }, 3000);
+    } else {
+      throw new Error(data.error || 'Erro desconhecido');
+    }
+  } catch(e) {
+    resetBtn();
+    alert('Erro ao salvar: ' + e.message);
   }
-
-  // Inicia o fluxo OAuth (redireciona a aba atual)
-  _startOAuth(clientId);
 }
 
 
 
-async function _uploadToDrive(token, btn, orig) {
-  const content = buildSaveContent();
-  const blob = new Blob([content], { type: 'text/html' });
-  const existingId = localStorage.getItem('gdrive_file_id');
 
-  const url = existingId
-    ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`
-    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-  const method = existingId ? 'PATCH' : 'POST';
-
-  const boundary = '-------314159265358979323846';
-  const delimiter = '\r\n--' + boundary + '\r\n';
-  const closeDelimiter = '\r\n--' + boundary + '--';
-  const metaJson = JSON.stringify({ name: 'Cronograma.html', mimeType: 'text/html' });
-
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const encoder = new TextEncoder();
-      const part1 = encoder.encode(
-        delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-        metaJson + delimiter + 'Content-Type: text/html\r\n\r\n'
-      );
-      const part3 = encoder.encode(closeDelimiter);
-      const fileBytes = new Uint8Array(e.target.result);
-      const body = new Uint8Array(part1.length + fileBytes.length + part3.length);
-      body.set(part1, 0);
-      body.set(fileBytes, part1.length);
-      body.set(part3, part1.length + fileBytes.length);
-
-      const xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-      xhr.setRequestHeader('Content-Type', 'multipart/related; boundary="' + boundary + '"');
-
-      xhr.onload = function() {
-        if (xhr.status === 200 || xhr.status === 201) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            if (data.id) localStorage.setItem('gdrive_file_id', data.id);
-          } catch(e) {}
-          btn.innerHTML = '✅ Salvo!';
-          btn.disabled = false;
-          setTimeout(() => { btn.innerHTML = orig; }, 3000);
-        } else if ((xhr.status === 404 || xhr.status === 410) && existingId) {
-          localStorage.removeItem('gdrive_file_id');
-          _uploadToDrive(token, btn, orig).then(resolve);
-          return;
-        } else {
-          alert('Erro ao salvar (' + xhr.status + '): ' + xhr.responseText.slice(0, 300));
-          btn.disabled = false; btn.innerHTML = orig;
-        }
-        resolve();
-      };
-      xhr.onerror = function() {
-        alert('Erro de rede ao salvar no Drive.');
-        btn.disabled = false; btn.innerHTML = orig;
-        resolve();
-      };
-      xhr.send(body.buffer);
-    };
-    reader.readAsArrayBuffer(blob);
-  });
-}
 
 
 
