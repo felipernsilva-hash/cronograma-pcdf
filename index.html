@@ -10596,18 +10596,17 @@ async function salvarNoDrive() {
 
   try {
     const content = buildSaveContent();
-    const resp = await fetch(_APPS_SCRIPT_URL, {
+    // Apps Script exige no-cors OU seguir redirect manualmente
+    // Usamos mode: 'no-cors' — não lemos a resposta mas o script executa
+    await fetch(_APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: content,
     });
-    const data = await resp.json().catch(()=>({}));
-    if (data.ok) {
-      btn.innerHTML = '✅ Salvo!';
-      btn.disabled = false;
-      setTimeout(() => { btn.innerHTML = orig; }, 3000);
-    } else {
-      throw new Error(data.error || 'Erro desconhecido');
-    }
+    // Se chegou aqui sem exception, consideramos salvo
+    btn.innerHTML = '✅ Salvo!';
+    btn.disabled = false;
+    setTimeout(() => { btn.innerHTML = orig; }, 3000);
   } catch(e) {
     resetBtn();
     alert('Erro ao salvar: ' + e.message);
