@@ -10609,11 +10609,15 @@ async function salvarNoDrive() {
       callback: async (resp) => {
         _authDone = true;
         clearTimeout(safetyTimer);
+        console.log('[Drive] OAuth resp:', JSON.stringify(resp).slice(0, 300));
         if (resp.error) {
           resetBtn();
-          if (resp.error !== 'access_denied' && resp.error !== 'popup_closed_by_user') {
-            alert('Erro na autenticação: ' + resp.error);
-          }
+          alert('Erro OAuth: ' + resp.error + (resp.error_description ? ' — ' + resp.error_description : ''));
+          return;
+        }
+        if (!resp.access_token) {
+          resetBtn();
+          alert('Token não recebido. resp: ' + JSON.stringify(resp).slice(0, 200));
           return;
         }
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Enviando…';
