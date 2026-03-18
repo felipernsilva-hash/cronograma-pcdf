@@ -10612,7 +10612,7 @@ async function salvarNoDrive() {
         }
       }
     });
-    tokenClient.requestAccessToken({ prompt: localStorage.getItem('gdrive_file_id') ? '' : 'consent' });
+    tokenClient.requestAccessToken({ prompt: 'consent' });
   } catch(e) {
     _authDone = true;
     clearTimeout(safetyTimer);
@@ -10625,37 +10625,68 @@ async function _uploadToDrive(token, btn, orig) {
   const content = buildSaveContent();
   const blob = new Blob([content], { type: 'text/html' });
   const existingId = localStorage.getItem('gdrive_file_id');
-  const meta = { name: 'Cronograma.html', mimeType: 'text/html' };
-
-  const form = new FormData();
-  form.append('metadata', new Blob([JSON.stringify(existingId ? { name: meta.name } : meta)], { type: 'application/json' }));
-  form.append('file', blob);
-
-  const url = existingId
-    ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`
-    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-  const method = existingId ? 'PATCH' : 'POST';
+  console.log('[Drive] blob size:', (blob.size/1024).toFixed(0)+'KB', '| existingId:', existingId);
 
   try {
-    const resp = await fetch(url, { method, headers: { Authorization: 'Bearer ' + token }, body: form });
-    if (resp.ok) {
-      const data = await resp.json();
+    const meta = JSON.stringify(existingId
+      ? { name: 'Cronograma.html' }
+      : { name: 'Cronograma.html', mimeType: 'text/html' });
+
+    const initUrl = existingId
+      ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=resumable`
+      : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable';
+    const initMethod = existingId ? 'PATCH' : 'POST';
+
+    console.log('[Drive] step1: initiating resumable upload…', initMethod, initUrl);
+    const initResp = await fetch(initUrl, {
+      method: initMethod,
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Upload-Content-Type': 'text/html',
+        'X-Upload-Content-Length': blob.size,
+      },
+      body: meta,
+    });
+    console.log('[Drive] step1 status:', initResp.status, initResp.statusText);
+
+    if (!initResp.ok && existingId) {
+      console.log('[Drive] step1 failed with existingId — retrying as new file');
+      localStorage.removeItem('gdrive_file_id');
+      await _uploadToDrive(token, btn, orig);
+      return;
+    }
+    if (!initResp.ok) {
+      const e = await initResp.json().catch(()=>({}));
+      throw new Error(e.error?.message || initResp.statusText);
+    }
+
+    const uploadUrl = initResp.headers.get('Location');
+    console.log('[Drive] step1 uploadUrl:', uploadUrl ? uploadUrl.slice(0,80)+'…' : 'NULL');
+    if (!uploadUrl) throw new Error('Upload URL não retornada pelo Drive.');
+
+    console.log('[Drive] step2: sending blob…');
+    const uploadResp = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'text/html' },
+      body: blob,
+    });
+    console.log('[Drive] step2 status:', uploadResp.status, uploadResp.statusText);
+
+    if (uploadResp.ok || uploadResp.status === 200 || uploadResp.status === 201) {
+      const data = await uploadResp.json().catch(()=>({}));
       if (data.id) localStorage.setItem('gdrive_file_id', data.id);
-      btn.innerHTML = '\u2705 Salvo!';
+      btn.innerHTML = '✅ Salvo!';
       setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 3000);
     } else {
-      // File may have been deleted from Drive — retry as new file
-      if (existingId) {
-        localStorage.removeItem('gdrive_file_id');
-        await _uploadToDrive(token, btn, orig);
-      } else {
-        const err = await resp.json();
-        throw new Error(err.error?.message || resp.statusText);
-      }
+      const e = await uploadResp.json().catch(()=>({}));
+      throw new Error(e.error?.message || uploadResp.statusText);
     }
   } catch(e) {
+    console.error('[Drive] error:', e);
     alert('Erro ao salvar no Drive: ' + e.message);
-    btn.disabled = false; btn.innerHTML = orig;
+    btn.disabled = false;
+    btn.innerHTML = orig;
   }
 }
 
