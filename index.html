@@ -2580,25 +2580,23 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
 </div>
 
 <script>
-// ── OAuth redirect detection — deve rodar ANTES de qualquer outra coisa ──
-// Quando o Google redireciona o popup de volta para este site após autenticação,
-// o hash da URL contém o access_token. Detectamos isso aqui e enviamos
-// via postMessage para a janela principal, depois fechamos o popup.
+// ── OAuth redirect detection — roda ANTES de tudo ──────────────────────
+// Quando o Google redireciona de volta após autenticação, o access_token
+// vem no hash da URL. Detectamos aqui e fazemos o upload direto.
 (function() {
-  if (window.opener && window.location.hash && window.location.hash.includes('access_token')) {
+  if (window.location.hash && window.location.hash.includes('access_token')) {
     try {
       const params = new URLSearchParams(window.location.hash.slice(1));
       const token = params.get('access_token');
       const error = params.get('error');
-      window.opener.postMessage(
-        { type: 'oauth2_token', access_token: token || null, error: error || null },
-        window.location.origin
-      );
+      // Limpa o hash da URL sem recarregar
+      history.replaceState(null, '', window.location.pathname);
+      if (token) {
+        // Sinaliza para o DOMContentLoaded que há um token pendente
+        sessionStorage.setItem('_oauth_token', token);
+        sessionStorage.setItem('_oauth_pending', '1');
+      }
     } catch(e) {}
-    window.close();
-    // Para o restante do script de carregar (evita piscar o site no popup)
-    document.addEventListener('DOMContentLoaded', () => { document.body.style.display = 'none'; });
-    throw new Error('oauth_redirect'); // interrompe execução do script
   }
 })();
 
@@ -10483,6 +10481,10 @@ function resetFileHandle(){ _fileHandle=null; }
 // ============================================================
 document.addEventListener('DOMContentLoaded',()=>{
   loadSavedState();
+  // Processa token OAuth pendente (retorno do redirect Google)
+  if (sessionStorage.getItem('_oauth_pending') && sessionStorage.getItem('_oauth_token')) {
+    setTimeout(salvarNoDrive, 500);
+  }
   buildMonthSelector();
   renderCalendar();
   atualizarCountdownGlobal();
@@ -10601,49 +10603,18 @@ function saveDriveConfig() {
 
 
 
-function _getOAuthToken(clientId) {
-  return new Promise((resolve, reject) => {
-    const redirectUri = window.location.origin + window.location.pathname;
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'token',
-      scope: 'https://www.googleapis.com/auth/drive.file',
-      prompt: 'select_account',
-    });
-    const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
-    const popup = window.open(authUrl, 'oauth2', 'width=500,height=620,left=300,top=100');
-    if (!popup) { reject(new Error('Popup bloqueado. Libere popups para este site.')); return; }
-
-    // Escuta postMessage enviado pela própria página quando o Google redireciona de volta
-    const onMsg = (evt) => {
-      if (evt.origin !== window.location.origin) return;
-      if (!evt.data || evt.data.type !== 'oauth2_token') return;
-      window.removeEventListener('message', onMsg);
-      clearTimeout(timeoutId);
-      if (popup && !popup.closed) popup.close();
-      if (evt.data.access_token) resolve(evt.data.access_token);
-      else reject(new Error(evt.data.error || 'Token não recebido'));
-    };
-    window.addEventListener('message', onMsg);
-
-    // Detecta popup fechado pelo usuário
-    const pollClosed = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(pollClosed);
-        window.removeEventListener('message', onMsg);
-        clearTimeout(timeoutId);
-        reject(new Error('popup_closed'));
-      }
-    }, 500);
-
-    const timeoutId = setTimeout(() => {
-      clearInterval(pollClosed);
-      window.removeEventListener('message', onMsg);
-      if (!popup.closed) popup.close();
-      reject(new Error('timeout'));
-    }, 120000);
+function _startOAuth(clientId) {
+  // Salva o estado atual antes de redirecionar
+  sessionStorage.setItem('_oauth_pending', '1');
+  const redirectUri = window.location.origin + window.location.pathname;
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: 'token',
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    prompt: 'select_account',
   });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
 }
 
 async function salvarNoDrive() {
@@ -10655,19 +10626,19 @@ async function salvarNoDrive() {
   const orig = btn.innerHTML;
   const resetBtn = () => { btn.disabled = false; btn.innerHTML = orig; };
 
-  btn.disabled = true;
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Aguarde…';
-
-  try {
-    const token = await _getOAuthToken(clientId);
+  // Verifica se voltamos de um redirect OAuth com token pendente
+  const pendingToken = sessionStorage.getItem('_oauth_token');
+  if (pendingToken && sessionStorage.getItem('_oauth_pending')) {
+    sessionStorage.removeItem('_oauth_token');
+    sessionStorage.removeItem('_oauth_pending');
+    btn.disabled = true;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l3.43 6L8 18 14.56 9zm.6 1.5h8.4l3.43 5.94L12 18 5.44 10.94zM12 16.5l3.43-6H20.85L17.29 16.5z"/></svg> Enviando…';
-    await _uploadToDrive(token, btn, orig);
-  } catch(e) {
-    resetBtn();
-    if (e.message !== 'popup_closed' && e.message !== 'timeout') {
-      alert('Erro ao autenticar: ' + e.message);
-    }
+    await _uploadToDrive(pendingToken, btn, orig);
+    return;
   }
+
+  // Inicia o fluxo OAuth (redireciona a aba atual)
+  _startOAuth(clientId);
 }
 
 
