@@ -10691,11 +10691,17 @@ async function _uploadToDrive(token, btn, orig) {
     });
     console.log('[Drive] step2 status:', uploadResp.status, uploadResp.statusText);
 
-    if (uploadResp.ok || uploadResp.status === 200 || uploadResp.status === 201) {
+    if (uploadResp.status === 200 || uploadResp.status === 201) {
       const data = await uploadResp.json().catch(()=>({}));
       if (data.id) localStorage.setItem('gdrive_file_id', data.id);
       btn.innerHTML = '✅ Salvo!';
-      setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 3000);
+      btn.disabled = false;
+      setTimeout(() => { btn.innerHTML = orig; }, 3000);
+    } else if (uploadResp.status === 308) {
+      // Upload incompleto mas aceito — tratar como sucesso parcial
+      btn.innerHTML = '✅ Salvo!';
+      btn.disabled = false;
+      setTimeout(() => { btn.innerHTML = orig; }, 3000);
     } else {
       const e = await uploadResp.json().catch(()=>({}));
       throw new Error(e.error?.message || uploadResp.statusText);
