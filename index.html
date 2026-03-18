@@ -10649,37 +10649,75 @@ async function _uploadToDrive(token, btn, orig) {
     : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
   const method = existingId ? 'PATCH' : 'POST';
 
-  const meta = JSON.stringify({ name: 'Cronograma.html', mimeType: 'text/html' });
-  const body = new FormData();
-  body.append('metadata', new Blob([meta], { type: 'application/json' }));
-  body.append('file', blob);
+  const boundary = '-------314159265358979323846';
+  const delimiter = '\r\n--' + boundary + '\r\n';
+  const closeDelimiter = '\r\n--' + boundary + '--';
 
-  try {
-    const resp = await fetch(url, {
-      method,
-      headers: { Authorization: 'Bearer ' + token },
-      body,
-    });
+  // Monta multipart manualmente para evitar problemas com FormData + fetch
+  const metaJson = JSON.stringify({ name: 'Cronograma.html', mimeType: 'text/html' });
 
-    if (resp.ok) {
-      const data = await resp.json().catch(()=>({}));
-      if (data.id) localStorage.setItem('gdrive_file_id', data.id);
-      btn.innerHTML = '✅ Salvo!';
-      btn.disabled = false;
-      setTimeout(() => { btn.innerHTML = orig; }, 3000);
-    } else if (existingId) {
-      // Arquivo deletado do Drive — recria
-      localStorage.removeItem('gdrive_file_id');
-      await _uploadToDrive(token, btn, orig);
-    } else {
-      const err = await resp.json().catch(()=>({}));
-      throw new Error(err.error?.message || resp.status + ' ' + resp.statusText);
-    }
-  } catch(e) {
-    alert('Erro ao salvar no Drive: ' + e.message);
-    btn.disabled = false;
-    btn.innerHTML = orig;
-  }
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const fileData = e.target.result; // ArrayBuffer
+
+      const encoder = new TextEncoder();
+      const part1 = encoder.encode(
+        delimiter +
+        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+        metaJson +
+        delimiter +
+        'Content-Type: text/html\r\n\r\n'
+      );
+      const part3 = encoder.encode(closeDelimiter);
+      const fileBytes = new Uint8Array(fileData);
+
+      const body = new Uint8Array(part1.length + fileBytes.length + part3.length);
+      body.set(part1, 0);
+      body.set(fileBytes, part1.length);
+      body.set(part3, part1.length + fileBytes.length);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+      xhr.setRequestHeader('Content-Type', 'multipart/related; boundary="' + boundary + '"');
+
+      xhr.onload = function() {
+        console.log('[Drive] status:', xhr.status, '| response:', xhr.responseText.slice(0, 200));
+        if (xhr.status === 200 || xhr.status === 201) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (data.id) localStorage.setItem('gdrive_file_id', data.id);
+          } catch(e) {}
+          btn.innerHTML = '✅ Salvo!';
+          btn.disabled = false;
+          setTimeout(() => { btn.innerHTML = orig; }, 3000);
+        } else if (xhr.status === 401 || xhr.status === 403) {
+          alert('Erro de autenticação (' + xhr.status + '). Tente salvar novamente para renovar o token.');
+          btn.disabled = false; btn.innerHTML = orig;
+        } else if ((xhr.status === 404 || xhr.status === 410) && existingId) {
+          // Arquivo deletado do Drive — remove o id e recria
+          localStorage.removeItem('gdrive_file_id');
+          _uploadToDrive(token, btn, orig).then(resolve);
+          return;
+        } else {
+          alert('Erro ao salvar no Drive: ' + xhr.status + ' — ' + xhr.responseText.slice(0, 200));
+          btn.disabled = false; btn.innerHTML = orig;
+        }
+        resolve();
+      };
+
+      xhr.onerror = function() {
+        console.error('[Drive] network error');
+        alert('Erro de rede ao salvar no Drive. Verifique sua conexão.');
+        btn.disabled = false; btn.innerHTML = orig;
+        resolve();
+      };
+
+      xhr.send(body.buffer);
+    };
+    reader.readAsArrayBuffer(blob);
+  });
 }
 
 
