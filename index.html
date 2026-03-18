@@ -2580,6 +2580,28 @@ Ademais, seguiu tudo conforme o planejado.</div><div class="day-check checked"><
 </div>
 
 <script>
+// ── OAuth redirect detection — deve rodar ANTES de qualquer outra coisa ──
+// Quando o Google redireciona o popup de volta para este site após autenticação,
+// o hash da URL contém o access_token. Detectamos isso aqui e enviamos
+// via postMessage para a janela principal, depois fechamos o popup.
+(function() {
+  if (window.opener && window.location.hash && window.location.hash.includes('access_token')) {
+    try {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const token = params.get('access_token');
+      const error = params.get('error');
+      window.opener.postMessage(
+        { type: 'oauth2_token', access_token: token || null, error: error || null },
+        window.location.origin
+      );
+    } catch(e) {}
+    window.close();
+    // Para o restante do script de carregar (evita piscar o site no popup)
+    document.addEventListener('DOMContentLoaded', () => { document.body.style.display = 'none'; });
+    throw new Error('oauth_redirect'); // interrompe execução do script
+  }
+})();
+
 // ============================================================
 // DADOS GERAIS
 // ============================================================
@@ -10627,16 +10649,6 @@ function _getOAuthToken(clientId) {
 async function salvarNoDrive() {
   const clientId = localStorage.getItem('gdrive_client_id');
   if (!clientId) { openDriveConfig(); return; }
-
-  // Se a página foi aberta pelo OAuth redirect, extrai token e envia para a janela pai
-  if (window.opener && window.location.hash.includes('access_token')) {
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    const token = params.get('access_token');
-    const error = params.get('error');
-    window.opener.postMessage({ type: 'oauth2_token', access_token: token, error }, window.location.origin);
-    window.close();
-    return;
-  }
 
   const btn = document.getElementById('drive-btn-float');
   if (!btn) return;
